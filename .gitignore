@@ -1,0 +1,36 @@
+# Node.js
+node_modules/
+dist/
+dist-ssr/
+*.local
+.eslintcache
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+env/
+.env
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
+
+# Databases
+*.db
+*.sqlite3
+backend/app/database/rescue.db
+
+# IDEs & System
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
