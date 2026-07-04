@@ -11,6 +11,9 @@ import MedicalEmergency from '../Medical/MedicalEmergency.jsx';
 import DisasterSafety from '../Disaster/DisasterSafety.jsx';
 import AIAssistancePage from '../AIAssistance/AIAssistance.jsx';
 
+const API_URL = "http://127.0.0.1:8000/api/chatbot/";
+const OCR_API = "http://127.0.0.1:8000/api/ocr/";
+
 // Translation Dictionary defined outside the component to prevent reference errors during initialization
 const t = {
   en: {
@@ -287,40 +290,53 @@ export default function Dashboard({ language: initialLanguage, onResetLanguage, 
   }, []);
 
   // AI Chat responses simulation
-  const handleAIPrompt = (promptText) => {
-    setChatMessages(prev => [...prev, { sender: 'user', text: promptText }]);
-    setIsTyping(true);
-    
-    setTimeout(() => {
-      let botResponse = "";
-      const lower = promptText.toLowerCase();
-      
-      if (lower.includes('cpr') || lower.includes('सीपीआर')) {
-        botResponse = language === 'en'
-          ? "For CPR: Place hands in center of chest. Press hard & fast (100-120 compressions per min, 2 inches deep). Allow full chest recoil. Do not stop until paramedics arrive."
-          : "सीपीआर के लिए: हाथों को छाती के केंद्र में रखें। जोर से और तेजी से दबाएं (100-120 बार प्रति मिनट, 2 इंच गहरा)। छाती को पूरी तरह वापस सामान्य स्थिति में आने दें।";
-      } else if (lower.includes('bleed') || lower.includes('खून') || lower.includes('रक्त')) {
-        botResponse = language === 'en'
-          ? "For severe bleeding: Apply direct pressure to the wound with a clean cloth. Elevate the injured limb if possible. Keep pressure applied until help arrives. Do not remove soaked cloths."
-          : "गंभीर रक्तस्राव के लिए: साफ कपड़े से घाव पर सीधा दबाव डालें। यदि संभव हो तो घायल अंग को ऊपर उठाएं। मदद आने तक दबाव बनाए रखें।";
-      } else if (lower.includes('burn') || lower.includes('जल')) {
-        botResponse = language === 'en'
-          ? "For burns: Cool the burn immediately with cool running water for 10 to 20 minutes. Do not use ice. Cover loosely with sterile non-stick bandage or plastic wrap."
-          : "जलने पर: जले हुए हिस्से को तुरंत ठंडे बहते पानी से 10 से 20 मिनट तक ठंडा करें। बर्फ का प्रयोग न करें। साफ सूती कपड़े या पट्टी से ढीला ढकें।";
-      } else if (lower.includes('earthquake') || lower.includes('भूकंप')) {
-        botResponse = language === 'en'
-          ? "During an earthquake: DROP to your hands and knees. COVER your head and neck under sturdy furniture. HOLD ON to your shelter until shaking stops. Stay away from windows."
-          : "भूकंप के दौरान: जमीन पर झुक जाएं (DROP)। अपने सिर और गर्दन को मजबूत फर्नीचर के नीचे ढकें (COVER)। थरथराहट रुकने तक आश्रय को पकड़ कर रखें (HOLD ON)।";
-      } else {
-        botResponse = language === 'en'
-          ? "Offline Emergency Knowledge Base search complete: Ensure safety first. For specific guide details, tap 'CPR Guide' or 'First Aid' on the home dashboard."
-          : "ऑफलाइन आपातकालीन डेटाबेस खोज पूरी हुई: सबसे पहले सुरक्षा सुनिश्चित करें। विशेष मार्गदर्शन के लिए होम डैशबोर्ड पर 'सीपीआर गाइड' या 'प्राथमिक चिकित्सा' पर टैप करें।";
-      }
-      
-      setChatMessages(prev => [...prev, { sender: 'bot', text: botResponse }]);
-      setIsTyping(false);
-    }, 850);
-  };
+  const handleAIPrompt = async (promptText) => {
+  // Show user's message
+  setChatMessages((prev) => [
+    ...prev,
+    {
+      sender: "user",
+      text: promptText,
+    },
+  ]);
+
+  setIsTyping(true);
+
+  try {
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        message: promptText,
+        language: language,
+      }),
+    });
+
+    const data = await response.json();
+
+    setChatMessages((prev) => [
+      ...prev,
+      {
+        sender: "bot",
+        text: data.response,
+      },
+    ]);
+  } catch (error) {
+    console.error(error);
+
+    setChatMessages((prev) => [
+      ...prev,
+      {
+        sender: "bot",
+        text: "⚠ Unable to connect to RescueAI backend.",
+      },
+    ]);
+  }
+
+  setIsTyping(false);
+};
 
   const handleSendChat = (e) => {
     e.preventDefault();
@@ -331,30 +347,47 @@ export default function Dashboard({ language: initialLanguage, onResetLanguage, 
   };
 
   // Simulate OCR scan
-  const triggerScan = () => {
-    setScanningEffect(true);
-    setScanResult(null);
-    
-    setTimeout(() => {
-      setScanningEffect(false);
-      if (scanType === 'ocr') {
-        setScanResult({
-          title: language === 'en' ? "Prescription Detected" : "पर्चे की पहचान की गई",
-          content: "PARACETAMOL 500MG\nQty: 10 tablets\nDosage: Take 1 tablet every 6 hours as needed for pain/fever. Do not exceed 4 tablets in 24 hours.\n⚠️ Store in a cool dry place.",
-          tags: ["Painkiller", "Fever reducer", "Adult Dose"]
-        });
-      } else {
-        setScanResult({
-          title: language === 'en' ? "Safety Objects Detected" : "सुरक्षा उपकरणों की पहचान",
-          objects: [
-            { name: language === 'en' ? "Fire Extinguisher" : "अग्निशामक यंत्र", confidence: "98%", box: "Top Left" },
-            { name: language === 'en' ? "First Aid Kit" : "प्राथमिक चिकित्सा किट", confidence: "94%", box: "Center Right" },
-            { name: language === 'en' ? "Emergency Exit Sign" : "आपातकालीन निकास द्वार", confidence: "99%", box: "Top Center" }
-          ]
-        });
-      }
-    }, 1800);
-  };
+  const triggerScan = async () => {
+  if (!selectedImage) {
+    alert("Please select an image first.");
+    return;
+  }
+
+  setScanningEffect(true);
+  setScanResult(null);
+
+  try {
+    const formData = new FormData();
+    formData.append("file", selectedImage);
+
+    const response = await fetch(OCR_API, {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await response.json();
+
+    setScanResult({
+      title:
+        language === "en"
+          ? "Text Extracted"
+          : "टेक्स्ट निकाला गया",
+
+      content: data.text,
+
+      tags: ["OCR", "EasyOCR", "Offline AI"],
+    });
+  } catch (error) {
+    console.error(error);
+
+    setScanResult({
+      title: "Error",
+      content: "Unable to extract text.",
+    });
+  }
+
+  setScanningEffect(false);
+};
 
   // Copy GPS Coordinates
   const handleCopyCoords = () => {

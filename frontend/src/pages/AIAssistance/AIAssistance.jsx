@@ -132,37 +132,199 @@ export default function AIAssistance({
       </div>
 
       {/* HERO BANNER SECTION */}
-      <section className="bg-gradient-to-br from-[#EEF2FF] via-white to-[#E0E7FF] rounded-3xl border border-slate-100 p-6 md:p-8 shadow-xs flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden text-left">
-        <div className="absolute -top-24 -left-24 w-64 h-64 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none"></div>
-        <div className="absolute -bottom-24 -right-24 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl pointer-events-none"></div>
+      <section className="bg-gradient-to-br from-[#FFFFFF] via-[#F8FAFC] to-[#F4F8FF] rounded-[32px] border border-slate-100 p-6 md:p-10 shadow-xs flex flex-col md:flex-row items-center justify-between gap-8 md:gap-12 relative overflow-hidden text-left min-h-[420px]">
         
-        <div className="max-w-lg space-y-4 md:space-y-5 z-10">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-100 shadow-xxs">
-            <span className="w-2 h-2 rounded-full bg-indigo-650 animate-pulse"></span>
+        {/* Modern Dashboard Background Details */}
+        <div className="absolute inset-0 pointer-events-none select-none z-0">
+          {/* Light Dotted World Map style grid */}
+          <svg className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] opacity-[0.04] text-blue-500" viewBox="0 0 1000 500" fill="none">
+            {Array.from({ length: 15 }).map((_, i) => (
+              <circle key={`c1-${i}`} cx={100 + i * 60} cy={100 + Math.sin(i) * 50} r="1.5" fill="currentColor" />
+            ))}
+            {Array.from({ length: 15 }).map((_, i) => (
+              <circle key={`c2-${i}`} cx={80 + i * 60} cy={200 + Math.cos(i) * 40} r="1.5" fill="currentColor" />
+            ))}
+            {Array.from({ length: 15 }).map((_, i) => (
+              <circle key={`c3-${i}`} cx={120 + i * 60} cy={300 + Math.sin(i + 1) * 60} r="1.5" fill="currentColor" />
+            ))}
+            {Array.from({ length: 15 }).map((_, i) => (
+              <circle key={`c4-${i}`} cx={140 + i * 60} cy={400 + Math.cos(i + 2) * 50} r="1.5" fill="currentColor" />
+            ))}
+            <path d="M150,120 Q300,80 500,180 T800,220" stroke="currentColor" strokeWidth="0.8" strokeDasharray="4 4" />
+            <path d="M100,250 Q400,320 600,150 T900,350" stroke="currentColor" strokeWidth="0.8" strokeDasharray="4 4" />
+          </svg>
+
+          {/* Small heartbeat ECG waveform */}
+          <svg className="absolute bottom-4 left-8 w-48 h-12 text-[#2563EB] opacity-[0.08]" viewBox="0 0 100 30" fill="none">
+            <path d="M0,15 L25,15 L28,5 L32,25 L35,15 L40,15 L42,10 L44,20 L46,15 L100,15" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+
+          {/* Thin glowing connection lines */}
+          <svg className="absolute inset-0 w-full h-full opacity-[0.06] text-blue-500" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <line x1="10" y1="20" x2="90" y2="20" stroke="currentColor" strokeWidth="0.5" />
+            <line x1="10" y1="80" x2="90" y2="80" stroke="currentColor" strokeWidth="0.5" />
+            <line x1="20" y1="10" x2="20" y2="90" stroke="currentColor" strokeWidth="0.5" />
+          </svg>
+
+          {/* Floating medical plus symbols */}
+          <div className="absolute top-8 left-[15%] text-blue-500 font-bold text-lg opacity-[0.08] animate-pulse">+</div>
+          <div className="absolute top-1/4 right-[25%] text-blue-500 font-bold text-xl opacity-[0.06] animate-pulse" style={{ animationDelay: '1s' }}>+</div>
+          <div className="absolute bottom-1/3 left-[40%] text-blue-500 font-bold text-sm opacity-[0.07] animate-pulse" style={{ animationDelay: '2s' }}>+</div>
+          <div className="absolute bottom-8 right-[10%] text-blue-500 font-bold text-lg opacity-[0.08] animate-pulse" style={{ animationDelay: '1.5s' }}>+</div>
+        </div>
+
+        {/* Content Area (Left side) */}
+        <div className="max-w-lg space-y-5 md:space-y-6 z-10 flex flex-col items-start">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-55 text-[#2563EB] border border-blue-100 shadow-xxs">
+            <span className="w-2 h-2 rounded-full bg-[#2563EB] animate-pulse"></span>
             <span className="text-[10px] font-bold uppercase tracking-wider">{t.offlineReady}</span>
           </div>
           
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-800 tracking-tight leading-tight">
-            {t.heroHeading}
-          </h2>
-          <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
-            {t.heroSubtitle}
-          </p>
+          <div className="space-y-2">
+            {language === 'en' ? (
+              <h2 className="text-4xl sm:text-5xl font-black text-slate-800 tracking-tight leading-tight">
+                AI Emergency <span className="bg-gradient-to-r from-[#2563EB] to-[#3B82F6] bg-clip-text text-transparent">Assistance</span>
+              </h2>
+            ) : (
+              <h2 className="text-3xl sm:text-4xl font-black text-slate-800 tracking-tight leading-tight">
+                {t.heroHeading}
+              </h2>
+            )}
+            <p className="text-xs sm:text-sm text-slate-500 leading-relaxed max-w-md">
+              {t.heroSubtitle}
+            </p>
+          </div>
 
-          <div className="inline-flex items-center gap-2 text-[11px] font-bold text-slate-400 bg-white border border-slate-150 rounded-xl px-3.5 py-2 shadow-xxs">
-            <span className="w-2 h-2 rounded-full bg-indigo-500"></span>
+          {/* Frosted glass 100% Local AI information card */}
+          <div className="flex items-center gap-3 text-[11.5px] font-bold text-slate-500 bg-white/60 backdrop-blur-md border border-white/80 rounded-2xl p-3 shadow-xxs max-w-sm">
+            <div className="w-8 h-8 bg-blue-500/10 text-[#2563EB] rounded-xl flex items-center justify-center shrink-0 shadow-xxs">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+            </div>
             <span>{t.offlineReadyDesc}</span>
+          </div>
+
+          {/* Quick Action grid buttons */}
+          <div className="grid grid-cols-2 gap-3 w-full max-w-md pt-2">
+            <button 
+              onClick={onNavigateToChat}
+              className="h-11 px-4 rounded-xl bg-gradient-to-r from-[#2563EB] to-[#3B82F6] hover:brightness-110 text-white font-extrabold text-xs transition-all shadow-md shadow-blue-500/10 flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <span>💬</span>
+              <span>AI Chat</span>
+            </button>
+            <button 
+              onClick={onNavigateToOCR}
+              className="h-11 px-4 rounded-xl bg-white/70 backdrop-blur-md border border-slate-100 hover:border-slate-350 hover:bg-white text-slate-700 font-extrabold text-xs transition-all shadow-xxs flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <span className="text-emerald-500">📄</span>
+              <span>OCR Scanner</span>
+            </button>
+            <button 
+              onClick={onNavigateToDetection}
+              className="h-11 px-4 rounded-xl bg-white/70 backdrop-blur-md border border-slate-100 hover:border-slate-350 hover:bg-white text-slate-700 font-extrabold text-xs transition-all shadow-xxs flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <span className="text-purple-500">🧊</span>
+              <span>Object Detection</span>
+            </button>
+            <button 
+              onClick={onNavigateToSettings}
+              className="h-11 px-4 rounded-xl bg-white/70 backdrop-blur-md border border-slate-100 hover:border-slate-350 hover:bg-white text-slate-700 font-extrabold text-xs transition-all shadow-xxs flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <span className="text-amber-500">🎤</span>
+              <span>Voice Assist</span>
+            </button>
           </div>
         </div>
 
-        {/* Vector SVG Illustration */}
-        <div className="w-full max-w-[280px] md:max-w-[340px] shrink-0 z-10">
-          <svg className="w-full h-auto" viewBox="0 0 200 150" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="100" cy="75" r="55" fill="#4F46E5" fillOpacity="0.08" />
-            <circle cx="100" cy="75" r="45" fill="#4F46E5" fillOpacity="0.12" />
-            <path d="M100 40c-19.3 0-35 15.7-35 35 0 14.3 8.6 26.6 21 31.9v8.1c0 2.2 1.8 4 4 4h20c2.2 0 4-1.8 4-4v-8.1c12.4-5.3 21-17.6 21-31.9 0-19.3-15.7-35-35-35zm-8 40a8 8 0 1 1 16 0 8 8 0 0 1-16 0z" fill="#4F46E5" />
-            <circle cx="100" cy="80" r="3" fill="#FFFFFF" />
+        {/* Robot Area (Right side) */}
+        <div className="relative w-full max-w-[320px] md:max-w-[400px] h-[320px] flex items-center justify-center shrink-0 z-10 select-none">
+          
+          {/* Circular HUD rings under/behind the robot */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="w-[280px] h-[280px] rounded-full border border-blue-500/10 absolute animate-[spin_40s_linear_infinite]"></div>
+            <div className="w-[220px] h-[220px] rounded-full border border-dashed border-blue-500/15 absolute animate-[spin_20s_linear_infinite_reverse]"></div>
+            <div className="w-[160px] h-[160px] rounded-full border border-blue-500/10 absolute"></div>
+            {/* Soft blue radial glow */}
+            <div className="w-[180px] h-[180px] bg-[#60A5FA]/15 rounded-full blur-2xl absolute"></div>
+          </div>
+
+          {/* Large translucent medical shield behind the robot */}
+          <svg className="absolute w-[220px] h-[220px] text-blue-500/10 opacity-[0.6] pointer-events-none z-0" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
           </svg>
+
+          {/* Floating light particles */}
+          <div className="absolute top-1/4 left-1/4 w-1.5 h-1.5 bg-blue-400 rounded-full opacity-30 animate-ping"></div>
+          <div className="absolute bottom-1/3 right-1/4 w-2 h-2 bg-blue-300 rounded-full opacity-40 animate-pulse" style={{ animationDelay: '0.5s' }}></div>
+          <div className="absolute top-1/2 right-1/3 w-1 h-1 bg-indigo-400 rounded-full opacity-50 animate-ping" style={{ animationDelay: '1.2s' }}></div>
+
+          {/* Holographic lighting glow */}
+          <div className="absolute bottom-[20%] w-[120px] h-[10px] bg-[#60A5FA]/30 rounded-full blur-xs pointer-events-none transform -skew-x-12 animate-pulse"></div>
+
+          {/* SVG Dotted connection lines */}
+          <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-40 z-0" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <line x1="20" y1="20" x2="50" y2="50" stroke="#2563EB" strokeWidth="0.6" strokeDasharray="2 2" />
+            <line x1="20" y1="80" x2="50" y2="50" stroke="#10B981" strokeWidth="0.6" strokeDasharray="2 2" />
+            <line x1="80" y1="20" x2="50" y2="50" stroke="#8B5CF6" strokeWidth="0.6" strokeDasharray="2 2" />
+            <line x1="80" y1="80" x2="50" y2="50" stroke="#F59E0B" strokeWidth="0.6" strokeDasharray="2 2" />
+          </svg>
+
+          {/* Floating Circle 1: AI Chat (Top-Left) */}
+          <div 
+            onClick={onNavigateToChat}
+            className="absolute top-[8%] left-[2%] flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/75 backdrop-blur-md border border-white shadow-md shadow-blue-500/5 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 cursor-pointer z-20 group"
+          >
+            <div className="w-6 h-6 rounded-full bg-[#2563EB]/10 text-[#2563EB] flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform">
+              <MessageSquare className="w-3.5 h-3.5" />
+            </div>
+            <span className="text-[10px] font-black text-slate-700 tracking-tight">AI Chat</span>
+          </div>
+
+          {/* Floating Circle 2: OCR Scanner (Bottom-Left) */}
+          <div 
+            onClick={onNavigateToOCR}
+            className="absolute bottom-[10%] left-0 flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/75 backdrop-blur-md border border-white shadow-md shadow-emerald-500/5 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 cursor-pointer z-20 group"
+          >
+            <div className="w-6 h-6 rounded-full bg-emerald-500/10 text-emerald-600 flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform">
+              <Eye className="w-3.5 h-3.5" />
+            </div>
+            <span className="text-[10px] font-black text-slate-700 tracking-tight">OCR Scanner</span>
+          </div>
+
+          {/* Floating Circle 3: Object Detection (Top-Right) */}
+          <div 
+            onClick={onNavigateToDetection}
+            className="absolute top-[12%] right-0 flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/75 backdrop-blur-md border border-white shadow-md shadow-purple-500/5 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 cursor-pointer z-20 group"
+          >
+            <div className="w-6 h-6 rounded-full bg-purple-500/10 text-purple-600 flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform">
+              <Camera className="w-3.5 h-3.5" />
+            </div>
+            <span className="text-[10px] font-black text-slate-700 tracking-tight">Detection</span>
+          </div>
+
+          {/* Floating Circle 4: Voice Assistant (Bottom-Right) */}
+          <div 
+            onClick={onNavigateToSettings}
+            className="absolute bottom-[14%] right-[2%] flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/75 backdrop-blur-md border border-white shadow-md shadow-amber-500/5 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 cursor-pointer z-20 group"
+          >
+            <div className="w-6 h-6 rounded-full bg-amber-500/10 text-amber-600 flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform">
+              <Bot className="w-3.5 h-3.5" strokeWidth={2.5} />
+            </div>
+            <span className="text-[10px] font-black text-slate-700 tracking-tight">Voice Assist</span>
+          </div>
+
+          {/* Robot SVG itself (Original vector illustration, kept exactly as requested) */}
+          <div className="z-10 w-[180px] md:w-[220px] transform hover:scale-[1.02] transition-transform duration-500 drop-shadow-xl">
+            <svg className="w-full h-auto" viewBox="0 0 200 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="100" cy="75" r="55" fill="#4F46E5" fillOpacity="0.08" />
+              <circle cx="100" cy="75" r="45" fill="#4F46E5" fillOpacity="0.12" />
+              <path d="M100 40c-19.3 0-35 15.7-35 35 0 14.3 8.6 26.6 21 31.9v8.1c0 2.2 1.8 4 4 4h20c2.2 0 4-1.8 4-4v-8.1c12.4-5.3 21-17.6 21-31.9 0-19.3-15.7-35-35-35zm-8 40a8 8 0 1 1 16 0 8 8 0 0 1-16 0z" fill="#4F46E5" />
+              <circle cx="100" cy="80" r="3" fill="#FFFFFF" />
+            </svg>
+          </div>
+
         </div>
       </section>
 
