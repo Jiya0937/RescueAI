@@ -1,7 +1,7 @@
 import React from 'react';
 import { 
   ArrowLeft, Bot, MessageSquare, Eye, Camera, Settings, 
-  ChevronRight, ShieldAlert, Check
+  ChevronRight, ShieldAlert, Check, Phone
 } from 'lucide-react';
 
 export default function AIAssistance({ 

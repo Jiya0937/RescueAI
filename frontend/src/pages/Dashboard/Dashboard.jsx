@@ -5,7 +5,7 @@ import {
   Sparkles, Accessibility, Volume1, Compass, Crosshair, AlertTriangle, 
   Check, Send, Mic, Flame, Droplets, Stethoscope, Layers, Globe, 
   Bell, RotateCcw, Play, Pause, User, Copy, ChevronRight, Share2, 
-  Upload, Camera, Bot
+  Upload, Camera
 } from 'lucide-react';
 import MedicalEmergency from '../Medical/MedicalEmergency.jsx';
 import DisasterSafety from '../Disaster/DisasterSafety.jsx';
@@ -302,7 +302,91 @@ export default function Dashboard({ language: initialLanguage, onResetLanguage, 
       } else if (lower.includes('bleed') || lower.includes('खून') || lower.includes('रक्त')) {
         botResponse = language === 'en'
           ? "For severe bleeding: Apply direct pressure to the wound with a clean cloth. Elevate the injured limb if possible. Keep pressure applied until help arrives. Do not remove soaked cloths."
-          : "गंभीर रक्तस्राव के लिए: साफ कपड़े स�  // 1. Home dashboard overview
+          : "गंभीर रक्तस्राव के लिए: साफ कपड़े से घाव पर सीधा दबाव डालें। यदि संभव हो तो घायल अंग को ऊपर उठाएं। मदद आने तक दबाव बनाए रखें।";
+      } else if (lower.includes('burn') || lower.includes('जल')) {
+        botResponse = language === 'en'
+          ? "For burns: Cool the burn immediately with cool running water for 10 to 20 minutes. Do not use ice. Cover loosely with sterile non-stick bandage or plastic wrap."
+          : "जलने पर: जले हुए हिस्से को तुरंत ठंडे बहते पानी से 10 से 20 मिनट तक ठंडा करें। बर्फ का प्रयोग न करें। साफ सूती कपड़े या पट्टी से ढीला ढकें।";
+      } else if (lower.includes('earthquake') || lower.includes('भूकंप')) {
+        botResponse = language === 'en'
+          ? "During an earthquake: DROP to your hands and knees. COVER your head and neck under sturdy furniture. HOLD ON to your shelter until shaking stops. Stay away from windows."
+          : "भूकंप के दौरान: जमीन पर झुक जाएं (DROP)। अपने सिर और गर्दन को मजबूत फर्नीचर के नीचे ढकें (COVER)। थरथराहट रुकने तक आश्रय को पकड़ कर रखें (HOLD ON)।";
+      } else {
+        botResponse = language === 'en'
+          ? "Offline Emergency Knowledge Base search complete: Ensure safety first. For specific guide details, tap 'CPR Guide' or 'First Aid' on the home dashboard."
+          : "ऑफलाइन आपातकालीन डेटाबेस खोज पूरी हुई: सबसे पहले सुरक्षा सुनिश्चित करें। विशेष मार्गदर्शन के लिए होम डैशबोर्ड पर 'सीपीआर गाइड' या 'प्राथमिक चिकित्सा' पर टैप करें।";
+      }
+      
+      setChatMessages(prev => [...prev, { sender: 'bot', text: botResponse }]);
+      setIsTyping(false);
+    }, 850);
+  };
+
+  const handleSendChat = (e) => {
+    e.preventDefault();
+    if (!chatInput.trim()) return;
+    const text = chatInput;
+    setChatInput('');
+    handleAIPrompt(text);
+  };
+
+  // Simulate OCR scan
+  const triggerScan = () => {
+    setScanningEffect(true);
+    setScanResult(null);
+    
+    setTimeout(() => {
+      setScanningEffect(false);
+      if (scanType === 'ocr') {
+        setScanResult({
+          title: language === 'en' ? "Prescription Detected" : "पर्चे की पहचान की गई",
+          content: "PARACETAMOL 500MG\nQty: 10 tablets\nDosage: Take 1 tablet every 6 hours as needed for pain/fever. Do not exceed 4 tablets in 24 hours.\n⚠️ Store in a cool dry place.",
+          tags: ["Painkiller", "Fever reducer", "Adult Dose"]
+        });
+      } else {
+        setScanResult({
+          title: language === 'en' ? "Safety Objects Detected" : "सुरक्षा उपकरणों की पहचान",
+          objects: [
+            { name: language === 'en' ? "Fire Extinguisher" : "अग्निशामक यंत्र", confidence: "98%", box: "Top Left" },
+            { name: language === 'en' ? "First Aid Kit" : "प्राथमिक चिकित्सा किट", confidence: "94%", box: "Center Right" },
+            { name: language === 'en' ? "Emergency Exit Sign" : "आपातकालीन निकास द्वार", confidence: "99%", box: "Top Center" }
+          ]
+        });
+      }
+    }, 1800);
+  };
+
+  // Copy GPS Coordinates
+  const handleCopyCoords = () => {
+    navigator.clipboard.writeText("28.6139° N, 77.2090° E");
+    setCoordinatesCopied(true);
+    setTimeout(() => setCoordinatesCopied(false), 2000);
+  };
+
+  // Personal contacts addition
+  const handleAddContact = (e) => {
+    e.preventDefault();
+    if (!newContactName || !newContactNum) return;
+    setPersonalContacts(prev => [...prev, {
+      name: newContactName,
+      relation: newContactRel || 'Contact',
+      number: newContactNum
+    }]);
+    setNewContactName('');
+    setNewContactNum('');
+    setNewContactRel('');
+    setShowAddContact(false);
+  };
+
+  // CSS layout variables
+  const wrapperClasses = `min-h-screen bg-[#F8FAFC] pb-28 font-sans transition-all duration-300 relative select-none
+    ${largeText ? 'accessibility-large-text' : ''}
+    ${highContrast ? 'accessibility-high-contrast' : ''}
+  `;
+
+  // --- SUBVIEW RENDERERS ---
+
+  // 1. Home dashboard overview
   const renderHome = () => (
     <div className="space-y-8 animate-fade-in">
       {/* Hero card with clean medical illustration */}
@@ -377,184 +461,228 @@ export default function Dashboard({ language: initialLanguage, onResetLanguage, 
       </section>
 
       {/* Three Premium Category Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         
         {/* Card 1 — Medical Emergency */}
         <div 
           onClick={() => setActiveTab('medical')}
-          className="bg-white border border-slate-100 rounded-[20px] p-6 shadow-sm hover:shadow-md hover:border-red-200 transition-all cursor-pointer group flex flex-col justify-between text-left relative overflow-hidden"
+          className="bg-white border border-slate-100 rounded-[20px] shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer group flex flex-col justify-between text-left relative overflow-hidden h-[360px] max-w-[380px] w-full mx-auto"
         >
-          <div className="space-y-4">
-            {/* Glassmorphism Icon container */}
-            <div className="w-16 h-16 rounded-full bg-red-50 text-[#E53935] flex items-center justify-center shadow-xs mx-auto group-hover:scale-105 transition-transform duration-300">
-              <Heart className="w-8 h-8 animate-pulse" />
-            </div>
-            
-            <div className="text-center space-y-2">
-              <h3 className="font-bold text-2xl text-slate-800 tracking-tight group-hover:text-[#E53935] transition-colors">
+          {/* Illustration Container */}
+          <div className="bg-gradient-to-b from-red-50/40 to-white pt-4 pb-2 flex items-center justify-center shrink-0">
+            <svg className="w-full h-32" viewBox="0 0 300 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="150" cy="60" r="45" fill="url(#redGrad)" opacity="0.12" />
+              <g transform="translate(90, 25)">
+                <rect x="2" y="14" width="56" height="42" rx="10" fill="#EF5350" opacity="0.25" />
+                <rect x="0" y="12" width="56" height="42" rx="10" fill="url(#medRed)" />
+                <circle cx="28" cy="33" r="11" fill="white" />
+                <rect x="25" y="27" width="6" height="12" rx="1" fill="#E53935" />
+                <rect x="22" y="30" width="12" height="6" rx="1" fill="#E53935" />
+                <rect x="12" y="10" width="6" height="4" rx="1" fill="#CFD8DC" />
+                <rect x="38" y="10" width="6" height="4" rx="1" fill="#CFD8DC" />
+                <path d="M18 12V6C18 4.3 19.3 3 21 3H35C36.7 3 38 4.3 38 6V12" stroke="#B0BEC5" strokeWidth="3" strokeLinecap="round" />
+              </g>
+              <g transform="translate(160, 28)">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="url(#heartRed)" filter="url(#glowRed)" />
+                <path d="M-20 20h10l4-15 5 25 4-15 7 5" stroke="#FF8A80" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+              </g>
+              <defs>
+                <linearGradient id="redGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stopColor="#EF5350" />
+                  <stop offset="100%" stopColor="#D32F2F" />
+                </linearGradient>
+                <linearGradient id="medRed" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#EF5350" />
+                  <stop offset="100%" stopColor="#C62828" />
+                </linearGradient>
+                <linearGradient id="heartRed" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stopColor="#FF1744" />
+                  <stop offset="100%" stopColor="#D50000" />
+                </linearGradient>
+                <filter id="glowRed" x="-20%" y="-20%" width="140%" height="140%">
+                  <feGaussianBlur stdDeviation="3" result="blur" />
+                  <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                </filter>
+              </defs>
+            </svg>
+          </div>
+          
+          <div className="px-6 pb-6 flex-1 flex flex-col justify-between">
+            <div className="space-y-2">
+              <h3 className="font-extrabold text-xl text-slate-800 tracking-tight group-hover:text-[#E53935] transition-colors leading-tight">
                 {language === 'en' ? 'Medical Emergency' : 'चिकित्सा आपातकाल'}
               </h3>
-              <p className="text-slate-500 text-sm leading-relaxed min-h-[48px] px-1">
+              <p className="text-slate-500 text-xs leading-relaxed min-h-[36px]">
                 {language === 'en' 
                   ? 'CPR, First Aid, Voice Assistant and Audio Guidance.'
                   : 'सीपीआर, प्राथमिक चिकित्सा, वॉयस असिस्टेंट और ऑडियो मार्गदर्शन।'}
               </p>
             </div>
-          </div>
 
-          <button 
-            onClick={(e) => { e.stopPropagation(); setActiveTab('medical'); }}
-            className="w-full h-[50px] rounded-[14px] mt-6 bg-gradient-to-r from-[#E53935] to-[#D32F2F] hover:brightness-115 text-white font-extrabold text-xs transition-all shadow-md shadow-red-500/10 flex items-center justify-center gap-1.5 cursor-pointer"
-          >
-            <span>{language === 'en' ? 'Open Medical Emergency' : 'चिकित्सा आपातकाल खोलें'}</span>
-            <ChevronRight className="w-4 h-4 shrink-0" />
-          </button>
+            <div className="space-y-4 mt-2">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 text-[#E53935] text-[10.5px] font-extrabold border border-red-100/50 w-fit">
+                <span>🚑</span>
+                <span>{language === 'en' ? '4 Medical Tools' : '4 चिकित्सा उपकरण'}</span>
+              </div>
+
+              <button 
+                onClick={(e) => { e.stopPropagation(); setActiveTab('medical'); }}
+                className="w-full h-11 rounded-[14px] bg-gradient-to-r from-[#E53935] to-[#D32F2F] hover:brightness-110 text-white font-extrabold text-xs transition-all shadow-md shadow-red-500/10 flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                <span>{language === 'en' ? 'Explore' : 'खोजें'}</span>
+                <span className="text-sm font-light">→</span>
+              </button>
+            </div>
+          </div>
+          
+          <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#E53935] to-[#D32F2F]"></div>
         </div>
 
         {/* Card 2 — Disaster Safety */}
         <div 
           onClick={() => setActiveTab('disaster')}
-          className="bg-white border border-slate-100 rounded-[20px] p-6 shadow-sm hover:shadow-md hover:border-emerald-200 transition-all cursor-pointer group flex flex-col justify-between text-left relative overflow-hidden"
+          className="bg-white border border-slate-100 rounded-[20px] shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer group flex flex-col justify-between text-left relative overflow-hidden h-[360px] max-w-[380px] w-full mx-auto md:col-span-1 lg:col-span-1"
         >
-          <div className="space-y-4">
-            {/* Glassmorphism Icon container */}
-            <div className="w-16 h-16 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shadow-xs mx-auto group-hover:scale-105 transition-transform duration-300">
-              <Globe className="w-8 h-8" />
-            </div>
-            
-            <div className="text-center space-y-2">
-              <h3 className="font-bold text-2xl text-slate-800 tracking-tight group-hover:text-emerald-600 transition-colors">
+          {/* Illustration Container */}
+          <div className="bg-gradient-to-b from-emerald-50/40 to-white pt-4 pb-2 flex items-center justify-center shrink-0">
+            <svg className="w-full h-32" viewBox="0 0 300 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="150" cy="60" r="45" fill="url(#greenGrad)" opacity="0.12" />
+              <g transform="translate(70, 20)">
+                <path d="M10 75 Q 30 55, 50 75 T 90 75" fill="none" stroke="#00ACC1" strokeWidth="3" strokeLinecap="round" opacity="0.5" />
+                <path d="M5 80 Q 25 65, 45 80 T 85 80" fill="none" stroke="#26C6DA" strokeWidth="4" strokeLinecap="round" />
+                <path d="M75 75 Q 70 50, 60 35" fill="none" stroke="#8D6E63" strokeWidth="4.5" strokeLinecap="round" />
+                <path d="M60 35 Q 45 35, 40 45" fill="none" stroke="#4CAF50" strokeWidth="3" strokeLinecap="round" />
+                <path d="M60 35 Q 55 20, 45 20" fill="none" stroke="#4CAF50" strokeWidth="3" strokeLinecap="round" />
+                <path d="M60 35 Q 70 20, 75 25" fill="none" stroke="#4CAF50" strokeWidth="3" strokeLinecap="round" />
+                <path d="M60 35 Q 70 40, 72 48" fill="none" stroke="#4CAF50" strokeWidth="3" strokeLinecap="round" />
+                <rect x="15" y="48" width="30" height="22" rx="2" fill="#FFE0B2" stroke="#5D4037" strokeWidth="1.5" />
+                <rect x="27" y="58" width="7" height="12" fill="#5D4037" />
+                <polygon points="10,48 48,48 29,32" fill="#FF7043" stroke="#5D4037" strokeWidth="1.5" strokeLinejoin="round" />
+              </g>
+              <g transform="translate(165, 25)">
+                <path d="M20 5C35 5 40 10 40 10V25C40 38 28 47 20 50C12 47 0 38 0 25V10C0 10 5 5 20 5Z" fill="url(#shieldGreen)" />
+                <path d="M12 25L17 30L28 18" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+              </g>
+              <g transform="translate(100, 10)">
+                <path d="M25 15 L15 28 H23 L13 40" stroke="#FFD54F" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M8 12a6 6 0 0 1 11-3 7 7 0 0 1 13 2 6 6 0 0 1-2 11.5H8.5A5.5 5.5 0 0 1 8 12z" fill="#90A4AE" opacity="0.9" />
+              </g>
+              <defs>
+                <linearGradient id="greenGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stopColor="#4CAF50" />
+                  <stop offset="100%" stopColor="#2E7D32" />
+                </linearGradient>
+                <linearGradient id="shieldGreen" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#66BB6A" />
+                  <stop offset="100%" stopColor="#2E7D32" />
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+          
+          <div className="px-6 pb-6 flex-1 flex flex-col justify-between">
+            <div className="space-y-2">
+              <h3 className="font-extrabold text-xl text-slate-800 tracking-tight group-hover:text-[#2E7D32] transition-colors leading-tight">
                 {language === 'en' ? 'Disaster Safety' : 'आपदा सुरक्षा'}
               </h3>
-              <p className="text-slate-500 text-sm leading-relaxed min-h-[48px] px-1">
+              <p className="text-slate-500 text-xs leading-relaxed min-h-[36px]">
                 {language === 'en'
                   ? 'Disaster Guide, Offline Maps and Emergency Contacts.'
                   : 'आपदा गाइड, ऑफलाइन मानचित्र और आपातकालीन संपर्क।'}
               </p>
             </div>
-          </div>
 
-          <button 
-            onClick={(e) => { e.stopPropagation(); setActiveTab('disaster'); }}
-            className="w-full h-[50px] rounded-[14px] mt-6 bg-gradient-to-r from-emerald-500 to-teal-600 hover:brightness-115 text-white font-extrabold text-xs transition-all shadow-md shadow-emerald-500/10 flex items-center justify-center gap-1.5 cursor-pointer"
-          >
-            <span>{language === 'en' ? 'Open Disaster Safety' : 'आपदा सुरक्षा खोलें'}</span>
-            <ChevronRight className="w-4 h-4 shrink-0" />
-          </button>
+            <div className="space-y-4 mt-2">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-[#2E7D32] text-[10.5px] font-extrabold border border-emerald-100/50 w-fit">
+                <span>🌍</span>
+                <span>{language === 'en' ? '3 Disaster Tools' : '3 आपदा उपकरण'}</span>
+              </div>
+
+              <button 
+                onClick={(e) => { e.stopPropagation(); setActiveTab('disaster'); }}
+                className="w-full h-11 rounded-[14px] bg-gradient-to-r from-emerald-500 to-teal-600 hover:brightness-110 text-white font-extrabold text-xs transition-all shadow-md shadow-emerald-500/10 flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                <span>{language === 'en' ? 'Explore' : 'खोजें'}</span>
+                <span className="text-sm font-light">→</span>
+              </button>
+            </div>
+          </div>
+          
+          <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-gradient-to-r from-emerald-500 to-teal-600"></div>
         </div>
 
         {/* Card 3 — AI Assistance */}
         <div 
           onClick={() => setActiveTab('ai_assistance_page')}
-          className="bg-white border border-slate-100 rounded-[20px] p-6 shadow-sm hover:shadow-md hover:border-indigo-200 transition-all cursor-pointer group flex flex-col justify-between text-left relative overflow-hidden"
+          className="bg-white border border-slate-100 rounded-[20px] shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer group flex flex-col justify-between text-left relative overflow-hidden h-[360px] max-w-[380px] w-full mx-auto md:col-span-2 md:justify-self-center lg:col-span-1"
         >
-          <div className="space-y-4">
-            {/* Glassmorphism Icon container */}
-            <div className="w-16 h-16 rounded-full bg-indigo-50 text-indigo-650 flex items-center justify-center shadow-xs mx-auto group-hover:scale-105 transition-transform duration-300">
-              <Bot className="w-8 h-8" />
-            </div>
-            
-            <div className="text-center space-y-2">
-              <h3 className="font-bold text-2xl text-slate-800 tracking-tight group-hover:text-indigo-650 transition-colors">
+          {/* Illustration Container */}
+          <div className="bg-gradient-to-b from-indigo-50/40 to-white pt-4 pb-2 flex items-center justify-center shrink-0">
+            <svg className="w-full h-32" viewBox="0 0 300 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="150" cy="60" r="45" fill="url(#indigoGrad)" opacity="0.12" />
+              <g transform="translate(115, 20)">
+                <ellipse cx="35" cy="80" rx="25" ry="5" fill="#E2E8F0" />
+                <path d="M12 50 Q -5 40, -1 25" stroke="#ECEFF1" strokeWidth="7" strokeLinecap="round" />
+                <circle cx="-1" cy="23" r="4" fill="#B0BEC5" />
+                <path d="M58 50 Q 72 58, 65 72" stroke="#ECEFF1" strokeWidth="7" strokeLinecap="round" />
+                <circle cx="65" cy="74" r="4" fill="#B0BEC5" />
+                <rect x="15" y="42" width="40" height="34" rx="14" fill="#ECEFF1" stroke="#CFD8DC" strokeWidth="1.5" />
+                <rect x="22" y="49" width="26" height="15" rx="5" fill="#37474F" />
+                <path d="M24 57h5l2-5 3 10 2-5h10" stroke="#00E5FF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                <rect x="31" y="38" width="8" height="6" fill="#B0BEC5" />
+                <rect x="12" y="10" width="46" height="30" rx="12" fill="#FFFFFF" stroke="#CFD8DC" strokeWidth="1.5" />
+                <rect x="18" y="15" width="34" height="18" rx="6" fill="#263238" />
+                <ellipse cx="26" cy="24" rx="3.5" ry="3.5" fill="#00E5FF" />
+                <ellipse cx="44" cy="24" rx="3.5" ry="3.5" fill="#00E5FF" />
+                <rect x="8" y="20" width="4" height="8" rx="1" fill="#B0BEC5" />
+                <rect x="58" y="20" width="4" height="8" rx="1" fill="#B0BEC5" />
+                <line x1="35" y1="10" x2="35" y2="3" stroke="#B0BEC5" strokeWidth="3" />
+                <circle cx="35" cy="2" r="3.5" fill="#00E5FF" className="animate-pulse" />
+              </g>
+              <g transform="translate(180, 20)">
+                <path d="M0 12C0 5.37 5.37 0 12 0H52C58.63 0 64 5.37 64 12V24C64 30.63 58.63 36 52 36H16L4 44V36C1.65 36 0 33.35 0 31V12Z" fill="#E8EAF6" />
+                <rect x="12" y="11" width="40" height="4" rx="2" fill="#9FA8DA" />
+                <rect x="12" y="21" width="28" height="4" rx="2" fill="#9FA8DA" />
+              </g>
+              <defs>
+                <linearGradient id="indigoGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stopColor="#3F51B5" />
+                  <stop offset="100%" stopColor="#2196F3" />
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+          
+          <div className="px-6 pb-6 flex-1 flex flex-col justify-between">
+            <div className="space-y-2">
+              <h3 className="font-extrabold text-xl text-slate-800 tracking-tight group-hover:text-indigo-650 transition-colors leading-tight">
                 {language === 'en' ? 'AI Assistance' : 'एआई सहायता'}
               </h3>
-              <p className="text-slate-500 text-sm leading-relaxed min-h-[48px] px-1">
+              <p className="text-slate-500 text-xs leading-relaxed min-h-[36px]">
                 {language === 'en'
                   ? 'AI Chatbot, OCR Scanner, Object Detection and Settings.'
                   : 'एआई चैटबॉट, ओसीआर स्कैनर, ऑब्जेक्ट डिटेक्शन और सेटिंग्स।'}
               </p>
             </div>
-          </div>
 
-          <button 
-            onClick={(e) => { e.stopPropagation(); setActiveTab('ai_assistance_page'); }}
-            className="w-full h-[50px] rounded-[14px] mt-6 bg-gradient-to-r from-indigo-500 to-blue-600 hover:brightness-115 text-white font-extrabold text-xs transition-all shadow-md shadow-indigo-500/10 flex items-center justify-center gap-1.5 cursor-pointer"
-          >
-            <span>{language === 'en' ? 'Open AI Assistance' : 'एआई सहायता खोलें'}</span>
-            <ChevronRight className="w-4 h-4 shrink-0" />
-          </button>
-        </div>
-
-      </div>
-
-      {/* Ambulance / Emergency large phone buttons */}
-      <section className="bg-white rounded-3xl border border-slate-150 p-6 shadow-xs space-y-4">
-        <div className="text-left border-b border-slate-100 pb-2">
-          <h3 className="text-sm font-extrabold text-slate-800 uppercase tracking-wider">{currentT.quickNumbers}</h3>
-        </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <a 
-            href="tel:108"
-            className="flex flex-col sm:flex-row items-center gap-3.5 p-4 rounded-2xl border border-slate-150 hover:border-emerald-300 hover:bg-emerald-50/20 transition-all text-center sm:text-left group cursor-pointer"
-          >
-            <div className="w-9 h-9 rounded-xl bg-emerald-500/10 text-[#2E7D32] flex items-center justify-center shrink-0">
-              <Activity className="w-5 h-5" />
-            </div>
-            <div>
-              <span className="text-[9px] uppercase font-bold text-slate-400">{currentT.ambulance}</span>
-              <p className="font-extrabold text-slate-800 text-base leading-tight group-hover:text-[#2E7D32]">108</p>
-              <span className="text-[9px] font-bold text-[#1565C0] group-hover:underline mt-0.5 block">{currentT.call}</span>
-            </div>
-          </a>
-
-          <a 
-            href="tel:112"
-            className="flex flex-col sm:flex-row items-center gap-3.5 p-4 rounded-2xl border border-slate-150 hover:border-red-300 hover:bg-red-50/20 transition-all text-center sm:text-left group cursor-pointer"
-          >
-            <div className="w-9 h-9 rounded-xl bg-red-500/10 text-[#E53935] flex items-center justify-center shrink-0">
-              <ShieldAlert className="w-5 h-5 animate-soft-pulse" />
-            </div>
-            <div>
-              <span className="text-[9px] uppercase font-bold text-slate-400">{currentT.natEmergency}</span>
-              <p className="font-extrabold text-slate-800 text-base leading-tight group-hover:text-[#E53935]">112</p>
-              <span className="text-[9px] font-bold text-[#1565C0] group-hover:underline mt-0.5 block">{currentT.call}</span>
-            </div>
-          </a>
-
-          <a 
-            href="tel:100"
-            className="flex flex-col sm:flex-row items-center gap-3.5 p-4 rounded-2xl border border-slate-150 hover:border-blue-300 hover:bg-blue-50/20 transition-all text-center sm:text-left group cursor-pointer"
-          >
-            <div className="w-9 h-9 rounded-xl bg-blue-500/10 text-[#1565C0] flex items-center justify-center shrink-0">
-              <User className="w-5 h-5" />
-            </div>
-            <div>
-              <span className="text-[9px] uppercase font-bold text-slate-400">{currentT.police}</span>
-              <p className="font-extrabold text-slate-800 text-base leading-tight group-hover:text-[#1565C0]">100</p>
-              <span className="text-[9px] font-bold text-[#1565C0] group-hover:underline mt-0.5 block">{currentT.call}</span>
-            </div>
-          </a>
-
-          <a 
-            href="tel:101"
-            className="flex flex-col sm:flex-row items-center gap-3.5 p-4 rounded-2xl border border-slate-150 hover:border-amber-300 hover:bg-amber-50/20 transition-all text-center sm:text-left group cursor-pointer"
-          >
-            <div className="w-9 h-9 rounded-xl bg-amber-500/10 text-[#FB8C00] flex items-center justify-center shrink-0">
-              <Flame className="w-5 h-5" />
-            </div>
-            <div>
-              <span className="text-[9px] uppercase font-bold text-slate-400">{currentT.fire}</span>
-              <p className="font-extrabold text-slate-800 text-base leading-tight group-hover:text-[#FB8C00]">101</p>
-              <span className="text-[9px] font-bold text-[#1565C0] group-hover:underline mt-0.5 block">{currentT.call}</span>
-            </div>
-          </a>
-        </div>
-      </section>
-    </div>
-  );ustify-center mb-4 group-hover:bg-slate-700 group-hover:text-white transition-all">
-                  <Settings className="w-5.5 h-5.5" />
-                </div>
-                <h4 className="font-extrabold text-slate-800 text-sm mb-1 group-hover:text-slate-800 transition-colors">{currentT.settings}</h4>
-                <p className="text-[11px] text-slate-400 leading-relaxed">{currentT.settingsDesc}</p>
+            <div className="space-y-4 mt-2">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 text-indigo-650 text-[10.5px] font-extrabold border border-indigo-100/50 w-fit">
+                <span>🤖</span>
+                <span>{language === 'en' ? '4 AI Tools' : '4 एआई उपकरण'}</span>
               </div>
-              <div className="flex items-center justify-between text-[11px] font-bold text-slate-455 group-hover:text-slate-750 transition-colors pt-4 mt-6 border-t border-slate-50">
-                <span>Configure Options</span>
-                <ChevronRight className="w-3.5 h-3.5 transform group-hover:translate-x-1 transition-transform" />
-              </div>
+
+              <button 
+                onClick={(e) => { e.stopPropagation(); setActiveTab('ai_assistance_page'); }}
+                className="w-full h-11 rounded-[14px] bg-gradient-to-r from-indigo-500 to-blue-600 hover:brightness-110 text-white font-extrabold text-xs transition-all shadow-md shadow-indigo-500/10 flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                <span>{language === 'en' ? 'Explore' : 'खोजें'}</span>
+                <span className="text-sm font-light">→</span>
+              </button>
             </div>
           </div>
-        </section>
+          
+          <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-gradient-to-r from-indigo-500 to-blue-600"></div>
+        </div>
 
       </div>
 
@@ -1112,6 +1240,29 @@ export default function Dashboard({ language: initialLanguage, onResetLanguage, 
     </div>
   );
 
+  const renderDisasterSafety = () => (
+    <DisasterSafety
+      language={language}
+      onBack={() => setActiveTab('home')}
+      onOpenSOS={onOpenSOS}
+      onOpenDisasterGuide={(tab) => setDisasterModalTab(tab || 'earthquake')}
+      onNavigateToMaps={() => setActiveTab('maps')}
+      onNavigateToContacts={() => setActiveTab('contacts')}
+    />
+  );
+
+  const renderAIAssistancePage = () => (
+    <AIAssistancePage
+      language={language}
+      onBack={() => setActiveTab('home')}
+      onOpenSOS={onOpenSOS}
+      onNavigateToChat={() => setActiveTab('ai_assistant')}
+      onNavigateToOCR={() => { setActiveTab('scan'); setScanType('ocr'); }}
+      onNavigateToDetection={() => { setActiveTab('scan'); setScanType('detection'); }}
+      onNavigateToSettings={() => setActiveTab('settings')}
+    />
+  );
+
   const renderMedical = () => (
     <MedicalEmergency 
       language={language}
@@ -1139,29 +1290,6 @@ export default function Dashboard({ language: initialLanguage, onResetLanguage, 
       }}
       activeTab={activeTab}
       setActiveTab={setActiveTab}
-    />
-  );
-
-  const renderDisasterSafety = () => (
-    <DisasterSafety
-      language={language}
-      onBack={() => setActiveTab('home')}
-      onOpenSOS={onOpenSOS}
-      onOpenDisasterGuide={(tab) => setDisasterModalTab(tab || 'earthquake')}
-      onNavigateToMaps={() => setActiveTab('maps')}
-      onNavigateToContacts={() => setActiveTab('contacts')}
-    />
-  );
-
-  const renderAIAssistancePage = () => (
-    <AIAssistancePage
-      language={language}
-      onBack={() => setActiveTab('home')}
-      onOpenSOS={onOpenSOS}
-      onNavigateToChat={() => setActiveTab('ai_assistant')}
-      onNavigateToOCR={() => { setActiveTab('scan'); setScanType('ocr'); }}
-      onNavigateToDetection={() => { setActiveTab('scan'); setScanType('detection'); }}
-      onNavigateToSettings={() => setActiveTab('settings')}
     />
   );
 
