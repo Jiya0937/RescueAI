@@ -5,9 +5,11 @@ import {
   Sparkles, Accessibility, Volume1, Compass, Crosshair, AlertTriangle, 
   Check, Send, Mic, Flame, Droplets, Stethoscope, Layers, Globe, 
   Bell, RotateCcw, Play, Pause, User, Copy, ChevronRight, Share2, 
-  Upload, Camera
+  Upload, Camera, Bot
 } from 'lucide-react';
 import MedicalEmergency from '../Medical/MedicalEmergency.jsx';
+import DisasterSafety from '../Disaster/DisasterSafety.jsx';
+import AIAssistancePage from '../AIAssistance/AIAssistance.jsx';
 
 // Translation Dictionary defined outside the component to prevent reference errors during initialization
 const t = {
@@ -300,91 +302,7 @@ export default function Dashboard({ language: initialLanguage, onResetLanguage, 
       } else if (lower.includes('bleed') || lower.includes('खून') || lower.includes('रक्त')) {
         botResponse = language === 'en'
           ? "For severe bleeding: Apply direct pressure to the wound with a clean cloth. Elevate the injured limb if possible. Keep pressure applied until help arrives. Do not remove soaked cloths."
-          : "गंभीर रक्तस्राव के लिए: साफ कपड़े से घाव पर सीधा दबाव डालें। यदि संभव हो तो घायल अंग को ऊपर उठाएं। मदद आने तक दबाव बनाए रखें।";
-      } else if (lower.includes('burn') || lower.includes('जल')) {
-        botResponse = language === 'en'
-          ? "For burns: Cool the burn immediately with cool running water for 10 to 20 minutes. Do not use ice. Cover loosely with sterile non-stick bandage or plastic wrap."
-          : "जलने पर: जले हुए हिस्से को तुरंत ठंडे बहते पानी से 10 से 20 मिनट तक ठंडा करें। बर्फ का प्रयोग न करें। साफ सूती कपड़े या पट्टी से ढीला ढकें।";
-      } else if (lower.includes('earthquake') || lower.includes('भूकंप')) {
-        botResponse = language === 'en'
-          ? "During an earthquake: DROP to your hands and knees. COVER your head and neck under sturdy furniture. HOLD ON to your shelter until shaking stops. Stay away from windows."
-          : "भूकंप के दौरान: जमीन पर झुक जाएं (DROP)। अपने सिर और गर्दन को मजबूत फर्नीचर के नीचे ढकें (COVER)। थरथराहट रुकने तक आश्रय को पकड़ कर रखें (HOLD ON)।";
-      } else {
-        botResponse = language === 'en'
-          ? "Offline Emergency Knowledge Base search complete: Ensure safety first. For specific guide details, tap 'CPR Guide' or 'First Aid' on the home dashboard."
-          : "ऑफलाइन आपातकालीन डेटाबेस खोज पूरी हुई: सबसे पहले सुरक्षा सुनिश्चित करें। विशेष मार्गदर्शन के लिए होम डैशबोर्ड पर 'सीपीआर गाइड' या 'प्राथमिक चिकित्सा' पर टैप करें।";
-      }
-      
-      setChatMessages(prev => [...prev, { sender: 'bot', text: botResponse }]);
-      setIsTyping(false);
-    }, 850);
-  };
-
-  const handleSendChat = (e) => {
-    e.preventDefault();
-    if (!chatInput.trim()) return;
-    const text = chatInput;
-    setChatInput('');
-    handleAIPrompt(text);
-  };
-
-  // Simulate OCR scan
-  const triggerScan = () => {
-    setScanningEffect(true);
-    setScanResult(null);
-    
-    setTimeout(() => {
-      setScanningEffect(false);
-      if (scanType === 'ocr') {
-        setScanResult({
-          title: language === 'en' ? "Prescription Detected" : "पर्चे की पहचान की गई",
-          content: "PARACETAMOL 500MG\nQty: 10 tablets\nDosage: Take 1 tablet every 6 hours as needed for pain/fever. Do not exceed 4 tablets in 24 hours.\n⚠️ Store in a cool dry place.",
-          tags: ["Painkiller", "Fever reducer", "Adult Dose"]
-        });
-      } else {
-        setScanResult({
-          title: language === 'en' ? "Safety Objects Detected" : "सुरक्षा उपकरणों की पहचान",
-          objects: [
-            { name: language === 'en' ? "Fire Extinguisher" : "अग्निशामक यंत्र", confidence: "98%", box: "Top Left" },
-            { name: language === 'en' ? "First Aid Kit" : "प्राथमिक चिकित्सा किट", confidence: "94%", box: "Center Right" },
-            { name: language === 'en' ? "Emergency Exit Sign" : "आपातकालीन निकास द्वार", confidence: "99%", box: "Top Center" }
-          ]
-        });
-      }
-    }, 1800);
-  };
-
-  // Copy GPS Coordinates
-  const handleCopyCoords = () => {
-    navigator.clipboard.writeText("28.6139° N, 77.2090° E");
-    setCoordinatesCopied(true);
-    setTimeout(() => setCoordinatesCopied(false), 2000);
-  };
-
-  // Personal contacts addition
-  const handleAddContact = (e) => {
-    e.preventDefault();
-    if (!newContactName || !newContactNum) return;
-    setPersonalContacts(prev => [...prev, {
-      name: newContactName,
-      relation: newContactRel || 'Contact',
-      number: newContactNum
-    }]);
-    setNewContactName('');
-    setNewContactNum('');
-    setNewContactRel('');
-    setShowAddContact(false);
-  };
-
-  // CSS layout variables
-  const wrapperClasses = `min-h-screen bg-[#F8FAFC] pb-28 font-sans transition-all duration-300 relative select-none
-    ${largeText ? 'accessibility-large-text' : ''}
-    ${highContrast ? 'accessibility-high-contrast' : ''}
-  `;
-
-  // --- SUBVIEW RENDERERS ---
-
-  // 1. Home dashboard overview
+          : "गंभीर रक्तस्राव के लिए: साफ कपड़े स�  // 1. Home dashboard overview
   const renderHome = () => (
     <div className="space-y-8 animate-fade-in">
       {/* Hero card with clean medical illustration */}
@@ -458,231 +376,173 @@ export default function Dashboard({ language: initialLanguage, onResetLanguage, 
         </div>
       </section>
 
-      {/* Grid sections */}
-      <div className="space-y-10">
+      {/* Three Premium Category Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         
-        {/* 1. Medical emergency feature cards */}
-        <section className="space-y-4">
-          <div className="flex items-center gap-2 border-b border-slate-100 pb-2 text-left">
-            <h3 className="text-lg font-bold text-slate-800 tracking-tight">{currentT.medicalEmergencyTitle}</h3>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {/* CPR Card */}
-            <div 
-              onClick={() => {
-                setActiveTab('medical');
-                setTimeout(() => setCprModalOpen(true), 100);
-              }}
-              className="bg-white border border-slate-100 rounded-3xl p-5 shadow-xxs hover:shadow-md hover:border-red-200 transition-all cursor-pointer group flex flex-col justify-between text-left"
-            >
-              <div>
-                <div className="w-11 h-11 rounded-2xl bg-red-50 text-[#E53935] flex items-center justify-center mb-4 group-hover:bg-[#E53935] group-hover:text-white transition-all">
-                  <Heart className="w-5.5 h-5.5 animate-pulse" />
-                </div>
-                <h4 className="font-extrabold text-slate-800 text-sm mb-1 group-hover:text-[#E53935] transition-colors">{currentT.cpr}</h4>
-                <p className="text-[11px] text-slate-400 leading-relaxed">{currentT.cprDesc}</p>
-              </div>
-              <div className="flex items-center justify-between text-[11px] font-bold text-slate-455 group-hover:text-[#E53935] transition-colors pt-4 mt-6 border-t border-slate-50">
-                <span>Open Guide</span>
-                <ChevronRight className="w-3.5 h-3.5 transform group-hover:translate-x-1 transition-transform" />
-              </div>
+        {/* Card 1 — Medical Emergency */}
+        <div 
+          onClick={() => setActiveTab('medical')}
+          className="bg-white border border-slate-100 rounded-[20px] p-6 shadow-sm hover:shadow-md hover:border-red-200 transition-all cursor-pointer group flex flex-col justify-between text-left relative overflow-hidden"
+        >
+          <div className="space-y-4">
+            {/* Glassmorphism Icon container */}
+            <div className="w-16 h-16 rounded-full bg-red-50 text-[#E53935] flex items-center justify-center shadow-xs mx-auto group-hover:scale-105 transition-transform duration-300">
+              <Heart className="w-8 h-8 animate-pulse" />
             </div>
-
-            {/* First aid card */}
-            <div 
-              onClick={() => {
-                setActiveTab('medical');
-                setTimeout(() => setFirstAidModalTab('burns'), 100);
-              }}
-              className="bg-white border border-slate-100 rounded-3xl p-5 shadow-xxs hover:shadow-md hover:border-blue-200 transition-all cursor-pointer group flex flex-col justify-between text-left"
-            >
-              <div>
-                <div className="w-11 h-11 rounded-2xl bg-blue-50 text-[#1565C0] flex items-center justify-center mb-4 group-hover:bg-[#1565C0] group-hover:text-white transition-all">
-                  <Activity className="w-5.5 h-5.5" />
-                </div>
-                <h4 className="font-extrabold text-slate-800 text-sm mb-1 group-hover:text-[#1565C0] transition-colors">{currentT.firstAid}</h4>
-                <p className="text-[11px] text-slate-400 leading-relaxed">{currentT.firstAidDesc}</p>
-              </div>
-              <div className="flex items-center justify-between text-[11px] font-bold text-slate-455 group-hover:text-[#1565C0] transition-colors pt-4 mt-6 border-t border-slate-50">
-                <span>View Procedures</span>
-                <ChevronRight className="w-3.5 h-3.5 transform group-hover:translate-x-1 transition-transform" />
-              </div>
-            </div>
-
-            {/* Voice assistant card */}
-            <div 
-              onClick={() => {
-                setActiveTab('medical');
-              }}
-              className="bg-white border border-slate-100 rounded-3xl p-5 shadow-xxs hover:shadow-md hover:border-amber-200 transition-all cursor-pointer group flex flex-col justify-between text-left"
-            >
-              <div>
-                <div className="w-11 h-11 rounded-2xl bg-amber-50 text-[#FB8C00] flex items-center justify-center mb-4 group-hover:bg-[#FB8C00] group-hover:text-white transition-all">
-                  <Mic className="w-5.5 h-5.5" />
-                </div>
-                <h4 className="font-extrabold text-slate-800 text-sm mb-1 group-hover:text-[#FB8C00] transition-colors">{currentT.voiceAssistant}</h4>
-                <p className="text-[11px] text-slate-400 leading-relaxed">{currentT.voiceAssistantDesc}</p>
-              </div>
-              <div className="flex items-center justify-between text-[11px] font-bold text-slate-455 group-hover:text-[#FB8C00] transition-colors pt-4 mt-6 border-t border-slate-50">
-                <span>Launch Assistant</span>
-                <ChevronRight className="w-3.5 h-3.5 transform group-hover:translate-x-1 transition-transform" />
-              </div>
-            </div>
-
-            {/* Audio announcer guide card */}
-            <div 
-              onClick={() => {
-                setActiveTab('medical');
-              }}
-              className={`border rounded-3xl p-5 shadow-xxs hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between text-left bg-white border-slate-100 hover:border-amber-100`}
-            >
-              <div>
-                <div className="w-11 h-11 rounded-2xl bg-amber-50 text-[#FB8C00] group-hover:bg-[#FB8C00] group-hover:text-white flex items-center justify-center mb-4 transition-all">
-                  <Volume2 className="w-5.5 h-5.5" />
-                </div>
-                <h4 className="font-extrabold text-slate-800 text-sm mb-1 group-hover:text-[#FB8C00] transition-colors">{currentT.audioGuidance}</h4>
-                <p className="text-[11px] text-slate-400 leading-relaxed">{currentT.audioGuidanceDesc}</p>
-              </div>
-              <div className="flex items-center justify-between text-[11px] font-bold text-slate-455 group-hover:text-[#FB8C00] transition-colors pt-4 mt-6 border-t border-slate-50">
-                <span>Listen Instructions</span>
-                <ChevronRight className="w-3.5 h-3.5 transform group-hover:translate-x-1 transition-transform" />
-              </div>
+            
+            <div className="text-center space-y-2">
+              <h3 className="font-bold text-2xl text-slate-800 tracking-tight group-hover:text-[#E53935] transition-colors">
+                {language === 'en' ? 'Medical Emergency' : 'चिकित्सा आपातकाल'}
+              </h3>
+              <p className="text-slate-500 text-sm leading-relaxed min-h-[48px] px-1">
+                {language === 'en' 
+                  ? 'CPR, First Aid, Voice Assistant and Audio Guidance.'
+                  : 'सीपीआर, प्राथमिक चिकित्सा, वॉयस असिस्टेंट और ऑडियो मार्गदर्शन।'}
+              </p>
             </div>
           </div>
-        </section>
 
-        {/* 2. Disaster safety feature cards */}
-        <section className="space-y-4">
-          <div className="flex items-center gap-2 border-b border-slate-100 pb-2 text-left">
-            <h3 className="text-lg font-bold text-slate-800 tracking-tight">{currentT.disasterSafetyTitle}</h3>
-          </div>
+          <button 
+            onClick={(e) => { e.stopPropagation(); setActiveTab('medical'); }}
+            className="w-full h-[50px] rounded-[14px] mt-6 bg-gradient-to-r from-[#E53935] to-[#D32F2F] hover:brightness-115 text-white font-extrabold text-xs transition-all shadow-md shadow-red-500/10 flex items-center justify-center gap-1.5 cursor-pointer"
+          >
+            <span>{language === 'en' ? 'Open Medical Emergency' : 'चिकित्सा आपातकाल खोलें'}</span>
+            <ChevronRight className="w-4 h-4 shrink-0" />
+          </button>
+        </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-            {/* Disaster guide card */}
-            <div 
-              onClick={() => setDisasterModalTab('earthquake')}
-              className="bg-white border border-slate-100 rounded-3xl p-5 shadow-xxs hover:shadow-md hover:border-emerald-200 transition-all cursor-pointer group flex flex-col justify-between text-left"
-            >
-              <div>
-                <div className="w-11 h-11 rounded-2xl bg-emerald-50 text-[#2E7D32] flex items-center justify-center mb-4 group-hover:bg-[#2E7D32] group-hover:text-white transition-all">
-                  <Flame className="w-5.5 h-5.5" />
-                </div>
-                <h4 className="font-extrabold text-slate-800 text-sm mb-1 group-hover:text-[#2E7D32] transition-colors">{currentT.disasterGuide}</h4>
-                <p className="text-[11px] text-slate-400 leading-relaxed">{currentT.disasterGuideDesc}</p>
-              </div>
-              <div className="flex items-center justify-between text-[11px] font-bold text-slate-455 group-hover:text-[#2E7D32] transition-colors pt-4 mt-6 border-t border-slate-50">
-                <span>View Guidelines</span>
-                <ChevronRight className="w-3.5 h-3.5 transform group-hover:translate-x-1 transition-transform" />
-              </div>
+        {/* Card 2 — Disaster Safety */}
+        <div 
+          onClick={() => setActiveTab('disaster')}
+          className="bg-white border border-slate-100 rounded-[20px] p-6 shadow-sm hover:shadow-md hover:border-emerald-200 transition-all cursor-pointer group flex flex-col justify-between text-left relative overflow-hidden"
+        >
+          <div className="space-y-4">
+            {/* Glassmorphism Icon container */}
+            <div className="w-16 h-16 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shadow-xs mx-auto group-hover:scale-105 transition-transform duration-300">
+              <Globe className="w-8 h-8" />
             </div>
-
-            {/* Maps card */}
-            <div 
-              onClick={() => setActiveTab('maps')}
-              className="bg-white border border-slate-100 rounded-3xl p-5 shadow-xxs hover:shadow-md hover:border-blue-200 transition-all cursor-pointer group flex flex-col justify-between text-left"
-            >
-              <div>
-                <div className="w-11 h-11 rounded-2xl bg-blue-50 text-[#1565C0] flex items-center justify-center mb-4 group-hover:bg-[#1565C0] group-hover:text-white transition-all">
-                  <Map className="w-5.5 h-5.5" />
-                </div>
-                <h4 className="font-extrabold text-slate-800 text-sm mb-1 group-hover:text-[#1565C0] transition-colors">{currentT.offlineMaps}</h4>
-                <p className="text-[11px] text-slate-400 leading-relaxed">{currentT.offlineMapsDesc}</p>
-              </div>
-              <div className="flex items-center justify-between text-[11px] font-bold text-slate-455 group-hover:text-[#1565C0] transition-colors pt-4 mt-6 border-t border-slate-50">
-                <span>Launch GPS Map</span>
-                <ChevronRight className="w-3.5 h-3.5 transform group-hover:translate-x-1 transition-transform" />
-              </div>
-            </div>
-
-            {/* Contacts card */}
-            <div 
-              onClick={() => setActiveTab('contacts')}
-              className="bg-white border border-slate-100 rounded-3xl p-5 shadow-xxs hover:shadow-md hover:border-red-200 transition-all cursor-pointer group flex flex-col justify-between text-left"
-            >
-              <div>
-                <div className="w-11 h-11 rounded-2xl bg-red-50 text-[#E53935] flex items-center justify-center mb-4 group-hover:bg-[#E53935] group-hover:text-white transition-all">
-                  <Phone className="w-5.5 h-5.5" />
-                </div>
-                <h4 className="font-extrabold text-slate-800 text-sm mb-1 group-hover:text-[#E53935] transition-colors">{currentT.emergencyContacts}</h4>
-                <p className="text-[11px] text-slate-400 leading-relaxed">{currentT.emergencyContactsDesc}</p>
-              </div>
-              <div className="flex items-center justify-between text-[11px] font-bold text-slate-455 group-hover:text-[#E53935] transition-colors pt-4 mt-6 border-t border-slate-50">
-                <span>View Numbers</span>
-                <ChevronRight className="w-3.5 h-3.5 transform group-hover:translate-x-1 transition-transform" />
-              </div>
+            
+            <div className="text-center space-y-2">
+              <h3 className="font-bold text-2xl text-slate-800 tracking-tight group-hover:text-emerald-600 transition-colors">
+                {language === 'en' ? 'Disaster Safety' : 'आपदा सुरक्षा'}
+              </h3>
+              <p className="text-slate-500 text-sm leading-relaxed min-h-[48px] px-1">
+                {language === 'en'
+                  ? 'Disaster Guide, Offline Maps and Emergency Contacts.'
+                  : 'आपदा गाइड, ऑफलाइन मानचित्र और आपातकालीन संपर्क।'}
+              </p>
             </div>
           </div>
-        </section>
 
-        {/* 3. AI assistance tools */}
-        <section className="space-y-4">
-          <div className="flex items-center gap-2 border-b border-slate-100 pb-2 text-left">
-            <h3 className="text-lg font-bold text-slate-800 tracking-tight">{currentT.aiAssistanceTitle}</h3>
+          <button 
+            onClick={(e) => { e.stopPropagation(); setActiveTab('disaster'); }}
+            className="w-full h-[50px] rounded-[14px] mt-6 bg-gradient-to-r from-emerald-500 to-teal-600 hover:brightness-115 text-white font-extrabold text-xs transition-all shadow-md shadow-emerald-500/10 flex items-center justify-center gap-1.5 cursor-pointer"
+          >
+            <span>{language === 'en' ? 'Open Disaster Safety' : 'आपदा सुरक्षा खोलें'}</span>
+            <ChevronRight className="w-4 h-4 shrink-0" />
+          </button>
+        </div>
+
+        {/* Card 3 — AI Assistance */}
+        <div 
+          onClick={() => setActiveTab('ai_assistance_page')}
+          className="bg-white border border-slate-100 rounded-[20px] p-6 shadow-sm hover:shadow-md hover:border-indigo-200 transition-all cursor-pointer group flex flex-col justify-between text-left relative overflow-hidden"
+        >
+          <div className="space-y-4">
+            {/* Glassmorphism Icon container */}
+            <div className="w-16 h-16 rounded-full bg-indigo-50 text-indigo-650 flex items-center justify-center shadow-xs mx-auto group-hover:scale-105 transition-transform duration-300">
+              <Bot className="w-8 h-8" />
+            </div>
+            
+            <div className="text-center space-y-2">
+              <h3 className="font-bold text-2xl text-slate-800 tracking-tight group-hover:text-indigo-650 transition-colors">
+                {language === 'en' ? 'AI Assistance' : 'एआई सहायता'}
+              </h3>
+              <p className="text-slate-500 text-sm leading-relaxed min-h-[48px] px-1">
+                {language === 'en'
+                  ? 'AI Chatbot, OCR Scanner, Object Detection and Settings.'
+                  : 'एआई चैटबॉट, ओसीआर स्कैनर, ऑब्जेक्ट डिटेक्शन और सेटिंग्स।'}
+              </p>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {/* Local Chat Card */}
-            <div 
-              onClick={() => setActiveTab('ai_assistant')}
-              className="bg-white border border-slate-100 rounded-3xl p-5 shadow-xxs hover:shadow-md hover:border-indigo-200 transition-all cursor-pointer group flex flex-col justify-between text-left"
-            >
-              <div>
-                <div className="w-11 h-11 rounded-2xl bg-indigo-50 text-indigo-650 flex items-center justify-center mb-4 group-hover:bg-indigo-600 group-hover:text-white transition-all">
-                  <MessageSquare className="w-5.5 h-5.5" />
-                </div>
-                <h4 className="font-extrabold text-slate-800 text-sm mb-1 group-hover:text-indigo-650 transition-colors">{currentT.aiEmergencyAssistant}</h4>
-                <p className="text-[11px] text-slate-400 leading-relaxed">{currentT.aiEmergencyAssistantDesc}</p>
-              </div>
-              <div className="flex items-center justify-between text-[11px] font-bold text-slate-455 group-hover:text-indigo-600 transition-colors pt-4 mt-6 border-t border-slate-50">
-                <span>Launch Chat</span>
-                <ChevronRight className="w-3.5 h-3.5 transform group-hover:translate-x-1 transition-transform" />
-              </div>
-            </div>
+          <button 
+            onClick={(e) => { e.stopPropagation(); setActiveTab('ai_assistance_page'); }}
+            className="w-full h-[50px] rounded-[14px] mt-6 bg-gradient-to-r from-indigo-500 to-blue-600 hover:brightness-115 text-white font-extrabold text-xs transition-all shadow-md shadow-indigo-500/10 flex items-center justify-center gap-1.5 cursor-pointer"
+          >
+            <span>{language === 'en' ? 'Open AI Assistance' : 'एआई सहायता खोलें'}</span>
+            <ChevronRight className="w-4 h-4 shrink-0" />
+          </button>
+        </div>
 
-            {/* OCR Scanner Card */}
-            <div 
-              onClick={() => { setActiveTab('scan'); setScanType('ocr'); }}
-              className="bg-white border border-slate-100 rounded-3xl p-5 shadow-xxs hover:shadow-md hover:border-cyan-200 transition-all cursor-pointer group flex flex-col justify-between text-left"
-            >
-              <div>
-                <div className="w-11 h-11 rounded-2xl bg-cyan-50 text-cyan-650 flex items-center justify-center mb-4 group-hover:bg-cyan-650 group-hover:text-white transition-all">
-                  <Eye className="w-5.5 h-5.5" />
-                </div>
-                <h4 className="font-extrabold text-slate-800 text-sm mb-1 group-hover:text-cyan-650 transition-colors">{currentT.ocrScanner}</h4>
-                <p className="text-[11px] text-slate-400 leading-relaxed">{currentT.ocrScannerDesc}</p>
-              </div>
-              <div className="flex items-center justify-between text-[11px] font-bold text-slate-455 group-hover:text-cyan-650 transition-colors pt-4 mt-6 border-t border-slate-50">
-                <span>Scan Document</span>
-                <ChevronRight className="w-3.5 h-3.5 transform group-hover:translate-x-1 transition-transform" />
-              </div>
-            </div>
+      </div>
 
-            {/* Object detection card */}
-            <div 
-              onClick={() => { setActiveTab('scan'); setScanType('detection'); }}
-              className="bg-white border border-slate-100 rounded-3xl p-5 shadow-xxs hover:shadow-md hover:border-teal-200 transition-all cursor-pointer group flex flex-col justify-between text-left"
-            >
-              <div>
-                <div className="w-11 h-11 rounded-2xl bg-teal-50 text-teal-650 flex items-center justify-center mb-4 group-hover:bg-teal-600 group-hover:text-white transition-all">
-                  <Camera className="w-5.5 h-5.5" />
-                </div>
-                <h4 className="font-extrabold text-slate-800 text-sm mb-1 group-hover:text-teal-650 transition-colors">{currentT.objectDetection}</h4>
-                <p className="text-[11px] text-slate-400 leading-relaxed">{currentT.objectDetectionDesc}</p>
-              </div>
-              <div className="flex items-center justify-between text-[11px] font-bold text-slate-455 group-hover:text-teal-650 transition-colors pt-4 mt-6 border-t border-slate-50">
-                <span>Detect Objects</span>
-                <ChevronRight className="w-3.5 h-3.5 transform group-hover:translate-x-1 transition-transform" />
-              </div>
-            </div>
+      {/* Ambulance / Emergency large phone buttons */}
+      <section className="bg-white rounded-3xl border border-slate-150 p-6 shadow-xs space-y-4">
+        <div className="text-left border-b border-slate-100 pb-2">
+          <h3 className="text-sm font-extrabold text-slate-800 uppercase tracking-wider">{currentT.quickNumbers}</h3>
+        </div>
 
-            {/* Settings card */}
-            <div 
-              onClick={() => setActiveTab('settings')}
-              className="bg-white border border-slate-100 rounded-3xl p-5 shadow-xxs hover:shadow-md hover:border-slate-300 transition-all cursor-pointer group flex flex-col justify-between text-left"
-            >
-              <div>
-                <div className="w-11 h-11 rounded-2xl bg-slate-100 text-slate-600 flex items-center justify-center mb-4 group-hover:bg-slate-700 group-hover:text-white transition-all">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <a 
+            href="tel:108"
+            className="flex flex-col sm:flex-row items-center gap-3.5 p-4 rounded-2xl border border-slate-150 hover:border-emerald-300 hover:bg-emerald-50/20 transition-all text-center sm:text-left group cursor-pointer"
+          >
+            <div className="w-9 h-9 rounded-xl bg-emerald-500/10 text-[#2E7D32] flex items-center justify-center shrink-0">
+              <Activity className="w-5 h-5" />
+            </div>
+            <div>
+              <span className="text-[9px] uppercase font-bold text-slate-400">{currentT.ambulance}</span>
+              <p className="font-extrabold text-slate-800 text-base leading-tight group-hover:text-[#2E7D32]">108</p>
+              <span className="text-[9px] font-bold text-[#1565C0] group-hover:underline mt-0.5 block">{currentT.call}</span>
+            </div>
+          </a>
+
+          <a 
+            href="tel:112"
+            className="flex flex-col sm:flex-row items-center gap-3.5 p-4 rounded-2xl border border-slate-150 hover:border-red-300 hover:bg-red-50/20 transition-all text-center sm:text-left group cursor-pointer"
+          >
+            <div className="w-9 h-9 rounded-xl bg-red-500/10 text-[#E53935] flex items-center justify-center shrink-0">
+              <ShieldAlert className="w-5 h-5 animate-soft-pulse" />
+            </div>
+            <div>
+              <span className="text-[9px] uppercase font-bold text-slate-400">{currentT.natEmergency}</span>
+              <p className="font-extrabold text-slate-800 text-base leading-tight group-hover:text-[#E53935]">112</p>
+              <span className="text-[9px] font-bold text-[#1565C0] group-hover:underline mt-0.5 block">{currentT.call}</span>
+            </div>
+          </a>
+
+          <a 
+            href="tel:100"
+            className="flex flex-col sm:flex-row items-center gap-3.5 p-4 rounded-2xl border border-slate-150 hover:border-blue-300 hover:bg-blue-50/20 transition-all text-center sm:text-left group cursor-pointer"
+          >
+            <div className="w-9 h-9 rounded-xl bg-blue-500/10 text-[#1565C0] flex items-center justify-center shrink-0">
+              <User className="w-5 h-5" />
+            </div>
+            <div>
+              <span className="text-[9px] uppercase font-bold text-slate-400">{currentT.police}</span>
+              <p className="font-extrabold text-slate-800 text-base leading-tight group-hover:text-[#1565C0]">100</p>
+              <span className="text-[9px] font-bold text-[#1565C0] group-hover:underline mt-0.5 block">{currentT.call}</span>
+            </div>
+          </a>
+
+          <a 
+            href="tel:101"
+            className="flex flex-col sm:flex-row items-center gap-3.5 p-4 rounded-2xl border border-slate-150 hover:border-amber-300 hover:bg-amber-50/20 transition-all text-center sm:text-left group cursor-pointer"
+          >
+            <div className="w-9 h-9 rounded-xl bg-amber-500/10 text-[#FB8C00] flex items-center justify-center shrink-0">
+              <Flame className="w-5 h-5" />
+            </div>
+            <div>
+              <span className="text-[9px] uppercase font-bold text-slate-400">{currentT.fire}</span>
+              <p className="font-extrabold text-slate-800 text-base leading-tight group-hover:text-[#FB8C00]">101</p>
+              <span className="text-[9px] font-bold text-[#1565C0] group-hover:underline mt-0.5 block">{currentT.call}</span>
+            </div>
+          </a>
+        </div>
+      </section>
+    </div>
+  );ustify-center mb-4 group-hover:bg-slate-700 group-hover:text-white transition-all">
                   <Settings className="w-5.5 h-5.5" />
                 </div>
                 <h4 className="font-extrabold text-slate-800 text-sm mb-1 group-hover:text-slate-800 transition-colors">{currentT.settings}</h4>
@@ -1282,10 +1142,35 @@ export default function Dashboard({ language: initialLanguage, onResetLanguage, 
     />
   );
 
+  const renderDisasterSafety = () => (
+    <DisasterSafety
+      language={language}
+      onBack={() => setActiveTab('home')}
+      onOpenSOS={onOpenSOS}
+      onOpenDisasterGuide={(tab) => setDisasterModalTab(tab || 'earthquake')}
+      onNavigateToMaps={() => setActiveTab('maps')}
+      onNavigateToContacts={() => setActiveTab('contacts')}
+    />
+  );
+
+  const renderAIAssistancePage = () => (
+    <AIAssistancePage
+      language={language}
+      onBack={() => setActiveTab('home')}
+      onOpenSOS={onOpenSOS}
+      onNavigateToChat={() => setActiveTab('ai_assistant')}
+      onNavigateToOCR={() => { setActiveTab('scan'); setScanType('ocr'); }}
+      onNavigateToDetection={() => { setActiveTab('scan'); setScanType('detection'); }}
+      onNavigateToSettings={() => setActiveTab('settings')}
+    />
+  );
+
   const renderContent = () => {
     switch (activeTab) {
       case 'home': return renderHome();
       case 'medical': return renderMedical();
+      case 'disaster': return renderDisasterSafety();
+      case 'ai_assistance_page': return renderAIAssistancePage();
       case 'ai_assistant': return renderAIAssistant();
       case 'scan': return renderScan();
       case 'maps': return renderMaps();

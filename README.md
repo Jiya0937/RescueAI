@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # RescueAI – Offline Emergency Assistant
 
 RescueAI is a modern, AI-powered offline emergency assistant designed to provide critical guidance, medical steps (CPR, bleeding, burns, etc.), and mapping services during natural disasters and medical emergencies. The application is designed to operate completely offline (via local services) while being fully compatible with online hosting for demonstration purposes.
@@ -102,3 +103,6 @@ RescueAI is a modern, AI-powered offline emergency assistant designed to provide
 
 ## 📜 License
 Distributed under the MIT License. See `LICENSE` for more details.
+=======
+# RescueAI
+>>>>>>> aa99a2d13d2355ffcd41c60a2e1dc013584c329c
