@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from "react";
 import { 
   ArrowLeft, Flame, Map, Phone, Shield, Globe, 
   ChevronRight, ShieldAlert, Check

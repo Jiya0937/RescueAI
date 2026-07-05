@@ -10,6 +10,10 @@ from dotenv import load_dotenv
 from app.api.chatbot.chat import router as chatbot_router
 # Import OCR router 
 from app.api.ocr.ocr import router as ocr_router
+# Import Omputer Vision
+from app.api.vision.detection import router as vision_router
+# Import speech 
+from app.api.speech.speech import router as speech_router
 
 # Load environment variables
 load_dotenv()
@@ -76,6 +80,8 @@ async def global_exception_handler(request: Request, exc: Exception):
                 # Endpoint: /chatbot
 app.include_router(chatbot_router, prefix="/api")   # Endpoint: /api/chatbot
 app.include_router(ocr_router, prefix="/api")
+app.include_router(vision_router, prefix="/api")
+app.include_router(speech_router, prefix="/api")
 
 
 # Root Endpoint / Health Check

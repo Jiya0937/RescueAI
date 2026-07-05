@@ -13,6 +13,7 @@ import AIAssistancePage from '../AIAssistance/AIAssistance.jsx';
 
 const API_URL = "http://127.0.0.1:8000/api/chatbot/";
 const OCR_API = "http://127.0.0.1:8000/api/ocr/";
+const VISION_API = "http://127.0.0.1:8000/api/vision/";
 
 // Translation Dictionary defined outside the component to prevent reference errors during initialization
 const t = {
@@ -199,6 +200,21 @@ export default function Dashboard({ language: initialLanguage, onResetLanguage, 
   const [scanType, setScanType] = useState('ocr'); // 'ocr' or 'detection'
   const [scanResult, setScanResult] = useState(null);
   const [scanningEffect, setScanningEffect] = useState(false);
+  
+  // Image uploaded state
+  const [selectedImage, setSelectedImage] = useState(null);
+const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
+const [isDragOver, setIsDragOver] = useState(false);
+
+// Webcam States
+const [cameraOpen, setCameraOpen] = useState(false);
+const [cameraStream, setCameraStream] = useState(null);
+const [capturedImage, setCapturedImage] = useState(null);
+const [isCapturing, setIsCapturing] = useState(false);
+
+// Webcam Refs
+const videoRef = useRef(null);
+const canvasRef = useRef(null);
 
   // Maps mockup State
   const [mapLayer, setMapLayer] = useState('all'); // 'all', 'hospitals', 'shelters'
@@ -346,8 +362,86 @@ export default function Dashboard({ language: initialLanguage, onResetLanguage, 
     handleAIPrompt(text);
   };
 
+  // Image and Camera Event Handlers
+  const handleImageSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedImage(file);
+      setImagePreviewUrl(URL.createObjectURL(file));
+      setScanResult(null);
+    }
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = () => {
+    setIsDragOver(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    const file = e.dataTransfer?.files?.[0];
+    if (file) {
+      setSelectedImage(file);
+      setImagePreviewUrl(URL.createObjectURL(file));
+      setScanResult(null);
+    }
+  };
+
+  const startCamera = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+      setCameraStream(stream);
+      setCameraOpen(true);
+      // Wait for next render tick to ensure video element is bound
+      setTimeout(() => {
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+        }
+      }, 100);
+    } catch (err) {
+      console.error("Error accessing camera: ", err);
+      alert("Could not access camera. Please upload an image instead.");
+      setCameraOpen(false);
+    }
+  };
+
+  const stopCamera = () => {
+    if (cameraStream) {
+      cameraStream.getTracks().forEach(track => track.stop());
+      setCameraStream(null);
+    }
+    setCameraOpen(false);
+  };
+
+  const captureImage = () => {
+    if (videoRef.current && canvasRef.current) {
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+      canvas.width = video.videoWidth || 640;
+      canvas.height = video.videoHeight || 480;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      
+      canvas.toBlob((blob) => {
+        if (blob) {
+          const file = new File([blob], "captured_image.jpg", { type: "image/jpeg" });
+          setSelectedImage(file);
+          setImagePreviewUrl(URL.createObjectURL(blob));
+          setScanResult(null);
+          stopCamera();
+        }
+      }, "image/jpeg");
+    }
+  };
+
   // Simulate OCR scan
-  const triggerScan = async () => {
+const triggerScan = async () => {
+
   if (!selectedImage) {
     alert("Please select an image first.");
     return;
@@ -357,33 +451,64 @@ export default function Dashboard({ language: initialLanguage, onResetLanguage, 
   setScanResult(null);
 
   try {
+    console.log("Current Scan Type:", scanType);
     const formData = new FormData();
     formData.append("file", selectedImage);
 
-    const response = await fetch(OCR_API, {
+    const api =
+      scanType === "ocr"
+        ? OCR_API
+        : VISION_API;
+
+    const response = await fetch(api, {
       method: "POST",
       body: formData,
     });
 
     const data = await response.json();
 
-    setScanResult({
-      title:
-        language === "en"
-          ? "Text Extracted"
-          : "टेक्स्ट निकाला गया",
+    if (!response.ok) {
+      throw new Error(data.detail || "Backend Error");
+    }
 
-      content: data.text,
+    if (scanType === "ocr") {
 
-      tags: ["OCR", "EasyOCR", "Offline AI"],
-    });
+      setScanResult({
+        title: "Text Extracted",
+        content: data.text,
+        tags: ["OCR", "EasyOCR", "Offline AI"],
+      });
+
+    } else {
+
+      setScanResult({
+    title: "Objects Detected",
+    objects: data.objects || data || [],
+});
+
+    }
+
   } catch (error) {
+
     console.error(error);
 
-    setScanResult({
-      title: "Error",
-      content: "Unable to extract text.",
-    });
+    if (scanType === "ocr") {
+
+      setScanResult({
+        title: "Error",
+        content: error.message,
+        tags: ["Error"],
+      });
+
+    } else {
+
+      setScanResult({
+        title: "Detection Error",
+        objects: [],
+      });
+
+    }
+
   }
 
   setScanningEffect(false);
@@ -420,369 +545,225 @@ export default function Dashboard({ language: initialLanguage, onResetLanguage, 
   // --- SUBVIEW RENDERERS ---
 
   // 1. Home dashboard overview
+  // 1. Home dashboard overview
   const renderHome = () => (
-    <div className="space-y-8 animate-fade-in">
-      {/* Hero card with clean medical illustration */}
-      <section className="bg-white rounded-3xl border border-slate-100 p-6 md:p-8 shadow-xs flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden">
-        <div className="absolute -top-24 -left-24 w-64 h-64 bg-[#1565C0]/5 rounded-full blur-3xl pointer-events-none"></div>
-        <div className="absolute -bottom-24 -right-24 w-64 h-64 bg-[#E53935]/5 rounded-full blur-3xl pointer-events-none"></div>
-        
-        <div className="text-left max-w-lg space-y-4 md:space-y-5 z-10">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 text-[#2E7D32] border border-emerald-100 shadow-xxs">
-            <span className="w-2 h-2 rounded-full bg-[#2E7D32] animate-pulse"></span>
-            <span className="text-[10px] font-bold uppercase tracking-wider">{currentT.offlineMode}</span>
+    <div className="animate-fade-in w-full">
+      {/* Full-width Hero Section */}
+      <section 
+        className="relative min-h-[92vh] flex flex-col justify-between text-white bg-cover bg-center overflow-hidden"
+        style={{ backgroundImage: `url('/images/hero-bg.jpg')` }}
+      >
+        {/* Dark overlay */}
+        <div className="absolute inset-0 bg-black/55 z-0"></div>
+
+        {/* Transparent Navigation Bar */}
+        <header className="relative z-10 w-full px-6 py-4 md:px-12 flex items-center justify-between border-b border-white/10 backdrop-blur-sm">
+          <div className="flex items-center gap-2.5 cursor-pointer" onClick={() => setActiveTab('home')}>
+            <Shield className="w-7 h-7 text-[#E53935] fill-[#E53935]/15" />
+            <span className="font-extrabold text-xl tracking-tight text-white">Rescue<span className="text-[#E53935]">AI</span></span>
           </div>
-          
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-800 tracking-tight leading-tight">
-            {currentT.heroHeading}
-          </h2>
-          <p className="text-xs sm:text-sm text-slate-500 leading-relaxed max-w-md">
-            {currentT.heroSubtitle}
+
+          <nav className="hidden lg:flex items-center gap-8 text-sm font-semibold text-white/90">
+            <button onClick={() => setActiveTab('home')} className={`hover:text-white transition-colors cursor-pointer ${activeTab === 'home' ? 'text-[#E53935] font-bold border-b-2 border-[#E53935] pb-1' : ''}`}>Home</button>
+            <button onClick={() => setActiveTab('medical')} className="hover:text-white transition-colors cursor-pointer">Medical</button>
+            <button onClick={() => setActiveTab('disaster')} className="hover:text-white transition-colors cursor-pointer">Disasters</button>
+            <button onClick={() => setActiveTab('ai_assistant')} className="hover:text-white transition-colors cursor-pointer">AI Assistant</button>
+            <button onClick={() => setActiveTab('scan')} className="hover:text-white transition-colors cursor-pointer">Vision Scan</button>
+            <button onClick={() => setActiveTab('settings')} className="hover:text-white transition-colors cursor-pointer">Resources</button>
+          </nav>
+
+          <button 
+            onClick={onOpenSOS}
+            className="bg-[#E53935] hover:bg-[#D32F2F] text-white flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-xs shadow-md shadow-red-650/20 transition-all cursor-pointer select-none active:scale-95 duration-100"
+          >
+            <Phone className="w-4 h-4 fill-white" />
+            <span>SOS Emergency</span>
+          </button>
+        </header>
+
+        {/* Center Hero Content */}
+        <div className="relative z-10 flex-1 flex flex-col items-center justify-center text-center px-4 max-w-4xl mx-auto py-12 md:py-16 space-y-6">
+          {/* Badge */}
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-red-655/20 border border-red-500/30 text-white backdrop-blur-md shadow-sm">
+            <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse"></span>
+            <span className="text-xs font-bold uppercase tracking-wider">Offline Mode – Always With You</span>
+          </div>
+
+          {/* Heading */}
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-white leading-tight">
+            Your Offline <span className="text-[#E53935]">Emergency</span> Companion
+          </h1>
+
+          {/* Subheading */}
+          <p className="text-sm sm:text-base text-slate-200 max-w-2xl leading-relaxed">
+            AI-powered guidance for medical emergencies, disasters, and safety – anytime, anywhere.
           </p>
 
-          <div className="bg-[#F8FAFC] border border-slate-150 rounded-2xl p-4 flex items-center gap-3.5">
-            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-[#2E7D32] flex items-center justify-center shrink-0">
-              <Activity className="w-5 h-5" />
-            </div>
-            <div>
-              <p className="font-extrabold text-xs text-slate-800">{currentT.offlineMode}</p>
-              <p className="text-[10px] text-slate-400 mt-0.5">{currentT.offlineModeDesc}</p>
-            </div>
+          {/* Call-to-action buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 pt-2">
+            <button 
+              onClick={onOpenSOS}
+              className="bg-[#E53935] hover:bg-[#D32F2F] text-white flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl font-bold text-sm shadow-lg shadow-red-650/30 transition-all cursor-pointer active:scale-95 duration-100"
+            >
+              <AlertTriangle className="w-4 h-4" />
+              <span>Get Emergency Help</span>
+            </button>
+            <button 
+              onClick={() => {
+                const element = document.getElementById("quick-emergency-numbers");
+                if (element) {
+                  element.scrollIntoView({ behavior: 'smooth' });
+                }
+              }}
+              className="border border-white/40 hover:border-white hover:bg-white/10 text-white flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl font-bold text-sm transition-all cursor-pointer"
+            >
+              <span>Explore Guides</span>
+              <ChevronRight className="w-4 h-4" />
+            </button>
           </div>
         </div>
 
-        {/* Flat SVG Rescuer/Patient Medical Illustration */}
-        <div className="w-full max-w-[320px] md:max-w-[360px] shrink-0 z-10">
-          <svg className="w-full h-auto" viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <ellipse cx="200" cy="245" rx="140" ry="18" fill="#F1F5F9" />
-            <ellipse cx="200" cy="242" rx="120" ry="12" fill="#E2E8F0" />
-            <circle cx="90" cy="110" r="30" fill="#E0F2FE" />
-            <path d="M90 102v16M82 110h16" stroke="#0284C7" strokeWidth="3" strokeLinecap="round" />
-            <line x1="90" y1="110" x2="200" y2="60" stroke="#CBD5E1" strokeWidth="1.5" strokeDasharray="4 4" />
-            <line x1="200" y1="60" x2="310" y2="130" stroke="#CBD5E1" strokeWidth="1.5" strokeDasharray="4 4" />
-            <line x1="200" y1="60" x2="200" y2="150" stroke="#CBD5E1" strokeWidth="1.5" strokeDasharray="4 4" />
-            <path d="M200 40c45 0 70 20 70 20v65c0 45-30 75-70 85-40-10-70-40-70-85V60s25-20 70-20z" fill="#1565C0" fillOpacity="0.15" />
-            <path d="M200 50c38 0 60 16 60 16v54c0 38-25 63-60 72-35-9-60-34-60-72V66s22-16 60-16z" fill="#1565C0" />
-            <path d="M200 90v40M180 110h40" stroke="#FFFFFF" strokeWidth="10" strokeLinecap="round" />
+        {/* Feature cards & Scroll Down */}
+        <div className="relative z-10 w-full max-w-5xl mx-auto px-6 pb-8 space-y-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Card 1: Medical Help */}
+            <div 
+              onClick={() => setActiveTab('medical')}
+              className="bg-white/10 backdrop-blur-md border border-white/10 hover:border-white/30 hover:bg-white/15 text-white rounded-2xl p-5 transition-all duration-300 cursor-pointer flex flex-col items-center sm:items-start text-center sm:text-left gap-3 shadow-lg"
+            >
+              <div className="w-10 h-10 rounded-xl bg-red-600/30 flex items-center justify-center border border-red-500/20">
+                <Stethoscope className="w-5 h-5 text-red-400" />
+              </div>
+              <div>
+                <h4 className="font-extrabold text-sm tracking-tight">Medical Help</h4>
+                <p className="text-xs text-slate-300 mt-1 leading-normal">First aid guidance, treatments & more</p>
+              </div>
+            </div>
 
-            {/* Rescuer */}
-            <g transform="translate(60, 110)">
-              <rect x="75" y="100" width="12" height="35" rx="6" fill="#475569" />
-              <rect x="93" y="100" width="12" height="35" rx="6" fill="#475569" />
-              <path d="M65 65h50v40H65V65z" fill="#0EA5E9" />
-              <rect x="65" y="73" width="50" height="5" fill="#FACC15" />
-              <rect x="65" y="85" width="50" height="5" fill="#FACC15" />
-              <circle cx="90" cy="45" r="16" fill="#FDBA74" />
-              <path d="M74 42c0-10 8-15 16-15s16 5 16 15z" fill="#1E293B" />
-              <path d="M65 70c-10 5-12 18-5 24l15-15" fill="#FDBA74" stroke="#0EA5E9" strokeWidth="4" strokeLinecap="round" />
-              <rect x="42" y="80" width="16" height="22" rx="2" fill="#E2E8F0" stroke="#475569" strokeWidth="2" />
-              <path d="M47 91h6M50 88v6" stroke="#E53935" strokeWidth="1.5" />
-            </g>
+            {/* Card 2: Disaster Safety */}
+            <div 
+              onClick={() => setActiveTab('disaster')}
+              className="bg-white/10 backdrop-blur-md border border-white/10 hover:border-white/30 hover:bg-white/15 text-white rounded-2xl p-5 transition-all duration-300 cursor-pointer flex flex-col items-center sm:items-start text-center sm:text-left gap-3 shadow-lg"
+            >
+              <div className="w-10 h-10 rounded-xl bg-red-600/30 flex items-center justify-center border border-red-500/20">
+                <ShieldAlert className="w-5 h-5 text-red-400" />
+              </div>
+              <div>
+                <h4 className="font-extrabold text-sm tracking-tight">Disaster Safety</h4>
+                <p className="text-xs text-slate-300 mt-1 leading-normal">Stay prepared and learn safety tips</p>
+              </div>
+            </div>
 
-            {/* Patient */}
-            <g transform="translate(240, 130)">
-              <rect x="35" y="85" width="10" height="30" rx="5" fill="#334155" />
-              <rect x="51" y="85" width="10" height="30" rx="5" fill="#334155" />
-              <path d="M25 55h46v35H25V55z" fill="#94A3B8" />
-              <circle cx="48" cy="35" r="14" fill="#FDBA74" />
-              <path d="M34 32c0-8 6-12 14-12s14 4 14 12z" fill="#475569" />
-              <path d="M28 60c-8 3-10 12-8 18" stroke="#FDBA74" strokeWidth="5" strokeLinecap="round" />
-            </g>
-            <path d="M60 270h80l8-15 8 30 10-45 10 40 8-10 6 5h150" stroke="#EF5350" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.6" />
-          </svg>
+            {/* Card 3: AI Assistant */}
+            <div 
+              onClick={() => setActiveTab('ai_assistant')}
+              className="bg-white/10 backdrop-blur-md border border-white/10 hover:border-white/30 hover:bg-white/15 text-white rounded-2xl p-5 transition-all duration-300 cursor-pointer flex flex-col items-center sm:items-start text-center sm:text-left gap-3 shadow-lg"
+            >
+              <div className="w-10 h-10 rounded-xl bg-red-600/30 flex items-center justify-center border border-red-500/20">
+                <MessageSquare className="w-5 h-5 text-red-400" />
+              </div>
+              <div>
+                <h4 className="font-extrabold text-sm tracking-tight">AI Assistant</h4>
+                <p className="text-xs text-slate-300 mt-1 leading-normal">Ask anything, get instant answers</p>
+              </div>
+            </div>
+
+            {/* Card 4: Vision Scan */}
+            <div 
+              onClick={() => setActiveTab('scan')}
+              className="bg-white/10 backdrop-blur-md border border-white/10 hover:border-white/30 hover:bg-white/15 text-white rounded-2xl p-5 transition-all duration-300 cursor-pointer flex flex-col items-center sm:items-start text-center sm:text-left gap-3 shadow-lg"
+            >
+              <div className="w-10 h-10 rounded-xl bg-red-600/30 flex items-center justify-center border border-red-500/20">
+                <Eye className="w-5 h-5 text-red-400" />
+              </div>
+              <div>
+                <h4 className="font-extrabold text-sm tracking-tight">Vision Scan</h4>
+                <p className="text-xs text-slate-300 mt-1 leading-normal">Scan documents and detect objects</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Scroll Down */}
+          <div className="flex flex-col items-center gap-1 text-[10px] text-slate-300 font-semibold cursor-pointer animate-bounce pt-2"
+               onClick={() => {
+                 const element = document.getElementById("quick-emergency-numbers");
+                 if (element) {
+                   element.scrollIntoView({ behavior: 'smooth' });
+                 }
+               }}>
+            <span>Scroll Down</span>
+            <span className="text-sm">▼</span>
+          </div>
         </div>
       </section>
 
-      {/* Three Premium Category Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        
-        {/* Card 1 — Medical Emergency */}
-        <div 
-          onClick={() => setActiveTab('medical')}
-          className="bg-white border border-slate-100 rounded-[20px] shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer group flex flex-col justify-between text-left relative overflow-hidden h-[360px] max-w-[380px] w-full mx-auto"
-        >
-          {/* Illustration Container */}
-          <div className="bg-gradient-to-b from-red-50/40 to-white pt-4 pb-2 flex items-center justify-center shrink-0">
-            <svg className="w-full h-32" viewBox="0 0 300 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="150" cy="60" r="45" fill="url(#redGrad)" opacity="0.12" />
-              <g transform="translate(90, 25)">
-                <rect x="2" y="14" width="56" height="42" rx="10" fill="#EF5350" opacity="0.25" />
-                <rect x="0" y="12" width="56" height="42" rx="10" fill="url(#medRed)" />
-                <circle cx="28" cy="33" r="11" fill="white" />
-                <rect x="25" y="27" width="6" height="12" rx="1" fill="#E53935" />
-                <rect x="22" y="30" width="12" height="6" rx="1" fill="#E53935" />
-                <rect x="12" y="10" width="6" height="4" rx="1" fill="#CFD8DC" />
-                <rect x="38" y="10" width="6" height="4" rx="1" fill="#CFD8DC" />
-                <path d="M18 12V6C18 4.3 19.3 3 21 3H35C36.7 3 38 4.3 38 6V12" stroke="#B0BEC5" strokeWidth="3" strokeLinecap="round" />
-              </g>
-              <g transform="translate(160, 28)">
-                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="url(#heartRed)" filter="url(#glowRed)" />
-                <path d="M-20 20h10l4-15 5 25 4-15 7 5" stroke="#FF8A80" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-              </g>
-              <defs>
-                <linearGradient id="redGrad" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stopColor="#EF5350" />
-                  <stop offset="100%" stopColor="#D32F2F" />
-                </linearGradient>
-                <linearGradient id="medRed" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#EF5350" />
-                  <stop offset="100%" stopColor="#C62828" />
-                </linearGradient>
-                <linearGradient id="heartRed" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stopColor="#FF1744" />
-                  <stop offset="100%" stopColor="#D50000" />
-                </linearGradient>
-                <filter id="glowRed" x="-20%" y="-20%" width="140%" height="140%">
-                  <feGaussianBlur stdDeviation="3" result="blur" />
-                  <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                </filter>
-              </defs>
-            </svg>
+      {/* Quick Numbers and Content Container below Hero */}
+      <div id="quick-emergency-numbers" className="max-w-5xl mx-auto px-4 py-12 sm:px-6 space-y-8">
+        {/* Ambulance / Emergency large phone buttons */}
+        <section className="bg-white rounded-3xl border border-slate-150 p-6 shadow-xs space-y-4">
+          <div className="text-left border-b border-slate-100 pb-2">
+            <h3 className="text-sm font-extrabold text-slate-800 uppercase tracking-wider">{currentT.quickNumbers}</h3>
           </div>
-          
-          <div className="px-6 pb-6 flex-1 flex flex-col justify-between">
-            <div className="space-y-2">
-              <h3 className="font-extrabold text-xl text-slate-800 tracking-tight group-hover:text-[#E53935] transition-colors leading-tight">
-                {language === 'en' ? 'Medical Emergency' : 'चिकित्सा आपातकाल'}
-              </h3>
-              <p className="text-slate-500 text-xs leading-relaxed min-h-[36px]">
-                {language === 'en' 
-                  ? 'CPR, First Aid, Voice Assistant and Audio Guidance.'
-                  : 'सीपीआर, प्राथमिक चिकित्सा, वॉयस असिस्टेंट और ऑडियो मार्गदर्शन।'}
-              </p>
-            </div>
 
-            <div className="space-y-4 mt-2">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 text-[#E53935] text-[10.5px] font-extrabold border border-red-100/50 w-fit">
-                <span>🚑</span>
-                <span>{language === 'en' ? '4 Medical Tools' : '4 चिकित्सा उपकरण'}</span>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <a 
+              href="tel:108"
+              className="flex flex-col sm:flex-row items-center gap-3.5 p-4 rounded-2xl border border-slate-150 hover:border-emerald-300 hover:bg-emerald-50/20 transition-all text-center sm:text-left group cursor-pointer"
+            >
+              <div className="w-9 h-9 rounded-xl bg-emerald-500/10 text-[#2E7D32] flex items-center justify-center shrink-0">
+                <Activity className="w-5 h-5" />
               </div>
-
-              <button 
-                onClick={(e) => { e.stopPropagation(); setActiveTab('medical'); }}
-                className="w-full h-11 rounded-[14px] bg-gradient-to-r from-[#E53935] to-[#D32F2F] hover:brightness-110 text-white font-extrabold text-xs transition-all shadow-md shadow-red-500/10 flex items-center justify-center gap-1.5 cursor-pointer"
-              >
-                <span>{language === 'en' ? 'Explore' : 'खोजें'}</span>
-                <span className="text-sm font-light">→</span>
-              </button>
-            </div>
-          </div>
-          
-          <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#E53935] to-[#D32F2F]"></div>
-        </div>
-
-        {/* Card 2 — Disaster Safety */}
-        <div 
-          onClick={() => setActiveTab('disaster')}
-          className="bg-white border border-slate-100 rounded-[20px] shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer group flex flex-col justify-between text-left relative overflow-hidden h-[360px] max-w-[380px] w-full mx-auto md:col-span-1 lg:col-span-1"
-        >
-          {/* Illustration Container */}
-          <div className="bg-gradient-to-b from-emerald-50/40 to-white pt-4 pb-2 flex items-center justify-center shrink-0">
-            <svg className="w-full h-32" viewBox="0 0 300 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="150" cy="60" r="45" fill="url(#greenGrad)" opacity="0.12" />
-              <g transform="translate(70, 20)">
-                <path d="M10 75 Q 30 55, 50 75 T 90 75" fill="none" stroke="#00ACC1" strokeWidth="3" strokeLinecap="round" opacity="0.5" />
-                <path d="M5 80 Q 25 65, 45 80 T 85 80" fill="none" stroke="#26C6DA" strokeWidth="4" strokeLinecap="round" />
-                <path d="M75 75 Q 70 50, 60 35" fill="none" stroke="#8D6E63" strokeWidth="4.5" strokeLinecap="round" />
-                <path d="M60 35 Q 45 35, 40 45" fill="none" stroke="#4CAF50" strokeWidth="3" strokeLinecap="round" />
-                <path d="M60 35 Q 55 20, 45 20" fill="none" stroke="#4CAF50" strokeWidth="3" strokeLinecap="round" />
-                <path d="M60 35 Q 70 20, 75 25" fill="none" stroke="#4CAF50" strokeWidth="3" strokeLinecap="round" />
-                <path d="M60 35 Q 70 40, 72 48" fill="none" stroke="#4CAF50" strokeWidth="3" strokeLinecap="round" />
-                <rect x="15" y="48" width="30" height="22" rx="2" fill="#FFE0B2" stroke="#5D4037" strokeWidth="1.5" />
-                <rect x="27" y="58" width="7" height="12" fill="#5D4037" />
-                <polygon points="10,48 48,48 29,32" fill="#FF7043" stroke="#5D4037" strokeWidth="1.5" strokeLinejoin="round" />
-              </g>
-              <g transform="translate(165, 25)">
-                <path d="M20 5C35 5 40 10 40 10V25C40 38 28 47 20 50C12 47 0 38 0 25V10C0 10 5 5 20 5Z" fill="url(#shieldGreen)" />
-                <path d="M12 25L17 30L28 18" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
-              </g>
-              <g transform="translate(100, 10)">
-                <path d="M25 15 L15 28 H23 L13 40" stroke="#FFD54F" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M8 12a6 6 0 0 1 11-3 7 7 0 0 1 13 2 6 6 0 0 1-2 11.5H8.5A5.5 5.5 0 0 1 8 12z" fill="#90A4AE" opacity="0.9" />
-              </g>
-              <defs>
-                <linearGradient id="greenGrad" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stopColor="#4CAF50" />
-                  <stop offset="100%" stopColor="#2E7D32" />
-                </linearGradient>
-                <linearGradient id="shieldGreen" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#66BB6A" />
-                  <stop offset="100%" stopColor="#2E7D32" />
-                </linearGradient>
-              </defs>
-            </svg>
-          </div>
-          
-          <div className="px-6 pb-6 flex-1 flex flex-col justify-between">
-            <div className="space-y-2">
-              <h3 className="font-extrabold text-xl text-slate-800 tracking-tight group-hover:text-[#2E7D32] transition-colors leading-tight">
-                {language === 'en' ? 'Disaster Safety' : 'आपदा सुरक्षा'}
-              </h3>
-              <p className="text-slate-500 text-xs leading-relaxed min-h-[36px]">
-                {language === 'en'
-                  ? 'Disaster Guide, Offline Maps and Emergency Contacts.'
-                  : 'आपदा गाइड, ऑफलाइन मानचित्र और आपातकालीन संपर्क।'}
-              </p>
-            </div>
-
-            <div className="space-y-4 mt-2">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-[#2E7D32] text-[10.5px] font-extrabold border border-emerald-100/50 w-fit">
-                <span>🌍</span>
-                <span>{language === 'en' ? '3 Disaster Tools' : '3 आपदा उपकरण'}</span>
+              <div>
+                <span className="text-[9px] uppercase font-bold text-slate-400">{currentT.ambulance}</span>
+                <p className="font-extrabold text-slate-800 text-base leading-tight group-hover:text-[#2E7D32]">108</p>
+                <span className="text-[9px] font-bold text-[#1565C0] group-hover:underline mt-0.5 block">{currentT.call}</span>
               </div>
+            </a>
 
-              <button 
-                onClick={(e) => { e.stopPropagation(); setActiveTab('disaster'); }}
-                className="w-full h-11 rounded-[14px] bg-gradient-to-r from-emerald-500 to-teal-600 hover:brightness-110 text-white font-extrabold text-xs transition-all shadow-md shadow-emerald-500/10 flex items-center justify-center gap-1.5 cursor-pointer"
-              >
-                <span>{language === 'en' ? 'Explore' : 'खोजें'}</span>
-                <span className="text-sm font-light">→</span>
-              </button>
-            </div>
-          </div>
-          
-          <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-gradient-to-r from-emerald-500 to-teal-600"></div>
-        </div>
-
-        {/* Card 3 — AI Assistance */}
-        <div 
-          onClick={() => setActiveTab('ai_assistance_page')}
-          className="bg-white border border-slate-100 rounded-[20px] shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer group flex flex-col justify-between text-left relative overflow-hidden h-[360px] max-w-[380px] w-full mx-auto md:col-span-2 md:justify-self-center lg:col-span-1"
-        >
-          {/* Illustration Container */}
-          <div className="bg-gradient-to-b from-indigo-50/40 to-white pt-4 pb-2 flex items-center justify-center shrink-0">
-            <svg className="w-full h-32" viewBox="0 0 300 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="150" cy="60" r="45" fill="url(#indigoGrad)" opacity="0.12" />
-              <g transform="translate(115, 20)">
-                <ellipse cx="35" cy="80" rx="25" ry="5" fill="#E2E8F0" />
-                <path d="M12 50 Q -5 40, -1 25" stroke="#ECEFF1" strokeWidth="7" strokeLinecap="round" />
-                <circle cx="-1" cy="23" r="4" fill="#B0BEC5" />
-                <path d="M58 50 Q 72 58, 65 72" stroke="#ECEFF1" strokeWidth="7" strokeLinecap="round" />
-                <circle cx="65" cy="74" r="4" fill="#B0BEC5" />
-                <rect x="15" y="42" width="40" height="34" rx="14" fill="#ECEFF1" stroke="#CFD8DC" strokeWidth="1.5" />
-                <rect x="22" y="49" width="26" height="15" rx="5" fill="#37474F" />
-                <path d="M24 57h5l2-5 3 10 2-5h10" stroke="#00E5FF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                <rect x="31" y="38" width="8" height="6" fill="#B0BEC5" />
-                <rect x="12" y="10" width="46" height="30" rx="12" fill="#FFFFFF" stroke="#CFD8DC" strokeWidth="1.5" />
-                <rect x="18" y="15" width="34" height="18" rx="6" fill="#263238" />
-                <ellipse cx="26" cy="24" rx="3.5" ry="3.5" fill="#00E5FF" />
-                <ellipse cx="44" cy="24" rx="3.5" ry="3.5" fill="#00E5FF" />
-                <rect x="8" y="20" width="4" height="8" rx="1" fill="#B0BEC5" />
-                <rect x="58" y="20" width="4" height="8" rx="1" fill="#B0BEC5" />
-                <line x1="35" y1="10" x2="35" y2="3" stroke="#B0BEC5" strokeWidth="3" />
-                <circle cx="35" cy="2" r="3.5" fill="#00E5FF" className="animate-pulse" />
-              </g>
-              <g transform="translate(180, 20)">
-                <path d="M0 12C0 5.37 5.37 0 12 0H52C58.63 0 64 5.37 64 12V24C64 30.63 58.63 36 52 36H16L4 44V36C1.65 36 0 33.35 0 31V12Z" fill="#E8EAF6" />
-                <rect x="12" y="11" width="40" height="4" rx="2" fill="#9FA8DA" />
-                <rect x="12" y="21" width="28" height="4" rx="2" fill="#9FA8DA" />
-              </g>
-              <defs>
-                <linearGradient id="indigoGrad" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stopColor="#3F51B5" />
-                  <stop offset="100%" stopColor="#2196F3" />
-                </linearGradient>
-              </defs>
-            </svg>
-          </div>
-          
-          <div className="px-6 pb-6 flex-1 flex flex-col justify-between">
-            <div className="space-y-2">
-              <h3 className="font-extrabold text-xl text-slate-800 tracking-tight group-hover:text-indigo-650 transition-colors leading-tight">
-                {language === 'en' ? 'AI Assistance' : 'एआई सहायता'}
-              </h3>
-              <p className="text-slate-500 text-xs leading-relaxed min-h-[36px]">
-                {language === 'en'
-                  ? 'AI Chatbot, OCR Scanner, Object Detection and Settings.'
-                  : 'एआई चैटबॉट, ओसीआर स्कैनर, ऑब्जेक्ट डिटेक्शन और सेटिंग्स।'}
-              </p>
-            </div>
-
-            <div className="space-y-4 mt-2">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 text-indigo-650 text-[10.5px] font-extrabold border border-indigo-100/50 w-fit">
-                <span>🤖</span>
-                <span>{language === 'en' ? '4 AI Tools' : '4 एआई उपकरण'}</span>
+            <a 
+              href="tel:112"
+              className="flex flex-col sm:flex-row items-center gap-3.5 p-4 rounded-2xl border border-slate-150 hover:border-red-300 hover:bg-red-50/20 transition-all text-center sm:text-left group cursor-pointer"
+            >
+              <div className="w-9 h-9 rounded-xl bg-red-500/10 text-[#E53935] flex items-center justify-center shrink-0">
+                <ShieldAlert className="w-5 h-5 animate-soft-pulse" />
               </div>
+              <div>
+                <span className="text-[9px] uppercase font-bold text-slate-400">{currentT.natEmergency}</span>
+                <p className="font-extrabold text-slate-800 text-base leading-tight group-hover:text-[#E53935]">112</p>
+                <span className="text-[9px] font-bold text-[#1565C0] group-hover:underline mt-0.5 block">{currentT.call}</span>
+              </div>
+            </a>
 
-              <button 
-                onClick={(e) => { e.stopPropagation(); setActiveTab('ai_assistance_page'); }}
-                className="w-full h-11 rounded-[14px] bg-gradient-to-r from-indigo-500 to-blue-600 hover:brightness-110 text-white font-extrabold text-xs transition-all shadow-md shadow-indigo-500/10 flex items-center justify-center gap-1.5 cursor-pointer"
-              >
-                <span>{language === 'en' ? 'Explore' : 'खोजें'}</span>
-                <span className="text-sm font-light">→</span>
-              </button>
-            </div>
+            <a 
+              href="tel:100"
+              className="flex flex-col sm:flex-row items-center gap-3.5 p-4 rounded-2xl border border-slate-150 hover:border-blue-300 hover:bg-blue-50/20 transition-all text-center sm:text-left group cursor-pointer"
+            >
+              <div className="w-9 h-9 rounded-xl bg-blue-500/10 text-[#1565C0] flex items-center justify-center shrink-0">
+                <User className="w-5 h-5" />
+              </div>
+              <div>
+                <span className="text-[9px] uppercase font-bold text-slate-400">{currentT.police}</span>
+                <p className="font-extrabold text-slate-800 text-base leading-tight group-hover:text-[#1565C0]">100</p>
+                <span className="text-[9px] font-bold text-[#1565C0] group-hover:underline mt-0.5 block">{currentT.call}</span>
+              </div>
+            </a>
+
+            <a 
+              href="tel:101"
+              className="flex flex-col sm:flex-row items-center gap-3.5 p-4 rounded-2xl border border-slate-150 hover:border-amber-300 hover:bg-amber-50/20 transition-all text-center sm:text-left group cursor-pointer"
+            >
+              <div className="w-9 h-9 rounded-xl bg-amber-500/10 text-[#FB8C00] flex items-center justify-center shrink-0">
+                <Flame className="w-5 h-5" />
+              </div>
+              <div>
+                <span className="text-[9px] uppercase font-bold text-slate-400">{currentT.fire}</span>
+                <p className="font-extrabold text-slate-800 text-base leading-tight group-hover:text-[#FB8C00]">101</p>
+                <span className="text-[9px] font-bold text-[#1565C0] group-hover:underline mt-0.5 block">{currentT.call}</span>
+              </div>
+            </a>
           </div>
-          
-          <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-gradient-to-r from-indigo-500 to-blue-600"></div>
-        </div>
-
+        </section>
       </div>
-
-      {/* Ambulance / Emergency large phone buttons */}
-      <section className="bg-white rounded-3xl border border-slate-150 p-6 shadow-xs space-y-4">
-        <div className="text-left border-b border-slate-100 pb-2">
-          <h3 className="text-sm font-extrabold text-slate-800 uppercase tracking-wider">{currentT.quickNumbers}</h3>
-        </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <a 
-            href="tel:108"
-            className="flex flex-col sm:flex-row items-center gap-3.5 p-4 rounded-2xl border border-slate-150 hover:border-emerald-300 hover:bg-emerald-50/20 transition-all text-center sm:text-left group cursor-pointer"
-          >
-            <div className="w-9 h-9 rounded-xl bg-emerald-500/10 text-[#2E7D32] flex items-center justify-center shrink-0">
-              <Activity className="w-5 h-5" />
-            </div>
-            <div>
-              <span className="text-[9px] uppercase font-bold text-slate-400">{currentT.ambulance}</span>
-              <p className="font-extrabold text-slate-800 text-base leading-tight group-hover:text-[#2E7D32]">108</p>
-              <span className="text-[9px] font-bold text-[#1565C0] group-hover:underline mt-0.5 block">{currentT.call}</span>
-            </div>
-          </a>
-
-          <a 
-            href="tel:112"
-            className="flex flex-col sm:flex-row items-center gap-3.5 p-4 rounded-2xl border border-slate-150 hover:border-red-300 hover:bg-red-50/20 transition-all text-center sm:text-left group cursor-pointer"
-          >
-            <div className="w-9 h-9 rounded-xl bg-red-500/10 text-[#E53935] flex items-center justify-center shrink-0">
-              <ShieldAlert className="w-5 h-5 animate-soft-pulse" />
-            </div>
-            <div>
-              <span className="text-[9px] uppercase font-bold text-slate-400">{currentT.natEmergency}</span>
-              <p className="font-extrabold text-slate-800 text-base leading-tight group-hover:text-[#E53935]">112</p>
-              <span className="text-[9px] font-bold text-[#1565C0] group-hover:underline mt-0.5 block">{currentT.call}</span>
-            </div>
-          </a>
-
-          <a 
-            href="tel:100"
-            className="flex flex-col sm:flex-row items-center gap-3.5 p-4 rounded-2xl border border-slate-150 hover:border-blue-300 hover:bg-blue-50/20 transition-all text-center sm:text-left group cursor-pointer"
-          >
-            <div className="w-9 h-9 rounded-xl bg-blue-500/10 text-[#1565C0] flex items-center justify-center shrink-0">
-              <User className="w-5 h-5" />
-            </div>
-            <div>
-              <span className="text-[9px] uppercase font-bold text-slate-400">{currentT.police}</span>
-              <p className="font-extrabold text-slate-800 text-base leading-tight group-hover:text-[#1565C0]">100</p>
-              <span className="text-[9px] font-bold text-[#1565C0] group-hover:underline mt-0.5 block">{currentT.call}</span>
-            </div>
-          </a>
-
-          <a 
-            href="tel:101"
-            className="flex flex-col sm:flex-row items-center gap-3.5 p-4 rounded-2xl border border-slate-150 hover:border-amber-300 hover:bg-amber-50/20 transition-all text-center sm:text-left group cursor-pointer"
-          >
-            <div className="w-9 h-9 rounded-xl bg-amber-500/10 text-[#FB8C00] flex items-center justify-center shrink-0">
-              <Flame className="w-5 h-5" />
-            </div>
-            <div>
-              <span className="text-[9px] uppercase font-bold text-slate-400">{currentT.fire}</span>
-              <p className="font-extrabold text-slate-800 text-base leading-tight group-hover:text-[#FB8C00]">101</p>
-              <span className="text-[9px] font-bold text-[#1565C0] group-hover:underline mt-0.5 block">{currentT.call}</span>
-            </div>
-          </a>
-        </div>
-      </section>
     </div>
   );
 
@@ -908,45 +889,128 @@ export default function Dashboard({ language: initialLanguage, onResetLanguage, 
         </div>
       </div>
 
-      <div className="relative aspect-video max-w-lg mx-auto bg-slate-900 rounded-2xl overflow-hidden border border-slate-700 flex flex-col justify-center items-center">
-        {scanningEffect && (
-          <div className="absolute inset-x-0 h-1 bg-[#E53935] shadow-md shadow-[#E53935]/50 animate-scanner-sweep z-10"></div>
-        )}
-        
-        {scanType === 'ocr' ? (
-          <>
-            <div className="absolute inset-6 border border-white/20 border-dashed rounded-xl pointer-events-none flex items-center justify-center">
-              <span className="text-[9px] text-white/30 tracking-widest uppercase">Align Notice or prescription label</span>
+      {/* Upload & Camera Section */}
+      <div className="max-w-4xl mx-auto bg-gradient-to-br from-white to-slate-50 border border-slate-200 rounded-3xl shadow-lg p-6 space-y-6">
+        {/* Heading */}
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-slate-800">
+            {scanType === "ocr" ? "📄 OCR Scanner" : "👁 Object Detection"}
+          </h2>
+          <p className="text-slate-500 text-sm mt-2">
+            {scanType === "ocr"
+              ? "Upload or capture an image to extract text."
+              : "Upload or capture an image to detect emergency objects."}
+          </p>
+        </div>
+
+        {/* Upload Buttons */}
+        <div className="grid md:grid-cols-2 gap-4">
+          {/* Upload */}
+          <label className="cursor-pointer rounded-2xl border-2 border-dashed border-blue-300 bg-blue-50 hover:bg-blue-100 transition p-8 flex flex-col items-center justify-center">
+            <Upload className="w-12 h-12 text-blue-600 mb-3" />
+            <span className="font-semibold text-slate-700">Upload Image</span>
+            <span className="text-xs text-slate-500 mt-1">PNG • JPG • JPEG</span>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageSelect}
+              className="hidden"
+            />
+          </label>
+
+          {/* Webcam */}
+          <button
+            onClick={startCamera}
+            className="rounded-2xl border-2 border-dashed border-emerald-300 bg-emerald-50 hover:bg-emerald-100 transition p-8 flex flex-col items-center justify-center"
+          >
+            <Camera className="w-12 h-12 text-emerald-600 mb-3" />
+            <span className="font-semibold text-slate-700">Open Camera</span>
+            <span className="text-xs text-slate-500 mt-1">Laptop Webcam / Mobile Camera</span>
+          </button>
+        </div>
+
+        {/* Drag Area */}
+        <div
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+          className={`border-2 border-dashed rounded-2xl p-8 transition ${
+            isDragOver ? "border-blue-600 bg-blue-50" : "border-slate-300 bg-slate-50"
+          }`}
+        >
+          <div className="text-center">
+            <Upload className="mx-auto w-10 h-10 text-slate-400" />
+            <p className="mt-3 font-semibold text-slate-700">Drag & Drop Image Here</p>
+            <p className="text-xs text-slate-500 mt-2">or use Upload Image</p>
+          </div>
+        </div>
+
+        {/* Camera Streaming UI */}
+        {cameraOpen && (
+          <div className="fixed inset-0 bg-slate-900/80 z-50 flex flex-col items-center justify-center p-4">
+            <div className="bg-white rounded-3xl p-6 max-w-lg w-full space-y-4 shadow-2xl relative">
+              <button 
+                type="button" 
+                onClick={stopCamera} 
+                className="absolute top-4 right-4 text-slate-400 hover:text-slate-650 font-bold text-lg cursor-pointer"
+              >
+                ✕
+              </button>
+              <h3 className="text-lg font-bold text-slate-800">Camera View</h3>
+              <div className="relative aspect-video bg-black rounded-2xl overflow-hidden">
+                <video ref={videoRef} autoPlay playsInline className="w-full h-full object-cover"></video>
+              </div>
+              <div className="flex gap-3 justify-end">
+                <button 
+                  type="button" 
+                  onClick={stopCamera} 
+                  className="px-4 py-2 border border-slate-200 rounded-xl text-xs font-bold text-slate-650 hover:bg-slate-50 cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="button" 
+                  onClick={captureImage} 
+                  className="px-4 py-2 bg-emerald-600 text-white rounded-xl text-xs font-bold hover:bg-emerald-700 cursor-pointer"
+                >
+                  Capture Photo
+                </button>
+              </div>
             </div>
-            <div className="absolute top-1/3 left-1/4 bg-white/10 border border-emerald-400/40 text-[9px] text-emerald-300 font-mono px-1 rounded backdrop-blur-xs select-none">
-              PARACETAMOL 500
-            </div>
-            <p className="text-white/50 text-[10px] text-center z-10 px-6 mt-16">
-              {scanningEffect ? <span className="text-emerald-400 animate-pulse font-bold">Scanning...</span> : 'Position medical notice in the layout box'}
-            </p>
-          </>
-        ) : (
-          <>
-            <div className="absolute top-1/4 left-1/3 border border-[#E53935] text-[8px] text-[#E53935] font-bold px-1.5 py-0.5 rounded bg-red-950/20 backdrop-blur-xs select-none">
-              First Aid Kit [94%]
-            </div>
-            <div className="absolute bottom-1/4 right-1/4 border border-[#1565C0] text-[8px] text-[#1565C0] font-bold px-1.5 py-0.5 rounded bg-blue-950/20 backdrop-blur-xs select-none">
-              Fire Extinguisher [98%]
-            </div>
-            <p className="text-white/50 text-[10px] text-center z-10 px-6 mt-16">
-              {scanningEffect ? <span className="text-[#E53935] animate-pulse font-bold">Analyzing Frame...</span> : 'Point at extinguisher, aid kit, or exit signage'}
-            </p>
-          </>
+          </div>
         )}
 
-        <button 
-          onClick={triggerScan}
-          disabled={scanningEffect}
-          className="absolute bottom-3 px-5 py-2 bg-white text-slate-800 rounded-xl font-bold text-[10px] shadow-md cursor-pointer flex items-center gap-1 disabled:opacity-50"
-        >
-          <Camera className="w-3.5 h-3.5" />
-          <span>{scanningEffect ? 'Analyzing...' : 'Scan Item'}</span>
-        </button>
+        {/* Image Preview & Scan Action */}
+        {imagePreviewUrl && (
+          <div className="border border-slate-150 rounded-2xl p-4 bg-slate-50/50 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <img src={imagePreviewUrl} alt="Preview" className="w-16 h-16 object-cover rounded-xl border border-slate-200" />
+              <div>
+                <p className="text-xs font-bold text-slate-800">{selectedImage ? selectedImage.name : 'Selected Image'}</p>
+                <p className="text-[10px] text-slate-450">{selectedImage ? `${(selectedImage.size / 1024).toFixed(1)} KB` : ''}</p>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <button 
+                type="button" 
+                onClick={() => { setSelectedImage(null); setImagePreviewUrl(null); setScanResult(null); }}
+                className="px-4 py-2 border border-slate-200 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 cursor-pointer"
+              >
+                Clear
+              </button>
+              <button 
+                type="button" 
+                disabled={scanningEffect}
+                onClick={triggerScan}
+                className="px-4 py-2 bg-[#1565C0] hover:bg-[#0D47A1] disabled:bg-slate-300 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-blue-500/10 flex items-center gap-1.5 cursor-pointer"
+              >
+                {scanningEffect ? 'Scanning...' : 'Start Scan'}
+              </button>
+            </div>
+          </div>
+        )}
+
+        <canvas ref={canvasRef} className="hidden"></canvas>
       </div>
 
       {scanResult && (
@@ -964,14 +1028,48 @@ export default function Dashboard({ language: initialLanguage, onResetLanguage, 
               </div>
             </div>
           ) : (
-            <div className="space-y-2">
-              {scanResult.objects.map((obj, idx) => (
-                <div key={idx} className="flex justify-between items-center bg-white border border-slate-150 p-2 rounded-xl text-[11px]">
-                  <span className="font-bold text-slate-700">{obj.name} <span className="text-[9px] text-slate-400 font-normal">({obj.box})</span></span>
-                  <span className="bg-emerald-50 text-[#2E7D32] border border-emerald-100 font-extrabold text-[9px] px-2 py-0.5 rounded-full">{obj.confidence} match</span>
-                </div>
-              ))}
-            </div>
+            <div className="space-y-3">
+
+{scanResult.objects.length === 0 ? (
+
+<div className="text-center text-gray-500 py-6">
+No objects detected.
+</div>
+
+) : (
+
+scanResult.objects.map((obj, idx) => (
+
+<div
+    key={idx}
+    className="flex justify-between items-center bg-white border rounded-xl p-3 shadow-sm"
+>
+
+<div>
+
+<p className="font-bold text-gray-800 capitalize">
+{obj.name}
+</p>
+
+<p className="text-xs text-gray-500">
+Detected by YOLOv8
+</p>
+
+</div>
+
+<div className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold">
+
+{obj.confidence.toFixed(1)}%
+
+</div>
+
+</div>
+
+))
+
+)}
+
+</div>
           )}
         </div>
       )}
@@ -1341,66 +1439,72 @@ export default function Dashboard({ language: initialLanguage, onResetLanguage, 
     }
   };
 
-  return (
-    <div className={wrapperClasses}>
-      {/* Top Header */}
-      <header className="sticky top-0 z-30 w-full bg-white/90 backdrop-blur-md border-b border-slate-100 px-4 py-3 sm:px-6 shadow-xxs">
-        <div className="max-w-5xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3 cursor-pointer" onClick={() => setActiveTab('home')}>
-            <div className="w-9 h-9 bg-[#E53935] text-white rounded-xl flex items-center justify-center font-bold text-base shadow-sm shadow-[#E53935]/20 shrink-0">R+</div>
-            <div>
-              <div className="flex items-center gap-1.5">
-                <h1 className="font-extrabold text-[#1E293B] text-base leading-none tracking-tight">{currentT.appName}</h1>
-                <span className="bg-[#E53935]/10 text-[#E53935] text-[8px] px-1.5 py-0.5 rounded font-extrabold uppercase">Offline</span>
+      {/* Top Header - Hidden on home tab since home has its own hero navbar */}
+      {activeTab !== 'home' && (
+        <header className="sticky top-0 z-30 w-full bg-white/90 backdrop-blur-md border-b border-slate-100 px-4 py-3 sm:px-6 shadow-xxs">
+          <div className="max-w-5xl mx-auto flex items-center justify-between">
+            <div className="flex items-center gap-3 cursor-pointer" onClick={() => setActiveTab('home')}>
+              <div className="w-9 h-9 bg-[#E53935] text-white rounded-xl flex items-center justify-center font-bold text-base shadow-sm shadow-[#E53935]/20 shrink-0">R+</div>
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <h1 className="font-extrabold text-[#1E293B] text-base leading-none tracking-tight">{currentT.appName}</h1>
+                  <span className="bg-[#E53935]/10 text-[#E53935] text-[8px] px-1.5 py-0.5 rounded font-extrabold uppercase">Offline</span>
+                </div>
+                <p className="text-[9px] text-slate-400 font-semibold mt-0.5">{currentT.logoSub}</p>
               </div>
-              <p className="text-[9px] text-slate-400 font-semibold mt-0.5">{currentT.logoSub}</p>
             </div>
-          </div>
 
-          <div className="flex items-center gap-2">
-            <button 
-              onClick={() => setLanguage(prev => prev === 'en' ? 'hi' : 'en')}
-              className="flex items-center gap-1 px-2.5 py-1.5 rounded-full border border-slate-200 bg-slate-50 hover:bg-slate-100 text-[10px] font-bold text-slate-700 transition-all cursor-pointer"
-            >
-              <Globe className="w-3.5 h-3.5 text-[#1565C0]" />
-              <span>{language === 'en' ? 'हिन्दी' : 'English'}</span>
-            </button>
-
-            <div className="relative">
-              <button onClick={() => setShowNotifications(!showNotifications)} className="p-1.5 hover:bg-slate-100 rounded-full border border-slate-200 text-slate-500 cursor-pointer">
-                <Bell className="w-4 h-4" />
-                <span className="absolute top-1 right-1 w-2 h-2 bg-[#E53935] rounded-full"></span>
+            <div className="flex items-center gap-2">
+              <button 
+                onClick={() => setLanguage(prev => prev === 'en' ? 'hi' : 'en')}
+                className="flex items-center gap-1 px-2.5 py-1.5 rounded-full border border-slate-200 bg-slate-50 hover:bg-slate-100 text-[10px] font-bold text-slate-700 transition-all cursor-pointer"
+              >
+                <Globe className="w-3.5 h-3.5 text-[#1565C0]" />
+                <span>{language === 'en' ? 'हिन्दी' : 'English'}</span>
               </button>
 
-              {showNotifications && (
-                <div className="absolute right-0 mt-2 w-72 bg-white border border-slate-200 rounded-2xl shadow-xl z-50 p-3.5 animate-slide-up text-left">
-                  <div className="flex items-center justify-between border-b border-slate-100 pb-1.5 mb-2">
-                    <h4 className="font-bold text-xs text-slate-800">{currentT.notificationTitle}</h4>
-                    <button onClick={() => setShowNotifications(false)} className="text-[10px] text-slate-400 font-bold hover:text-slate-650 cursor-pointer">✕</button>
-                  </div>
-                  <div className="space-y-2.5">
-                    {notifications.map((n, idx) => (
-                      <div key={idx} className="text-[10.5px] border-b border-slate-50 pb-2 last:border-0 last:pb-0">
-                        <p className="font-bold text-slate-700">{n.title}</p>
-                        <span className="text-[9px] text-slate-400">{n.time}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
+              <div className="relative">
+                <button onClick={() => setShowNotifications(!showNotifications)} className="p-1.5 hover:bg-slate-100 rounded-full border border-slate-200 text-slate-500 cursor-pointer">
+                  <Bell className="w-4 h-4" />
+                  <span className="absolute top-1 right-1 w-2 h-2 bg-[#E53935] rounded-full"></span>
+                </button>
 
-            <button onClick={() => setActiveTab('settings')} className={`p-1.5 rounded-full border text-slate-500 cursor-pointer ${activeTab === 'settings' ? 'bg-slate-150' : 'border-slate-200'}`}>
-              <Settings className="w-4 h-4" />
-            </button>
+                {showNotifications && (
+                  <div className="absolute right-0 mt-2 w-72 bg-white border border-slate-200 rounded-2xl shadow-xl z-50 p-3.5 animate-slide-up text-left">
+                    <div className="flex items-center justify-between border-b border-slate-100 pb-1.5 mb-2">
+                      <h4 className="font-bold text-xs text-slate-800">{currentT.notificationTitle}</h4>
+                      <button onClick={() => setShowNotifications(false)} className="text-[10px] text-slate-400 font-bold hover:text-slate-650 cursor-pointer">✕</button>
+                    </div>
+                    <div className="space-y-2.5">
+                      {notifications.map((n, idx) => (
+                        <div key={idx} className="text-[10.5px] border-b border-slate-50 pb-2 last:border-0 last:pb-0">
+                          <p className="font-bold text-slate-700">{n.title}</p>
+                          <span className="text-[9px] text-slate-400">{n.time}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <button onClick={() => setActiveTab('settings')} className={`p-1.5 rounded-full border text-slate-500 cursor-pointer ${activeTab === 'settings' ? 'bg-slate-150' : 'border-slate-200'}`}>
+                <Settings className="w-4 h-4" />
+              </button>
+            </div>
           </div>
-        </div>
-      </header>
+        </header>
+      )}
 
       {/* Render Main Content */}
-      <main className="max-w-5xl w-full mx-auto p-4 sm:p-6">
-        {renderContent()}
-      </main>
+      {activeTab === 'home' ? (
+        <div className="w-full">
+          {renderHome()}
+        </div>
+      ) : (
+        <main className="max-w-5xl w-full mx-auto p-4 sm:p-6">
+          {renderContent()}
+        </main>
+      )}
 
       {/* FLOATING RED SOS BUTTON */}
       <button 
