@@ -1,0 +1,37 @@
+[
+  {
+    "name": "City Hospital",
+    "type": "Hospital",
+    "address": "MG Road, Indore",
+    "latitude": 22.7196,
+    "longitude": 75.8577
+  },
+  {
+    "name": "Apollo Hospital",
+    "type": "Hospital",
+    "address": "Vijay Nagar, Indore",
+    "latitude": 22.7533,
+    "longitude": 75.8937
+  },
+  {
+    "name": "Fire Station",
+    "type": "Fire Station",
+    "address": "Rajwada, Indore",
+    "latitude": 22.7179,
+    "longitude": 75.8333
+  },
+  {
+    "name": "Police Station",
+    "type": "Police",
+    "address": "Palasia, Indore",
+    "latitude": 22.7250,
+    "longitude": 75.8830
+  },
+  {
+    "name": "Emergency Shelter",
+    "type": "Shelter",
+    "address": "Geeta Bhawan, Indore",
+    "latitude": 22.7065,
+    "longitude": 75.8758
+  }
+]

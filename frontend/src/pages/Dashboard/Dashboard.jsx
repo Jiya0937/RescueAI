@@ -10,6 +10,7 @@ import {
 import MedicalEmergency from '../Medical/MedicalEmergency.jsx';
 import DisasterSafety from '../Disaster/DisasterSafety.jsx';
 import AIAssistancePage from '../AIAssistance/AIAssistance.jsx';
+import { speechToText } from "../../services/speechApi";
 
 const API_URL = "http://127.0.0.1:8000/api/chatbot/";
 const OCR_API = "http://127.0.0.1:8000/api/ocr/";
@@ -195,6 +196,7 @@ export default function Dashboard({ language: initialLanguage, onResetLanguage, 
   ]);
   const [chatInput, setChatInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
 
   // Scan mockup State
   const [scanType, setScanType] = useState('ocr'); // 'ocr' or 'detection'
@@ -215,6 +217,8 @@ const [isCapturing, setIsCapturing] = useState(false);
 // Webcam Refs
 const videoRef = useRef(null);
 const canvasRef = useRef(null);
+const mediaRecorderRef = useRef(null);
+const audioChunksRef = useRef([]);
 
   // Maps mockup State
   const [mapLayer, setMapLayer] = useState('all'); // 'all', 'hospitals', 'shelters'
@@ -361,6 +365,75 @@ const canvasRef = useRef(null);
     setChatInput('');
     handleAIPrompt(text);
   };
+
+  const startRecording = async () => {
+
+    try {
+
+        const stream = await navigator.mediaDevices.getUserMedia({
+            audio: true,
+        });
+
+        const recorder = new MediaRecorder(stream);
+
+        audioChunksRef.current = [];
+
+        recorder.ondataavailable = (event) => {
+            audioChunksRef.current.push(event.data);
+        };
+
+        recorder.onstop = async () => {
+
+            const audioBlob = new Blob(
+                audioChunksRef.current,
+                {
+                    type: "audio/webm",
+                }
+            );
+
+            try {
+
+                const result = await speechToText(audioBlob);
+
+                setChatInput(result.text);
+
+            } catch (err) {
+
+                console.error(err);
+                alert("Speech recognition failed.");
+
+            }
+
+            stream.getTracks().forEach(track => track.stop());
+
+        };
+
+        recorder.start();
+
+        mediaRecorderRef.current = recorder;
+
+        setIsRecording(true);
+
+    } catch (err) {
+
+        console.error(err);
+        alert("Unable to access microphone.");
+
+    }
+
+};
+
+const stopRecording = () => {
+
+    if (mediaRecorderRef.current) {
+
+        mediaRecorderRef.current.stop();
+
+        setIsRecording(false);
+
+    }
+
+};
 
   // Image and Camera Event Handlers
   const handleImageSelect = (e) => {
@@ -547,14 +620,18 @@ const triggerScan = async () => {
   // 1. Home dashboard overview
   // 1. Home dashboard overview
   const renderHome = () => (
-    <div className="animate-fade-in w-full">
-      {/* Full-width Hero Section */}
-      <section 
-        className="relative min-h-[92vh] flex flex-col justify-between text-white bg-cover bg-center overflow-hidden"
-        style={{ backgroundImage: `url('/images/hero-bg.jpg')` }}
-      >
-        {/* Dark overlay */}
-        <div className="absolute inset-0 bg-black/55 z-0"></div>
+    <div 
+      className="animate-fade-in w-full relative min-h-screen bg-cover bg-center bg-no-repeat bg-fixed"
+      style={{ backgroundImage: `url('/images/hero-bg.jpg')` }}
+    >
+      {/* Dark overlay for continuous visual consistency and readability */}
+      <div className="absolute inset-0 bg-slate-950/65 z-0 pointer-events-none"></div>
+
+      <div className="relative z-10 w-full flex flex-col">
+        {/* Full-width Hero Section */}
+        <section 
+          className="relative min-h-[92vh] flex flex-col justify-between text-white overflow-hidden bg-transparent"
+        >
 
         {/* Transparent Navigation Bar */}
         <header className="relative z-10 w-full px-6 py-4 md:px-12 flex items-center justify-between border-b border-white/10 backdrop-blur-sm">
@@ -698,73 +775,74 @@ const triggerScan = async () => {
       </section>
 
       {/* Quick Numbers and Content Container below Hero */}
-      <div id="quick-emergency-numbers" className="max-w-5xl mx-auto px-4 py-12 sm:px-6 space-y-8">
+      <div id="quick-emergency-numbers" className="max-w-5xl mx-auto px-4 py-12 sm:px-6 space-y-8 relative z-10">
         {/* Ambulance / Emergency large phone buttons */}
-        <section className="bg-white rounded-3xl border border-slate-150 p-6 shadow-xs space-y-4">
-          <div className="text-left border-b border-slate-100 pb-2">
-            <h3 className="text-sm font-extrabold text-slate-800 uppercase tracking-wider">{currentT.quickNumbers}</h3>
+        <section className="bg-slate-900/60 backdrop-blur-md rounded-3xl border border-white/10 p-6 shadow-xl space-y-4 text-white">
+          <div className="text-left border-b border-white/10 pb-2">
+            <h3 className="text-sm font-extrabold text-white uppercase tracking-wider">{currentT.quickNumbers}</h3>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <a 
               href="tel:108"
-              className="flex flex-col sm:flex-row items-center gap-3.5 p-4 rounded-2xl border border-slate-150 hover:border-emerald-300 hover:bg-emerald-50/20 transition-all text-center sm:text-left group cursor-pointer"
+              className="flex flex-col sm:flex-row items-center gap-3.5 p-4 rounded-2xl border border-white/10 bg-white/5 hover:border-emerald-500/30 hover:bg-emerald-500/10 transition-all text-center sm:text-left group cursor-pointer"
             >
-              <div className="w-9 h-9 rounded-xl bg-emerald-500/10 text-[#2E7D32] flex items-center justify-center shrink-0">
+              <div className="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
                 <Activity className="w-5 h-5" />
               </div>
               <div>
-                <span className="text-[9px] uppercase font-bold text-slate-400">{currentT.ambulance}</span>
-                <p className="font-extrabold text-slate-800 text-base leading-tight group-hover:text-[#2E7D32]">108</p>
-                <span className="text-[9px] font-bold text-[#1565C0] group-hover:underline mt-0.5 block">{currentT.call}</span>
+                <span className="text-[9px] uppercase font-bold text-slate-350">{currentT.ambulance}</span>
+                <p className="font-extrabold text-white text-base leading-tight group-hover:text-emerald-300">108</p>
+                <span className="text-[9px] font-bold text-red-400 group-hover:text-red-300 group-hover:underline mt-0.5 block">{currentT.call}</span>
               </div>
             </a>
 
             <a 
               href="tel:112"
-              className="flex flex-col sm:flex-row items-center gap-3.5 p-4 rounded-2xl border border-slate-150 hover:border-red-300 hover:bg-red-50/20 transition-all text-center sm:text-left group cursor-pointer"
+              className="flex flex-col sm:flex-row items-center gap-3.5 p-4 rounded-2xl border border-white/10 bg-white/5 hover:border-red-500/30 hover:bg-red-500/10 transition-all text-center sm:text-left group cursor-pointer"
             >
-              <div className="w-9 h-9 rounded-xl bg-red-500/10 text-[#E53935] flex items-center justify-center shrink-0">
+              <div className="w-9 h-9 rounded-xl bg-red-500/20 text-red-500 flex items-center justify-center shrink-0">
                 <ShieldAlert className="w-5 h-5 animate-soft-pulse" />
               </div>
               <div>
-                <span className="text-[9px] uppercase font-bold text-slate-400">{currentT.natEmergency}</span>
-                <p className="font-extrabold text-slate-800 text-base leading-tight group-hover:text-[#E53935]">112</p>
-                <span className="text-[9px] font-bold text-[#1565C0] group-hover:underline mt-0.5 block">{currentT.call}</span>
+                <span className="text-[9px] uppercase font-bold text-slate-355">{currentT.natEmergency}</span>
+                <p className="font-extrabold text-white text-base leading-tight group-hover:text-red-300">112</p>
+                <span className="text-[9px] font-bold text-red-400 group-hover:text-red-300 group-hover:underline mt-0.5 block">{currentT.call}</span>
               </div>
             </a>
 
             <a 
               href="tel:100"
-              className="flex flex-col sm:flex-row items-center gap-3.5 p-4 rounded-2xl border border-slate-150 hover:border-blue-300 hover:bg-blue-50/20 transition-all text-center sm:text-left group cursor-pointer"
+              className="flex flex-col sm:flex-row items-center gap-3.5 p-4 rounded-2xl border border-white/10 bg-white/5 hover:border-blue-500/30 hover:bg-blue-500/10 transition-all text-center sm:text-left group cursor-pointer"
             >
-              <div className="w-9 h-9 rounded-xl bg-blue-500/10 text-[#1565C0] flex items-center justify-center shrink-0">
+              <div className="w-9 h-9 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0">
                 <User className="w-5 h-5" />
               </div>
               <div>
-                <span className="text-[9px] uppercase font-bold text-slate-400">{currentT.police}</span>
-                <p className="font-extrabold text-slate-800 text-base leading-tight group-hover:text-[#1565C0]">100</p>
-                <span className="text-[9px] font-bold text-[#1565C0] group-hover:underline mt-0.5 block">{currentT.call}</span>
+                <span className="text-[9px] uppercase font-bold text-slate-350">{currentT.police}</span>
+                <p className="font-extrabold text-white text-base leading-tight group-hover:text-blue-300">100</p>
+                <span className="text-[9px] font-bold text-red-400 group-hover:text-red-300 group-hover:underline mt-0.5 block">{currentT.call}</span>
               </div>
             </a>
 
             <a 
               href="tel:101"
-              className="flex flex-col sm:flex-row items-center gap-3.5 p-4 rounded-2xl border border-slate-150 hover:border-amber-300 hover:bg-amber-50/20 transition-all text-center sm:text-left group cursor-pointer"
+              className="flex flex-col sm:flex-row items-center gap-3.5 p-4 rounded-2xl border border-white/10 bg-white/5 hover:border-amber-500/30 hover:bg-amber-500/10 transition-all text-center sm:text-left group cursor-pointer"
             >
-              <div className="w-9 h-9 rounded-xl bg-amber-500/10 text-[#FB8C00] flex items-center justify-center shrink-0">
+              <div className="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-500 flex items-center justify-center shrink-0">
                 <Flame className="w-5 h-5" />
               </div>
               <div>
-                <span className="text-[9px] uppercase font-bold text-slate-400">{currentT.fire}</span>
-                <p className="font-extrabold text-slate-800 text-base leading-tight group-hover:text-[#FB8C00]">101</p>
-                <span className="text-[9px] font-bold text-[#1565C0] group-hover:underline mt-0.5 block">{currentT.call}</span>
+                <span className="text-[9px] uppercase font-bold text-slate-350">{currentT.fire}</span>
+                <p className="font-extrabold text-white text-base leading-tight group-hover:text-amber-300">101</p>
+                <span className="text-[9px] font-bold text-red-400 group-hover:text-red-300 group-hover:underline mt-0.5 block">{currentT.call}</span>
               </div>
             </a>
           </div>
         </section>
       </div>
     </div>
+  </div>
   );
 
   // 2. Local AI Assistant Mock view
@@ -1439,6 +1517,8 @@ Detected by YOLOv8
     }
   };
 
+  return (
+    <div className={wrapperClasses}>
       {/* Top Header - Hidden on home tab since home has its own hero navbar */}
       {activeTab !== 'home' && (
         <header className="sticky top-0 z-30 w-full bg-white/90 backdrop-blur-md border-b border-slate-100 px-4 py-3 sm:px-6 shadow-xxs">

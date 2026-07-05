@@ -14,6 +14,10 @@ from app.api.ocr.ocr import router as ocr_router
 from app.api.vision.detection import router as vision_router
 # Import speech 
 from app.api.speech.speech import router as speech_router
+# Import Test to test 
+from app.api.tts.tts import router as tts_router
+# Import Maps
+from app.api.maps.maps import router as maps_router
 
 # Load environment variables
 load_dotenv()
@@ -82,6 +86,8 @@ app.include_router(chatbot_router, prefix="/api")   # Endpoint: /api/chatbot
 app.include_router(ocr_router, prefix="/api")
 app.include_router(vision_router, prefix="/api")
 app.include_router(speech_router, prefix="/api")
+app.include_router(tts_router, prefix="/api")
+app.include_router(maps_router, prefix="/api")
 
 
 # Root Endpoint / Health Check

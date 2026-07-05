@@ -121,7 +121,7 @@ export default function DisasterSafety({
         <div className="absolute -top-24 -left-24 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none"></div>
         <div className="absolute -bottom-24 -right-24 w-64 h-64 bg-teal-500/5 rounded-full blur-3xl pointer-events-none"></div>
         
-        <div className="max-w-lg space-y-4 md:space-y-5 z-10">
+        <div className="max-w-4xl space-y-4 md:space-y-5 z-10">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 text-[#2E7D32] border border-emerald-100 shadow-xxs">
             <span className="w-2 h-2 rounded-full bg-[#2E7D32] animate-pulse"></span>
             <span className="text-[10px] font-bold uppercase tracking-wider">{t.offlineReady}</span>
