@@ -316,8 +316,18 @@ document.addEventListener('DOMContentLoaded', () => {
   medicalCards.forEach(card => {
     card.addEventListener('click', () => {
       const guideKey = card.getAttribute('data-guide');
-      if (guideKey) {
-        openDrawer(guideKey);
+      if (guideKey === 'cpr') {
+        window.location.href = 'cpr.html';
+      } else if (guideKey === 'snake') {
+        window.location.href = 'snake_bite.html';
+      } else if (guideKey === 'burns') {
+        window.location.href = 'burns.html';
+      } else if (guideKey === 'heart') {
+        window.location.href = 'heart_attack.html';
+      } else if (guideKey === 'bleeding') {
+        window.location.href = 'bleeding.html';
+      } else if (guideKey === 'poisoning' || guideKey === 'choking') {
+        window.location.href = 'poisoning.html';
       }
     });
   });

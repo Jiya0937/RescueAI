@@ -2,7 +2,7 @@ footer {
   background-color: var(--bg-secondary);
   border-top: 1px solid var(--border-color);
   padding: 60px 0 30px;
-  color: var(--text-secondary);
+  color: rgb(121, 121, 184);
   font-family: var(--font-body);
 }
 
@@ -129,6 +129,7 @@ footer {
     grid-template-columns: 1fr;
     gap: 30px;
   }
+
   .footer-bottom {
     flex-direction: column;
     gap: 12px;
