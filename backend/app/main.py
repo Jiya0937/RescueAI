@@ -56,6 +56,7 @@ origins = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
     "http://localhost:3000",  # Frontend running inside docker
+    "http://127.0.0.1:3000",  # Vite dev server opened via 127.0.0.1 instead of localhost
 ]
 
 # Allow additional origins from environment variables if present

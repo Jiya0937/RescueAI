@@ -1,17 +1,531 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>RescueAI - Offline Emergency Assistant</title>
-    <!-- Google Fonts: Outfit for heading/UI, Inter for body -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  </head>
-  <body class="bg-[#F8FAFC] text-slate-800 antialiased font-sans">
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n="title">RescueAI - AI-Powered Emergency Assistant</title>
+  <meta name="description" content="AI-powered emergency response platform providing instant assistance during medical emergencies, disasters and survival situations even without the internet.">
+  
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="css/common/variables.css">
+  <link rel="stylesheet" href="css/common/style.css">
+  <link rel="stylesheet" href="css/common/animation.css">
+  <link rel="stylesheet" href="css/common/navbar.css">
+  <link rel="stylesheet" href="css/common/footer.css">
+  <link rel="stylesheet" href="css/common/language.css">
+  <link rel="stylesheet" href="css/home.css">
+</head>
+<body>
+
+  <!-- Sticky Navigation Header -->
+  <header>
+    <div class="navbar">
+      <div class="nav-left">
+        <div class="logo-container" onclick="window.location.reload()">
+          <div class="logo-icon">
+            <i data-lucide="shield-check"></i>
+          </div>
+          <div class="logo-text-wrapper">
+            <span class="logo-title" data-i18n="nav_logo">RescueAI</span>
+            <span class="logo-subtitle" data-i18n="nav_subtitle">AI Emergency Assistant</span>
+          </div>
+        </div>
+      </div>
+      <div class="nav-right">
+        <button class="nav-item" id="nav-lang">
+          <i data-lucide="globe"></i>
+          <span data-i18n="nav_language">Language</span>
+        </button>
+        <button class="nav-item nav-item-notification" id="nav-notifications">
+          <i data-lucide="bell"></i>
+          <span class="notification-dot"></span>
+          <span data-i18n="nav_notifications">Notifications</span>
+        </button>
+        <button class="nav-item" id="nav-about">
+          <i data-lucide="info"></i>
+          <span data-i18n="nav_about">About</span>
+        </button>
+        <button class="nav-item" id="nav-settings">
+          <i data-lucide="settings"></i>
+          <span data-i18n="nav_settings">Settings</span>
+        </button>
+        <button class="nav-item" id="nav-profile">
+          <i data-lucide="user"></i>
+          <span data-i18n="nav_profile">Profile</span>
+        </button>
+        <button class="login-btn" data-i18n="nav_login">Login</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Language Selection Modal Overlay & Container -->
+  <div class="lang-modal-overlay" id="lang-modal-overlay"></div>
+  <div class="lang-modal-container" id="lang-modal-container">
+    <div class="lang-header">
+      <div class="lang-title">
+        <i data-lucide="globe" style="width: 20px; height: 20px;"></i>
+        <span data-i18n="lang_select_title">Select Language</span>
+      </div>
+      <span class="lang-subtitle" data-i18n="lang_select_subtitle">Choose your preferred language for the RescueAI interface.</span>
+    </div>
+    
+    <div class="lang-search-wrapper">
+      <i data-lucide="search" class="lang-search-icon"></i>
+      <input type="text" class="lang-search-input" id="lang-search-input" placeholder="Search language..." data-i18n="lang_search_placeholder">
+    </div>
+    
+    <div class="lang-list" id="lang-cards-list">
+      <button class="lang-card selected" data-lang="en">
+        <div class="lang-card-left">
+          <span class="lang-flag">🇺🇸</span>
+          <div class="lang-names-wrapper">
+            <span class="lang-eng-name">English</span>
+            <span class="lang-native-name">English</span>
+          </div>
+        </div>
+        <i data-lucide="check" class="lang-check-icon"></i>
+      </button>
+      <button class="lang-card" data-lang="hi">
+        <div class="lang-card-left">
+          <span class="lang-flag">🇮🇳</span>
+          <div class="lang-names-wrapper">
+            <span class="lang-eng-name">Hindi</span>
+            <span class="lang-native-name">हिन्दी</span>
+          </div>
+        </div>
+        <i data-lucide="check" class="lang-check-icon"></i>
+      </button>
+      <button class="lang-card" data-lang="mr">
+        <div class="lang-card-left">
+          <span class="lang-flag">🇮🇳</span>
+          <div class="lang-names-wrapper">
+            <span class="lang-eng-name">Marathi</span>
+            <span class="lang-native-name">मराठी</span>
+          </div>
+        </div>
+        <i data-lucide="check" class="lang-check-icon"></i>
+      </button>
+      <button class="lang-card" data-lang="bn">
+        <div class="lang-card-left">
+          <span class="lang-flag">🇮🇳</span>
+          <div class="lang-names-wrapper">
+            <span class="lang-eng-name">Bangla</span>
+            <span class="lang-native-name">বাংলা</span>
+          </div>
+        </div>
+        <i data-lucide="check" class="lang-check-icon"></i>
+      </button>
+      <button class="lang-card" data-lang="gu">
+        <div class="lang-card-left">
+          <span class="lang-flag">🇮🇳</span>
+          <div class="lang-names-wrapper">
+            <span class="lang-eng-name">Gujarati</span>
+            <span class="lang-native-name">ગુજરાતી</span>
+          </div>
+        </div>
+        <i data-lucide="check" class="lang-check-icon"></i>
+      </button>
+      <button class="lang-card" data-lang="pa">
+        <div class="lang-card-left">
+          <span class="lang-flag">🇮🇳</span>
+          <div class="lang-names-wrapper">
+            <span class="lang-eng-name">Punjabi</span>
+            <span class="lang-native-name">ਪੰਜਾਬੀ</span>
+          </div>
+        </div>
+        <i data-lucide="check" class="lang-check-icon"></i>
+      </button>
+      <button class="lang-card" data-lang="ta">
+        <div class="lang-card-left">
+          <span class="lang-flag">🇮🇳</span>
+          <div class="lang-names-wrapper">
+            <span class="lang-eng-name">Tamil</span>
+            <span class="lang-native-name">தமிழ்</span>
+          </div>
+        </div>
+        <i data-lucide="check" class="lang-check-icon"></i>
+      </button>
+      <button class="lang-card" data-lang="te">
+        <div class="lang-card-left">
+          <span class="lang-flag">🇮🇳</span>
+          <div class="lang-names-wrapper">
+            <span class="lang-eng-name">Telugu</span>
+            <span class="lang-native-name">తెలుగు</span>
+          </div>
+        </div>
+        <i data-lucide="check" class="lang-check-icon"></i>
+      </button>
+      <button class="lang-card" data-lang="kn">
+        <div class="lang-card-left">
+          <span class="lang-flag">🇮🇳</span>
+          <div class="lang-names-wrapper">
+            <span class="lang-eng-name">Kannada</span>
+            <span class="lang-native-name">ಕನ್ನಡ</span>
+          </div>
+        </div>
+        <i data-lucide="check" class="lang-check-icon"></i>
+      </button>
+      <button class="lang-card" data-lang="ml">
+        <div class="lang-card-left">
+          <span class="lang-flag">🇮🇳</span>
+          <div class="lang-names-wrapper">
+            <span class="lang-eng-name">Malayalam</span>
+            <span class="lang-native-name">മലയാളം</span>
+          </div>
+        </div>
+        <i data-lucide="check" class="lang-check-icon"></i>
+      </button>
+      <button class="lang-card" data-lang="ur">
+        <div class="lang-card-left">
+          <span class="lang-flag">🇮🇳</span>
+          <div class="lang-names-wrapper">
+            <span class="lang-eng-name">Urdu</span>
+            <span class="lang-native-name">اردو</span>
+          </div>
+        </div>
+        <i data-lucide="check" class="lang-check-icon"></i>
+      </button>
+    </div>
+    
+    <div class="lang-settings-panel">
+      <label class="lang-toggle-row">
+        <input type="checkbox" class="lang-checkbox" id="sync-voice-checkbox" checked>
+        <span data-i18n="lang_sync_voice">Sync Voice with Interface</span>
+      </label>
+      <label class="lang-toggle-row">
+        <input type="checkbox" class="lang-checkbox" id="auto-detect-checkbox">
+        <span data-i18n="lang_auto_detect">Auto Detect User Language</span>
+      </label>
+    </div>
+  </div>
+
+  <main class="container">
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <!-- Hero Left: Title, Description, Actions & AI Command Search -->
+      <div class="hero-left fade-right">
+        <h1 class="hero-title">
+          <span data-i18n="hero_title_1">Saving Lives,</span><br>
+          <span class="purple-text" data-i18n="hero_title_2">Even Without</span><br>
+          <span data-i18n="hero_title_3">the Internet.</span>
+        </h1>
+        <p class="hero-subheading" data-i18n="hero_subheading">
+          AI-powered emergency response platform providing instant assistance during medical emergencies, disasters and survival situations.
+        </p>
+        <div class="hero-buttons">
+          <button class="btn btn-primary">
+            <span data-i18n="btn_get_started">Get Started</span>
+            <i data-lucide="arrow-right"></i>
+          </button>
+          <button class="btn btn-secondary">
+            <span data-i18n="btn_emergency_sos">Emergency SOS</span>
+            <i data-lucide="phone-call"></i>
+          </button>
+        </div>
+        
+        <!-- Beautiful AI Command / Search Bar -->
+        <div class="ai-search-container">
+          <div class="ai-search-bar">
+            <i data-lucide="search" style="color: var(--text-secondary); margin-left: 4px; width: 20px; height: 20px;"></i>
+            <input type="text" class="ai-search-input" id="ai-search-input" placeholder="Ask about CPR, Snake Bite, Burns..." data-i18n="search_placeholder">
+            <div class="ai-search-actions">
+              <button class="ai-search-btn" id="search-mic-btn" title="Voice Search">
+                <i data-lucide="mic" style="width: 18px; height: 18px;"></i>
+              </button>
+              <button class="ai-search-btn" id="search-cam-btn" title="Image Analysis">
+                <i data-lucide="camera" style="width: 18px; height: 18px;"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hero Right: Modern Emergency AI Console Card -->
+      <div class="hero-right fade-left">
+        <div class="chat-assistant-card" id="chat-assistant-card">
+          <!-- Card Header: Title & AI Status -->
+          <div class="chat-card-header">
+            <div class="chat-bot-info">
+              <i data-lucide="shield" style="width: 20px; height: 20px;"></i>
+              <span data-i18n="chat_header">RescueAI Assistant</span>
+            </div>
+            <div class="chat-status">
+              <span class="status-dot"></span>
+              <span data-i18n="chat_status">AI Ready to Help</span>
+            </div>
+          </div>
+
+          <!-- Welcome Illustration (Initial State) -->
+          <div class="chat-welcome-container" id="chat-welcome-container">
+            <div class="welcome-shield-wrapper">
+              <div class="welcome-glowing-ring"></div>
+              <div class="welcome-shield-icon">
+                <i data-lucide="shield" class="pulse-shield"></i>
+              </div>
+            </div>
+            <h2 class="welcome-title" data-i18n="chat_welcome_title">How can I help you today?</h2>
+            <p class="welcome-subtitle" data-i18n="chat_welcome_subtitle">Describe your emergency or choose a quick action below.</p>
+          </div>
+
+          <!-- Chat Conversation List (Initially Hidden) -->
+          <div class="chat-conversation" id="chat-conversation" style="display: none;">
+            <!-- Dialogue bubbles will be dynamically rendered on interaction -->
+          </div>
+
+          <!-- Quick Emergency Chips Grid -->
+          <div class="quick-action-chips">
+            <button class="chip chip-cpr" data-query="CPR instructions" data-i18n="chip_cpr">
+              ❤️ CPR
+            </button>
+            <button class="chip chip-snake" data-query="snake bite first aid" data-i18n="chip_snake">
+              🐍 Snake Bite
+            </button>
+            <button class="chip chip-burns" data-query="burns treatment" data-i18n="chip_burns">
+              🔥 Burns
+            </button>
+            <button class="chip chip-accident" data-query="accident emergency" data-i18n="chip_accident">
+              🚗 Accident
+            </button>
+            <button class="chip chip-flood" data-query="flood safety" data-i18n="chip_flood">
+              🌊 Flood
+            </button>
+            <button class="chip chip-electric" data-query="electric shock first aid" data-i18n="chip_electric">
+              ⚡ Electric Shock
+            </button>
+          </div>
+
+          <!-- Consolidated Input wrapper (Merged voice mic and attachment controls) -->
+          <div class="chat-card-input-wrapper">
+            <div class="chat-card-input-area" id="chat-normal-input-bar">
+              <div class="chat-input-actions-left">
+                <button class="chat-input-btn" id="chat-attach-btn" title="Upload Photo">
+                  <i data-lucide="paperclip" style="width: 18px; height: 18px;"></i>
+                </button>
+                <button class="chat-input-btn" id="input-mic-btn" title="Voice Input">
+                  <i data-lucide="mic" style="width: 18px; height: 18px;"></i>
+                </button>
+              </div>
+              <input type="text" class="chat-input" id="chat-input-field" placeholder="Type your emergency..." data-i18n="chat_placeholder">
+              <button class="chat-send-btn" id="chat-send-btn" title="Send Message">
+                <i data-lucide="arrow-up" style="width: 18px; height: 18px;"></i>
+              </button>
+            </div>
+
+            <!-- In-bar Listening Wave Overlay (Initially Hidden) -->
+            <div class="chat-input-listening-overlay" id="chat-listening-overlay" style="display: none;">
+              <div class="listening-status">
+                <span class="listening-dot-pulse"></span>
+                <span data-i18n="chat_listening" class="listening-label">Listening... Speak now</span>
+              </div>
+              <div class="listening-wave">
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+              </div>
+              <button class="listening-stop-btn" id="listening-stop-btn">
+                <i data-lucide="square" style="width: 13px; height: 13px; margin-right: 4px; vertical-align: middle;"></i>
+                <span data-i18n="chat_listening_tap_stop">Tap to Stop</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section scroll-fade" id="features-section">
+      <div class="section-header text-center">
+        <h2 class="section-title" data-i18n="explore_title">Explore RescueAI Features</h2>
+        <p class="section-subtitle" data-i18n="explore_subtitle">Everything you need during emergencies in one platform.</p>
+      </div>
+
+      <!-- Feature Grid (6 Cards) -->
+      <div class="features-grid">
+        <!-- Card 1: Medical Emergency -->
+        <div class="feature-card hover-lift" onclick="window.location.href='pages/medical.html'" style="cursor: pointer;">
+          <div class="feature-card-header">
+            <div class="feature-icon-wrapper card-med">
+              <i data-lucide="heart" style="width: 24px; height: 24px;"></i>
+            </div>
+            <h3 class="feature-title" data-i18n="card_med">Medical Emergency</h3>
+          </div>
+          <ul class="feature-list card-med-list">
+            <li class="feature-list-item" data-i18n="card_med_item1">CPR</li>
+            <li class="feature-list-item" data-i18n="card_med_item2">Snake Bite</li>
+            <li class="feature-list-item" data-i18n="card_med_item3">Burns</li>
+            <li class="feature-list-item" data-i18n="card_med_item4">Heart Attack</li>
+          </ul>
+          <a href="pages/medical.html" class="feature-explore-btn" onclick="event.stopPropagation();">
+            <span data-i18n="explore_more">Explore</span>
+            <i data-lucide="arrow-up-right"></i>
+          </a>
+        </div>
+
+        <!-- Card 2: Disaster Safety -->
+        <div class="feature-card hover-lift">
+          <div class="feature-card-header">
+            <div class="feature-icon-wrapper card-disaster">
+              <i data-lucide="globe" style="width: 24px; height: 24px;"></i>
+            </div>
+            <h3 class="feature-title" data-i18n="card_disaster">Disaster Safety</h3>
+          </div>
+          <ul class="feature-list card-disaster-list">
+            <li class="feature-list-item" data-i18n="card_dis_item1">Earthquake</li>
+            <li class="feature-list-item" data-i18n="card_dis_item2">Flood</li>
+            <li class="feature-list-item" data-i18n="card_dis_item3">Fire</li>
+            <li class="feature-list-item" data-i18n="card_dis_item4">Cyclone</li>
+          </ul>
+          <a href="#" class="feature-explore-btn">
+            <span data-i18n="explore_more">Explore</span>
+            <i data-lucide="arrow-up-right"></i>
+          </a>
+        </div>
+
+        <!-- Card 3: AI Assistance -->
+        <div class="feature-card hover-lift">
+          <div class="feature-card-header">
+            <div class="feature-icon-wrapper card-ai">
+              <i data-lucide="bot" style="width: 24px; height: 24px;"></i>
+            </div>
+            <h3 class="feature-title" data-i18n="card_ai">AI Assistance</h3>
+          </div>
+          <ul class="feature-list card-ai-list">
+            <li class="feature-list-item" data-i18n="card_ai_item1">Offline AI</li>
+            <li class="feature-list-item" data-i18n="card_ai_item2">Voice Assistant</li>
+            <li class="feature-list-item" data-i18n="card_ai_item3">OCR</li>
+            <li class="feature-list-item" data-i18n="card_ai_item4">Object Detection</li>
+          </ul>
+          <a href="#" class="feature-explore-btn">
+            <span data-i18n="explore_more">Explore</span>
+            <i data-lucide="arrow-up-right"></i>
+          </a>
+        </div>
+
+        <!-- Card 4: Live Location -->
+        <div class="feature-card hover-lift">
+          <div class="feature-card-header">
+            <div class="feature-icon-wrapper card-loc">
+              <i data-lucide="map-pin" style="width: 24px; height: 24px;"></i>
+            </div>
+            <h3 class="feature-title" data-i18n="card_loc">Live Location</h3>
+          </div>
+          <ul class="feature-list card-loc-list">
+            <li class="feature-list-item" data-i18n="card_loc_item1">Nearby Hospital</li>
+            <li class="feature-list-item" data-i18n="card_loc_item2">Police Station</li>
+            <li class="feature-list-item" data-i18n="card_loc_item3">Fire Station</li>
+            <li class="feature-list-item" data-i18n="card_loc_item4">Compass</li>
+          </ul>
+          <a href="#" class="feature-explore-btn">
+            <span data-i18n="explore_more">Explore</span>
+            <i data-lucide="arrow-up-right"></i>
+          </a>
+        </div>
+
+        <!-- Card 5: Emergency SOS -->
+        <div class="feature-card hover-lift">
+          <div class="feature-card-header">
+            <div class="feature-icon-wrapper card-sos">
+              <i data-lucide="alert-triangle" style="width: 24px; height: 24px;"></i>
+            </div>
+            <h3 class="feature-title" data-i18n="card_sos">Emergency SOS</h3>
+          </div>
+          <ul class="feature-list card-sos-list">
+            <li class="feature-list-item" data-i18n="card_sos_item1">Emergency Contacts</li>
+            <li class="feature-list-item" data-i18n="card_sos_item2">112</li>
+            <li class="feature-list-item" data-i18n="card_sos_item3">108</li>
+            <li class="feature-list-item" data-i18n="card_sos_item4">100 / 101</li>
+          </ul>
+          <a href="#" class="feature-explore-btn">
+            <span data-i18n="explore_more">Explore</span>
+            <i data-lucide="arrow-up-right"></i>
+          </a>
+        </div>
+
+        <!-- Card 6: Survival Mode -->
+        <div class="feature-card hover-lift">
+          <div class="feature-card-header">
+            <div class="feature-icon-wrapper card-survival">
+              <i data-lucide="tent" style="width: 24px; height: 24px;"></i>
+            </div>
+            <h3 class="feature-title" data-i18n="card_survival">Survival Mode</h3>
+          </div>
+          <ul class="feature-list card-survival-list">
+            <li class="feature-list-item" data-i18n="card_surv_item1">Food & Water</li>
+            <li class="feature-list-item" data-i18n="card_surv_item2">Shelter</li>
+            <li class="feature-list-item" data-i18n="card_surv_item3">Flashlight</li>
+            <li class="feature-list-item" data-i18n="card_surv_item4">Offline Survival Guide</li>
+          </ul>
+          <a href="#" class="feature-explore-btn">
+            <span data-i18n="explore_more">Explore</span>
+            <i data-lucide="arrow-up-right"></i>
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer Section -->
+  <footer>
+    <div class="container footer-content">
+      <!-- Footer Left: Branding, Desc, Socials -->
+      <div class="footer-left">
+        <div class="footer-logo">
+          <div class="footer-logo-icon">
+            <i data-lucide="shield-check"></i>
+          </div>
+          <span class="footer-logo-text" data-i18n="nav_logo">RescueAI</span>
+        </div>
+        <p class="footer-desc" data-i18n="footer_desc">Saving Lives Even Without the Internet.</p>
+        <div class="footer-socials">
+          <a href="#" class="footer-social-icon" title="GitHub"><i data-lucide="github"></i></a>
+          <a href="#" class="footer-social-icon" title="Twitter"><i data-lucide="twitter"></i></a>
+          <a href="#" class="footer-social-icon" title="LinkedIn"><i data-lucide="linkedin"></i></a>
+          <a href="#" class="footer-social-icon" title="Youtube"><i data-lucide="youtube"></i></a>
+        </div>
+      </div>
+
+      <!-- Footer Middle: Quick Links -->
+      <div class="footer-column">
+        <h4 class="footer-column-title" data-i18n="footer_quick_links">Quick Links</h4>
+        <ul class="footer-links">
+          <li><a href="#" class="footer-link" data-i18n="card_med">Medical Emergency</a></li>
+          <li><a href="#" class="footer-link" data-i18n="card_disaster">Disaster Safety</a></li>
+          <li><a href="#" class="footer-link" data-i18n="card_ai">AI Assistance</a></li>
+          <li><a href="#" class="footer-link" data-i18n="card_ai_item3">OCR Scanner</a></li>
+          <li><a href="#" class="footer-link" data-i18n="card_ai_item4">Object Detection</a></li>
+          <li><a href="#" class="footer-link" data-i18n="card_loc_item1">Maps & Location</a></li>
+          <li><a href="#" class="footer-link" data-i18n="card_sos_item1">Contacts</a></li>
+          <li><a href="#" class="footer-link" data-i18n="nav_settings">Settings</a></li>
+        </ul>
+      </div>
+
+      <!-- Footer Right: Resources & Hackathon info -->
+      <div class="footer-column">
+        <h4 class="footer-column-title" data-i18n="footer_resources">Resources</h4>
+        <ul class="footer-links">
+          <li><a href="#" class="footer-link" data-i18n="footer_hackathon">IEEE Hackathon Project</a></li>
+          <li><a href="#" class="footer-link">GitHub Repository</a></li>
+          <li><a href="#" class="footer-link">Privacy Policy</a></li>
+          <li><a href="#" class="footer-link">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Footer Bottom: Copyright -->
+    <div class="container footer-bottom">
+      <p>&copy; RescueAI 2026. <span data-i18n="footer_copyright">All rights reserved.</span></p>
+      <p data-i18n="footer_hackathon">IEEE Hackathon Project</p>
+    </div>
+  </footer>
+
+  <!-- Lucide Script CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- JavaScript Scripts -->
+  <script src="js/common/translations.js"></script>
+  <script src="js/common/main.js"></script>
+  <script src="js/home.js"></script>
+</body>
 </html>

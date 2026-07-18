@@ -69,7 +69,7 @@ def ask_ollama(user_message: str, language: str = "en"):
     "stream": False,
     "options": {
         "temperature": 0.2,
-        "num_predict": 180
+        "num_predict": 40
     }
 }
 
