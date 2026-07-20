@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n="title">RescueAI Intelligence - Offline AI Assistant</title>
+  
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="../css/common/variables.css">
+  <link rel="stylesheet" href="../css/common/style.css">
+  <link rel="stylesheet" href="../css/common/animation.css">
+  <link rel="stylesheet" href="../css/common/language.css">
+  <link rel="stylesheet" href="../css/chatbot.css">
+</head>
+<body class="desktop-chat-layout">
+
+  <!-- Left Sidebar -->
+  <aside class="left-sidebar">
+    <div class="sidebar-header">
+      <div class="logo-container" onclick="window.location.href='../index.html'">
+        <div class="logo-icon">
+          <i data-lucide="shield-check"></i>
+        </div>
+        <div class="logo-text-wrapper">
+          <span class="logo-title" data-i18n="sidebar_logo_title">RescueAI</span>
+          <span class="logo-subtitle" data-i18n="sidebar_logo_subtitle">Offline Emergency Assistant</span>
+        </div>
+      </div>
+    </div>
+    
+    <nav class="sidebar-nav">
+      <ul class="nav-list">
+        <li class="nav-item-wrapper active">
+          <a href="chatbot.html" class="nav-link">
+            <i data-lucide="bot"></i>
+            <span data-i18n="menu_assistant">AI Assistant</span>
+          </a>
+        </li>
+        <li class="nav-item-wrapper">
+          <a href="../index.html" class="nav-link">
+            <i data-lucide="layout-dashboard"></i>
+            <span data-i18n="menu_dashboard">Dashboard</span>
+          </a>
+        </li>
+        <li class="nav-item-wrapper">
+          <a href="medical.html" class="nav-link">
+            <i data-lucide="heart-pulse"></i>
+            <span data-i18n="menu_medical">Medical Emergency</span>
+          </a>
+        </li>
+        <li class="nav-item-wrapper">
+          <a href="disaster.html?v=2" class="nav-link">
+            <i data-lucide="globe"></i>
+            <span data-i18n="menu_disaster">Disaster Safety</span>
+          </a>
+        </li>
+        <li class="nav-item-wrapper">
+          <a href="maps.html" class="nav-link">
+            <i data-lucide="map-pin"></i>
+            <span data-i18n="menu_hospitals">Hospital Finder</span>
+          </a>
+        </li>
+        <li class="nav-item-wrapper">
+          <a href="contacts.html" class="nav-link">
+            <i data-lucide="phone"></i>
+            <span data-i18n="menu_contacts">Emergency Contacts</span>
+          </a>
+        </li>
+        <li class="nav-item-wrapper">
+          <a href="maps.html" class="nav-link">
+            <i data-lucide="map"></i>
+            <span data-i18n="menu_maps">Offline Maps</span>
+          </a>
+        </li>
+        <li class="nav-item-wrapper">
+          <a href="settings.html" class="nav-link">
+            <i data-lucide="settings"></i>
+            <span data-i18n="menu_settings">Settings</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="version-label" data-i18n="sidebar_version">RescueAI v1.0.0</div>
+      <div class="status-badge-wrapper">
+        <span class="status-dot green"></span>
+        <span class="status-text" data-i18n="sidebar_status">All Systems Ready</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Central Main Chat Console -->
+  <main class="chat-main-container">
+    <!-- Top Bar -->
+    <header class="chat-topbar">
+      <div class="topbar-left">
+        <div class="bot-avatar-wrapper">
+          <i data-lucide="shield" class="bot-avatar-icon"></i>
+        </div>
+        <div class="bot-info-wrapper">
+          <h2 class="topbar-title" data-i18n="topbar_title">RescueAI Intelligence</h2>
+          <p class="topbar-subtitle" data-i18n="topbar_subtitle">Offline Emergency AI Assistant</p>
+        </div>
+        <div class="offline-badge" data-i18n="topbar_badge">🟢 Offline Mode</div>
+      </div>
+      
+      <div class="topbar-right">
+        <!-- Language button -->
+        <button class="nav-item-btn" id="nav-lang">
+          <i data-lucide="globe"></i>
+          <span data-i18n="nav_language">Language</span>
+        </button>
+        <button class="nav-item-btn" id="nav-settings-btn" onclick="window.location.href='settings.html'">
+          <i data-lucide="settings"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Chat Messages Window -->
+    <div class="chat-conversation-area" id="chat-conversation">
+      <!-- Welcome State (shown initially) -->
+      <div class="chat-welcome-wrapper" id="chat-welcome-container">
+        <div class="welcome-icon-box">
+          <div class="glowing-ring"></div>
+          <i data-lucide="shield" class="welcome-shield"></i>
+        </div>
+        <h2 class="welcome-title" data-i18n="chat_welcome_title">How can I help you today?</h2>
+        <p class="welcome-subtitle" data-i18n="chat_welcome_subtitle">Describe your emergency or choose a quick action below.</p>
+        
+        <!-- Welcome Quick Chips -->
+        <div class="welcome-chips-grid">
+          <button class="welcome-chip" data-query="What to do in a heart attack?" data-i18n="chip_heart">🫀 Heart Attack</button>
+          <button class="welcome-chip" data-query="CPR instructions" data-i18n="chip_cpr">❤️ CPR Guide</button>
+          <button class="welcome-chip" data-query="snake bite first aid" data-i18n="chip_snake">🐍 Snake Bite</button>
+          <button class="welcome-chip" data-query="burns treatment" data-i18n="chip_burns">🔥 Burns Treatment</button>
+        </div>
+      </div>
+      
+      <!-- Conversational bubbles loaded here -->
+    </div>
+
+    <!-- Bottom Unified Input Control -->
+    <footer class="chat-footer-input">
+      <div class="chat-input-card">
+        <div class="input-actions-group">
+          <!-- Hidden File inputs -->
+          <input type="file" id="media-file-input" style="display: none;" accept="image/*">
+          <input type="file" id="camera-file-input" style="display: none;" accept="image/*" capture="environment">
+          
+          <button class="action-circle-btn" id="btn-attach" title="Attach Document">
+            <i data-lucide="paperclip"></i>
+          </button>
+          <button class="action-circle-btn" id="btn-camera" title="Use Camera">
+            <i data-lucide="camera"></i>
+          </button>
+          <button class="action-circle-btn" id="btn-mic" title="Voice Input">
+            <i data-lucide="mic"></i>
+          </button>
+          <button class="action-circle-btn" id="btn-quick-sos" title="Quick emergency action">
+            <i data-lucide="zap" style="color: var(--color-emergency, #E53935);"></i>
+          </button>
+        </div>
+        
+        <input type="text" class="chat-text-input" id="chat-input-field" placeholder="Ask anything about emergencies..." data-i18n="chat_placeholder">
+        
+        <button class="chat-action-send-btn" id="btn-send-msg" title="Send query">
+          <i data-lucide="send"></i>
+        </button>
+      </div>
+      <div class="privacy-notice">
+        <i data-lucide="lock" style="width: 12px; height: 12px; margin-right: 4px; vertical-align: middle;"></i>
+        <span>All processing is done locally on your device. Your data stays private.</span>
+      </div>
+    </footer>
+  </main>
+
+  <!-- Right Information Panel -->
+  <aside class="right-sidebar-panel">
+    <!-- Offline status badge -->
+    <div class="panel-section offline-status-section">
+      <div class="status-card-inner">
+        <i data-lucide="wifi-off" class="status-off-icon"></i>
+        <div class="status-text-block">
+          <h4 class="status-card-title">You are Offline</h4>
+          <p class="status-card-desc">All features are working locally</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active Capabilities List -->
+    <div class="panel-section capabilities-section">
+      <h3 class="panel-section-title" data-i18n="capabilities_title">AI Capabilities (All Offline)</h3>
+      <ul class="capability-list">
+        <li class="capability-item">
+          <div class="cap-icon-wrapper"><i data-lucide="message-square"></i></div>
+          <div class="cap-details">
+            <h5 class="cap-name">AI Chat</h5>
+            <p class="cap-desc">Ask anything</p>
+          </div>
+        </li>
+        <li class="capability-item">
+          <div class="cap-icon-wrapper"><i data-lucide="mic"></i></div>
+          <div class="cap-details">
+            <h5 class="cap-name">Voice Chat</h5>
+            <p class="cap-desc">Talk to AI</p>
+          </div>
+        </li>
+        <li class="capability-item">
+          <div class="cap-icon-wrapper"><i data-lucide="image"></i></div>
+          <div class="cap-details">
+            <h5 class="cap-name">Image Analysis</h5>
+            <p class="cap-desc">Detect objects</p>
+          </div>
+        </li>
+        <li class="capability-item">
+          <div class="cap-icon-wrapper"><i data-lucide="scan-text"></i></div>
+          <div class="cap-details">
+            <h5 class="cap-name">OCR Scanner</h5>
+            <p class="cap-desc">Read any text</p>
+          </div>
+        </li>
+        <li class="capability-item">
+          <div class="cap-icon-wrapper"><i data-lucide="volume-2"></i></div>
+          <div class="cap-details">
+            <h5 class="cap-name">Text to Voice</h5>
+            <p class="cap-desc">Hear AI response</p>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Quick Seed Questions -->
+    <div class="panel-section questions-section">
+      <h3 class="panel-section-title" data-i18n="quick_questions_title">Example Questions</h3>
+      <div class="example-questions-list">
+        <button class="question-pill-btn" data-query="What to do in a heart attack?">
+          <span>What to do in a heart attack?</span>
+          <i data-lucide="chevron-right"></i>
+        </button>
+        <button class="question-pill-btn" data-query="How to treat burns at home?">
+          <span>How to treat burns at home?</span>
+          <i data-lucide="chevron-right"></i>
+        </button>
+        <button class="question-pill-btn" data-query="Snake bite first aid steps">
+          <span>Snake bite first aid steps</span>
+          <i data-lucide="chevron-right"></i>
+        </button>
+        <button class="question-pill-btn" data-query="Medicine for fever and pain">
+          <span>Medicine for fever and pain</span>
+          <i data-lucide="chevron-right"></i>
+        </button>
+        <button class="question-pill-btn" data-query="How to perform CPR?">
+          <span>How to perform CPR?</span>
+          <i data-lucide="chevron-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Emergency Access cards -->
+    <div class="panel-section quick-access-section">
+      <h3 class="panel-section-title" data-i18n="quick_access_title">Emergency Quick Access</h3>
+      <div class="quick-access-cards-grid">
+        <a href="tel:112" class="access-action-card theme-red">
+          <i data-lucide="phone-call" class="access-card-icon"></i>
+          <div class="access-card-text">
+            <div class="access-card-title" data-i18n="qa_call">Call 112</div>
+            <div class="access-card-desc">Emergency Line</div>
+          </div>
+        </a>
+        <a href="maps.html" class="access-action-card theme-blue">
+          <i data-lucide="navigation" class="access-card-icon"></i>
+          <div class="access-card-text">
+            <div class="access-card-title" data-i18n="qa_hospitals">Find Hospital</div>
+            <div class="access-card-desc">Locate Nearby</div>
+          </div>
+        </a>
+        <a href="medical.html" class="access-action-card theme-green">
+          <i data-lucide="book-open" class="access-card-icon"></i>
+          <div class="access-card-text">
+            <div class="access-card-title" data-i18n="qa_guides">First Aid Guides</div>
+            <div class="access-card-desc">Offline Guides</div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Full Screen Voice Mode Overlay (Initially Hidden) -->
+  <div class="voice-overlay-screen" id="voice-overlay-container" style="display: none;">
+    <button class="voice-overlay-close-btn" id="btn-close-voice" title="Close Voice Mode">
+      <i data-lucide="x"></i>
+    </button>
+    <div class="voice-status-box">
+      <div class="voice-shield-wrapper">
+        <div class="voice-pulse-ring ring-1"></div>
+        <div class="voice-pulse-ring ring-2"></div>
+        <div class="voice-microphone-icon-box">
+          <i data-lucide="mic" class="voice-mic-icon"></i>
+        </div>
+      </div>
+      <h2 class="voice-state-label" id="voice-state-text">Listening...</h2>
+      <p class="voice-state-sub" id="voice-sub-text">Speak now. Tap the mic or screen to stop.</p>
+    </div>
+    
+    <!-- Waveform Visualizer -->
+    <div class="speaking-waveform" id="speaking-waveform-visualizer" style="display: none;">
+      <span class="wave-line line-1"></span>
+      <span class="wave-line line-2"></span>
+      <span class="wave-line line-3"></span>
+      <span class="wave-line line-4"></span>
+      <span class="wave-line line-5"></span>
+      <span class="wave-line line-6"></span>
+      <span class="wave-line line-7"></span>
+    </div>
+  </div>
+
+  <!-- Language Selection Modal Overlay & Container (Reused from variables) -->
+  <div class="lang-modal-overlay" id="lang-modal-overlay"></div>
+  <div class="lang-modal-container" id="lang-modal-container">
+    <div class="lang-header">
+      <div class="lang-title">
+        <i data-lucide="globe" style="width: 20px; height: 20px;"></i>
+        <span data-i18n="lang_select_title">Select Language</span>
+      </div>
+      <span class="lang-subtitle" data-i18n="lang_select_subtitle">Choose your preferred language for the RescueAI interface.</span>
+    </div>
+    
+    <div class="lang-search-wrapper">
+      <i data-lucide="search" class="lang-search-icon"></i>
+      <input type="text" class="lang-search-input" id="lang-search-input" placeholder="Search language..." data-i18n="lang_search_placeholder">
+    </div>
+    
+    <div class="lang-list" id="lang-cards-list">
+      <button class="lang-card selected" data-lang="en">
+        <div class="lang-card-left">
+          <span class="lang-flag">🇺🇸</span>
+          <div class="lang-names-wrapper">
+            <span class="lang-eng-name">English</span>
+            <span class="lang-native-name">English</span>
+          </div>
+        </div>
+        <i data-lucide="check" class="lang-check-icon"></i>
+      </button>
+      <button class="lang-card" data-lang="hi">
+        <div class="lang-card-left">
+          <span class="lang-flag">🇮🇳</span>
+          <div class="lang-names-wrapper">
+            <span class="lang-eng-name">Hindi</span>
+            <span class="lang-native-name">हिन्दी</span>
+          </div>
+        </div>
+        <i data-lucide="check" class="lang-check-icon"></i>
+      </button>
+      <button class="lang-card" data-lang="mr">
+        <div class="lang-card-left">
+          <span class="lang-flag">🇮🇳</span>
+          <div class="lang-names-wrapper">
+            <span class="lang-eng-name">Marathi</span>
+            <span class="lang-native-name">मराठी</span>
+          </div>
+        </div>
+        <i data-lucide="check" class="lang-check-icon"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Lucide Script CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- JavaScript Scripts -->
+  <script src="../js/common/translations.js"></script>
+  <script src="../js/common/main.js"></script>
+  <script src="../js/chatbot.js"></script>
+
+</body>
+</html>

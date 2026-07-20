@@ -2,7 +2,7 @@ header {
   position: sticky;
   top: 0;
   z-index: 1000;
-  background: rgba(248, 250, 252, 0.8);
+  background: #84b9cd;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border-color);
@@ -51,7 +51,7 @@ header {
 }
 
 .logo-title {
-  font-size: 1.35rem;
+  font-size: 2.05rem;
   font-weight: 800;
   line-height: 1.1;
   color: var(--text-primary);
@@ -69,6 +69,7 @@ header {
   display: flex;
   align-items: center;
   gap: 4px;
+  font-size: 1.50;
 }
 
 .nav-item {

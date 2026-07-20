@@ -1,8 +1,8 @@
 footer {
-  background-color: var(--bg-secondary);
+  background-color: #84b9cd;
   border-top: 1px solid var(--border-color);
   padding: 60px 0 30px;
-  color: rgb(121, 121, 184);
+  color: rgb(41, 41, 94);
   font-family: var(--font-body);
 }
 
@@ -75,7 +75,7 @@ footer {
 }
 
 .footer-social-icon:hover {
-  background-color: rgba(109, 94, 247, 0.08);
+  background-color: rgba(83, 76, 147, 0.08);
   color: var(--color-primary);
   border-color: var(--color-primary);
   transform: translateY(-2px);

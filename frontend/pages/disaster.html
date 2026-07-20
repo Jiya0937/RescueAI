@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n="title">Disaster Safety - RescueAI</title>
+  
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="../css/common/variables.css">
+  <link rel="stylesheet" href="../css/common/style.css">
+  <link rel="stylesheet" href="../css/common/animation.css">
+  <link rel="stylesheet" href="../css/common/navbar.css">
+  <link rel="stylesheet" href="../css/common/footer.css">
+  <link rel="stylesheet" href="../css/common/language.css">
+  <link rel="stylesheet" href="../css/disaster.css?v=2">
+  <link rel="stylesheet" href="../css/chatbot.css">
+</head>
+<body>
+
+  <!-- Navigation Header with Return Link -->
+  <header>
+    <div class="navbar">
+      <div class="nav-left">
+        <a href="../index.html" class="back-home-link" id="nav-back-link">
+          <i data-lucide="arrow-left" style="width: 20px; height: 20px;"></i>
+          <span data-i18n="nav_back_to_home" style="font-weight: 700;">Back to Home</span>
+        </a>
+      </div>
+      <div class="nav-right">
+        <button class="nav-item lang-badge-btn" id="nav-lang">
+          <i data-lucide="globe"></i>
+          <span>EN | हिन्दी</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Language Selection Modal Overlay & Container (Reused) -->
+  <div class="lang-modal-overlay" id="lang-modal-overlay"></div>
+  <div class="lang-modal-container" id="lang-modal-container">
+    <div class="lang-header">
+      <div class="lang-title">
+        <i data-lucide="globe" style="width: 20px; height: 20px;"></i>
+        <span data-i18n="lang_select_title">Select Language</span>
+      </div>
+      <span class="lang-subtitle" data-i18n="lang_select_subtitle">Choose your preferred language for the RescueAI interface.</span>
+    </div>
+    
+    <div class="lang-search-wrapper">
+      <i data-lucide="search" class="lang-search-icon"></i>
+      <input type="text" class="lang-search-input" id="lang-search-input" placeholder="Search language..." data-i18n="lang_search_placeholder">
+    </div>
+    
+    <div class="lang-list" id="lang-cards-list">
+      <button class="lang-card selected" data-lang="en">
+        <div class="lang-card-left">
+          <span class="lang-flag">🇺🇸</span>
+          <div class="lang-names-wrapper">
+            <span class="lang-eng-name">English</span>
+            <span class="lang-native-name">English</span>
+          </div>
+        </div>
+        <i data-lucide="check" class="lang-check-icon"></i>
+      </button>
+      <button class="lang-card" data-lang="hi">
+        <div class="lang-card-left">
+          <span class="lang-flag">🇮🇳</span>
+          <div class="lang-names-wrapper">
+            <span class="lang-eng-name">Hindi</span>
+            <span class="lang-native-name">हिन्दी</span>
+          </div>
+        </div>
+        <i data-lucide="check" class="lang-check-icon"></i>
+      </button>
+      <button class="lang-card" data-lang="mr">
+        <div class="lang-card-left">
+          <span class="lang-flag">🇮🇳</span>
+          <div class="lang-names-wrapper">
+            <span class="lang-eng-name">Marathi</span>
+            <span class="lang-native-name">मराठी</span>
+          </div>
+        </div>
+        <i data-lucide="check" class="lang-check-icon"></i>
+      </button>
+    </div>
+    
+    <div class="lang-settings-panel">
+      <label class="lang-toggle-row">
+        <input type="checkbox" class="lang-checkbox" id="sync-voice-checkbox" checked>
+        <span data-i18n="lang_sync_voice">Sync Voice with Interface</span>
+      </label>
+      <label class="lang-toggle-row">
+        <input type="checkbox" class="lang-checkbox" id="auto-detect-checkbox">
+        <span data-i18n="lang_auto_detect">Auto Detect User Language</span>
+      </label>
+    </div>
+  </div>
+
+  <main class="container disaster-container">
+    
+    <!-- Screen 1: Dashboard View -->
+    <div class="disaster-view active" id="dashboard-view">
+      <div class="disaster-hero">
+        <div class="disaster-hero-text">
+          
+          <h1 class="page-title" data-i18n="dis_dashboard_title">Disaster Safety</h1>
+          <p class="page-subtitle" data-i18n="dis_dashboard_subtitle">Select a disaster to get smart guidance and stay safe</p>
+        </div>
+        
+      </div>
+
+      <div class="section-header-wrap">
+        <h2 class="section-title" data-i18n="dis_common_title">Common Disasters</h2>
+        <p class="section-subtitle-text">Select a disaster to view safety guidance and emergency procedures.</p>
+      </div>
+      <div class="disaster-grid" id="disaster-cards-grid">
+        <!-- Cards generated dynamically in disaster.js -->
+      </div>
+
+      <div class="ai-banner hover-lift" id="dashboard-ai-banner">
+        <div class="ai-banner-left">
+          <h3 class="ai-banner-title" data-i18n="dis_ai_banner_title">Not sure what to do?</h3>
+          <p class="ai-banner-text" data-i18n="dis_ai_banner_text">Ask our AI Assistant for help anytime.</p>
+        </div>
+        <div class="ai-banner-right">
+          <button class="ai-banner-trigger-btn">
+            <i data-lucide="bot"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Screen 2: Smart Situation Assessment View -->
+    <div class="disaster-view" id="situation-view">
+      <div class="stepper">
+        <div class="step active" id="step-1">
+          <div class="step-circle" id="step-circle-1"><i data-lucide="activity"></i></div>
+          <span class="step-label" id="step-label-1">Earthquake</span>
+        </div>
+        <div class="step-divider"></div>
+        <div class="step active" id="step-2">
+          <div class="step-circle">2</div>
+          <span class="step-label" data-i18n="step_situation">Situation</span>
+        </div>
+        <div class="step-divider"></div>
+        <div class="step" id="step-3">
+          <div class="step-circle">3</div>
+          <span class="step-label" data-i18n="step_help">Help</span>
+        </div>
+      </div>
+
+      <div class="situation-header-banner" id="situation-banner-container">
+        <!-- Banner SVG generated in disaster.js -->
+      </div>
+
+      <div class="situation-intro">
+        <h2 class="situation-question" id="situation-question-text" data-i18n="dis_situation_question">What is happening?</h2>
+        <p class="situation-subtitle" data-i18n="dis_situation_subtitle">Select the situation that matches what happened.</p>
+      </div>
+
+      <div class="situation-grid" id="situation-cards-grid">
+        <!-- Situation cards generated dynamically in disaster.js -->
+      </div>
+
+      <div class="ai-banner hover-lift" id="situation-ai-banner">
+        <div class="ai-banner-left">
+          <h3 class="ai-banner-title" data-i18n="dis_ai_banner_title">Not sure what to do?</h3>
+          <p class="ai-banner-text" data-i18n="dis_ai_banner_text">Ask our AI Assistant for help anytime.</p>
+        </div>
+        <div class="ai-banner-right">
+          <button class="ai-banner-trigger-btn">
+            <i data-lucide="bot"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Screen 3: Recommendation View -->
+    <div class="disaster-view" id="recommendation-view">
+      <div class="stepper">
+        <div class="step completed">
+          <div class="step-circle"><i data-lucide="check"></i></div>
+          <span class="step-label" data-i18n="step_disaster_selected">Disaster Selected</span>
+        </div>
+        <div class="step-divider"></div>
+        <div class="step completed">
+          <div class="step-circle"><i data-lucide="check"></i></div>
+          <span class="step-label" data-i18n="step_situation_identified">Situation Identified</span>
+        </div>
+        <div class="step-divider"></div>
+        <div class="step active">
+          <div class="step-circle">3</div>
+          <span class="step-label" data-i18n="step_guide_ready">Guide Ready</span>
+        </div>
+      </div>
+
+      <div class="recommendation-card">
+        <div class="rec-icon-badge" id="rec-icon-container">
+          <!-- Icon injected dynamically -->
+        </div>
+        <div class="rec-details">
+          <span class="rec-pill" data-i18n="recommended_action_pill">Recommended Action</span>
+          <h2 class="rec-title" id="rec-title-text">Heavy Bleeding</h2>
+          <p class="rec-desc" id="rec-desc-text">Follow the Bleeding Emergency Guide for step-by-step instructions.</p>
+        </div>
+      </div>
+
+      <div class="info-split-grid">
+        <div class="rec-checklist-card">
+          <h3 class="checklist-title" data-i18n="what_will_get_title">What will you get?</h3>
+          <ul class="checklist-items">
+            <li>
+              <i data-lucide="check-circle-2" class="check-icon"></i>
+              <span data-i18n="get_item_1">Immediate first aid steps</span>
+            </li>
+            <li>
+              <i data-lucide="check-circle-2" class="check-icon"></i>
+              <span data-i18n="get_item_2">What to do and what not to do</span>
+            </li>
+            <li>
+              <i data-lucide="check-circle-2" class="check-icon"></i>
+              <span data-i18n="get_item_3">When to seek medical help</span>
+            </li>
+            <li>
+              <i data-lucide="check-circle-2" class="check-icon"></i>
+              <span data-i18n="get_item_4">Find nearest hospital</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="medkit-illustration-card">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 160" class="medkit-svg">
+            <rect x="30" y="40" width="140" height="100" rx="16" fill="#FF5252"/>
+            <rect x="30" y="40" width="140" height="20" rx="4" fill="#D32F2F" opacity="0.2"/>
+            <path d="M75 40 L75 25 C75 20, 125 20, 125 25 L125 40" stroke="#FF5252" stroke-width="8" fill="none" stroke-linecap="round"/>
+            <path d="M75 40 L75 25 C75 20, 125 20, 125 25 L125 40" stroke="#FFFFFF" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.4"/>
+            <rect x="55" y="36" width="15" height="10" rx="2" fill="#E0E0E0"/>
+            <rect x="130" y="36" width="15" height="10" rx="2" fill="#E0E0E0"/>
+            <rect x="88" y="70" width="24" height="40" rx="4" fill="#FFFFFF"/>
+            <rect x="80" y="78" width="40" height="24" rx="4" fill="#FFFFFF"/>
+            <ellipse cx="100" cy="148" rx="70" ry="8" fill="#E2E8F0" opacity="0.7"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="rec-actions-container">
+        <button class="btn-rec btn-rec-primary" id="btn-open-guide">
+          <i data-lucide="book-open"></i>
+          <div class="btn-text-wrapper">
+            <span class="btn-main-text" data-i18n="btn_open_emergency_guide">Open Emergency Guide</span>
+            <span class="btn-sub-text" data-i18n="btn_open_emergency_guide_sub">Step-by-step first aid instructions</span>
+          </div>
+          <i data-lucide="chevron-right" class="arrow-right-icon"></i>
+        </button>
+
+        <div class="rec-secondary-actions">
+          <button class="btn-rec btn-rec-secondary" id="btn-rec-hospital">
+            <i data-lucide="map-pin" class="sec-icon sec-icon-hospital"></i>
+            <div class="btn-text-wrapper">
+              <span class="btn-main-text" data-i18n="find_hospital_btn">Find Nearby Hospital</span>
+              <span class="btn-sub-text" data-i18n="find_hospital_sub">Locate the nearest medical facilities</span>
+            </div>
+            <i data-lucide="chevron-right" class="arrow-right-icon"></i>
+          </button>
+
+          <button class="btn-rec btn-rec-secondary" id="btn-rec-contacts">
+            <i data-lucide="phone" class="sec-icon sec-icon-contacts"></i>
+            <div class="btn-text-wrapper">
+              <span class="btn-main-text" data-i18n="emergency_contacts_title">Emergency Contacts</span>
+              <span class="btn-sub-text" data-i18n="emergency_contacts_sub">Call ambulance, police, fire & more</span>
+            </div>
+            <i data-lucide="chevron-right" class="arrow-right-icon"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="emergency-call-card">
+        <div class="call-icon-wrapper">
+          <i data-lucide="phone-call"></i>
+        </div>
+        <div class="call-text-wrapper">
+          <h4 data-i18n="emergency_call_title">In an emergency? Call 112</h4>
+          <p data-i18n="emergency_call_desc">Share your location and get help fast.</p>
+        </div>
+        <a href="tel:112" class="call-btn-link" data-i18n="btn_call_112">Call 112</a>
+      </div>
+    </div>
+  </main>
+
+  <!-- Bottom Nav Bar (Active on Mobile viewports) -->
+  <nav class="bottom-nav">
+    <a href="../index.html" class="bottom-nav-item">
+      <i data-lucide="home"></i>
+      <span data-i18n="nav_home">Home</span>
+    </a>
+    <a href="disaster.html" class="bottom-nav-item active">
+      <i data-lucide="alert-triangle"></i>
+      <span data-i18n="nav_disaster">Disaster</span>
+    </a>
+    <a href="medical.html" class="bottom-nav-item">
+      <i data-lucide="heart"></i>
+      <span data-i18n="card_med">Medical</span>
+    </a>
+    <a href="contacts.html" class="bottom-nav-item">
+      <i data-lucide="phone"></i>
+      <span data-i18n="card_sos">Contacts</span>
+    </a>
+    <a href="settings.html" class="bottom-nav-item">
+      <i data-lucide="settings"></i>
+      <span data-i18n="nav_settings">Settings</span>
+    </a>
+  </nav>
+
+  <!-- Lucide Script CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- JavaScript Scripts -->
+  <script src="../js/common/translations.js"></script>
+  <script src="../js/common/emergency_translations.js"></script>
+  <script src="../js/common/main.js"></script>
+  <script src="../js/disaster.js?v=2"></script>
+  <script src="../js/chatbot.js"></script>
+
+</body>
+</html>

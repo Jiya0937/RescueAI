@@ -17,7 +17,7 @@ html {
 body {
   font-family: var(--font-body);
   background-color: var(--bg-primary);
-  background-image: url('../../assets/images/hero-bg.png');
+  background-image: url('../../assets/images/hero-main.jpg');
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
