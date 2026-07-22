@@ -18,6 +18,8 @@ from app.api.speech.speech import router as speech_router
 from app.api.tts.tts import router as tts_router
 # Import Maps
 from app.api.maps.maps import router as maps_router
+# Import Auth & Profile
+from app.api.auth.auth import router as auth_router
 
 # Load environment variables
 load_dotenv()
@@ -32,11 +34,15 @@ logging.basicConfig(
 )
 logger = logging.getLogger("rescue-ai-backend")
 
+# Database initialization
+from app.database.database import Base, engine
+Base.metadata.create_all(bind=engine)
+
 # Define lifespan event handler for startup/shutdown actions
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    logger.info("Initializing RescueAI Backend services...")
-    # Add any model warmups or DB connection pool setups here in the future
+    logger.info("Initializing RescueAI Backend services & DB tables...")
+    Base.metadata.create_all(bind=engine)
     yield
     logger.info("Shutting down RescueAI Backend services...")
 
@@ -51,22 +57,11 @@ app = FastAPI(
 )
 
 # CORS configurations for frontend communication
-# Allow localhost:5173 (React Vite), 127.0.0.1:5173, and optionally configured production origins
-origins = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    "http://localhost:3000",  # Frontend running inside docker
-    "http://127.0.0.1:3000",  # Vite dev server opened via 127.0.0.1 instead of localhost
-]
-
-# Allow additional origins from environment variables if present
-extra_origins = os.getenv("ALLOWED_ORIGINS")
-if extra_origins:
-    origins.extend([o.strip() for o in extra_origins.split(",")])
-
+# Allow all origins (localhost, 127.0.0.1, Live Server ports, Vite, Docker)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
+    allow_origin_regex=r".*",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -82,13 +77,32 @@ async def global_exception_handler(request: Request, exc: Exception):
     )
 
 # Register routers
-                # Endpoint: /chatbot
-app.include_router(chatbot_router, prefix="/api")   # Endpoint: /api/chatbot
+app.include_router(chatbot_router, prefix="/api")
 app.include_router(ocr_router, prefix="/api")
 app.include_router(vision_router, prefix="/api")
 app.include_router(speech_router, prefix="/api")
 app.include_router(tts_router, prefix="/api")
 app.include_router(maps_router, prefix="/api")
+app.include_router(auth_router, prefix="/api")
+
+# Static files mounting (if frontend directory exists)
+from fastapi.staticfiles import StaticFiles
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+frontend_dir = os.path.join(project_root, "frontend")
+if os.path.exists(frontend_dir):
+    pages_dir = os.path.join(frontend_dir, "pages")
+    css_dir = os.path.join(frontend_dir, "css")
+    js_dir = os.path.join(frontend_dir, "js")
+    assets_dir = os.path.join(frontend_dir, "assets")
+    
+    if os.path.exists(pages_dir):
+        app.mount("/pages", StaticFiles(directory=pages_dir), name="pages")
+    if os.path.exists(css_dir):
+        app.mount("/css", StaticFiles(directory=css_dir), name="css")
+    if os.path.exists(js_dir):
+        app.mount("/js", StaticFiles(directory=js_dir), name="js")
+    if os.path.exists(assets_dir):
+        app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
 
 
 # Root Endpoint / Health Check

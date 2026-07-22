@@ -1,5 +1,6 @@
 // chatbot.js - RescueAI Desktop-First Chatbot & API Integration
 
+
 document.addEventListener('DOMContentLoaded', () => {
   const isDesktopChat = document.body.classList.contains('desktop-chat-layout') || window.location.pathname.includes('chatbot.html');
 

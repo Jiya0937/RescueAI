@@ -1,4 +1,7 @@
+// main.js - RescueAI Language Selector & Navigation Logic
 document.addEventListener('DOMContentLoaded', () => {
+  console.log("MAIN.JS LOADED"); // DEBUG LINE 1
+
   // 1. Initialize Lucide Icons
   if (typeof lucide !== 'undefined') {
     lucide.createIcons();
@@ -70,21 +73,20 @@ document.addEventListener('DOMContentLoaded', () => {
   langCards.forEach(card => {
     card.addEventListener('click', () => {
       const selectedLang = card.getAttribute('data-lang');
-      
-      // Update selected class in list
+      console.log("DEBUG - Language card clicked:", selectedLang); // DEBUG LINE 2
+
       langCards.forEach(c => c.classList.remove('selected'));
       card.classList.add('selected');
-      
-      // Trigger translation
+
+      localStorage.setItem('rescue_lang', selectedLang);
+
       if (window.RescueTranslations) {
         window.RescueTranslations.apply(selectedLang);
       }
-      
-      // Dispatch custom event for home.js to update placeholders/bot replies
+
       const event = new CustomEvent('rescueLangChanged', { detail: { lang: selectedLang } });
       document.dispatchEvent(event);
 
-      // Close modal with minor delay for smooth feedback
       setTimeout(closeLangModal, 300);
     });
   });
@@ -93,7 +95,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const syncVoiceCheckbox = document.getElementById('sync-voice-checkbox');
   const autoDetectCheckbox = document.getElementById('auto-detect-checkbox');
 
-  // Load settings from localStorage
   if (syncVoiceCheckbox) {
     const savedSync = localStorage.getItem('rescue_sync_voice');
     syncVoiceCheckbox.checked = savedSync === null ? true : (savedSync === 'true');
@@ -113,12 +114,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Auto-detect function
   function runAutoDetect() {
     const detected = navigator.language || navigator.userLanguage || 'en';
     const primaryCode = detected.split('-')[0].toLowerCase();
-    
-    // Check if we support this language in translations
+
     if (window.RescueTranslations && window.RescueTranslations.data[primaryCode]) {
       applySelectedLang(primaryCode);
     }
@@ -135,6 +134,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (window.RescueTranslations) {
       window.RescueTranslations.apply(langCode);
     }
+
+    document.dispatchEvent(new CustomEvent('rescueLangChanged', { detail: { lang: langCode } }));
   }
 
   // 6. Page Initialization
@@ -146,7 +147,38 @@ document.addEventListener('DOMContentLoaded', () => {
   } else if (isAutoDetectOn) {
     runAutoDetect();
   } else {
-    // Default to English
     applySelectedLang('en');
+  }
+
+  // 7. Navigation Auth Handlers & Dynamic Login/Profile Button State
+  const profileBtn = document.getElementById('nav-profile');
+  const loginBtn = document.querySelector('.login-btn');
+
+  const token = localStorage.getItem('rescue_token');
+  const isPagesSubdir = window.location.pathname.includes('/pages/');
+
+  if (loginBtn) {
+    if (token) {
+      loginBtn.textContent = 'Profile';
+      loginBtn.style.background = 'linear-gradient(135deg, #6C63FF 0%, #5849DF 100%)';
+      loginBtn.style.color = '#FFFFFF';
+      loginBtn.addEventListener('click', () => {
+        window.location.href = isPagesSubdir ? 'profile.html' : 'pages/profile.html';
+      });
+    } else {
+      loginBtn.addEventListener('click', () => {
+        window.location.href = isPagesSubdir ? 'auth.html' : 'pages/auth.html';
+      });
+    }
+  }
+
+  if (profileBtn) {
+    profileBtn.addEventListener('click', () => {
+      if (token) {
+        window.location.href = isPagesSubdir ? 'profile.html' : 'pages/profile.html';
+      } else {
+        window.location.href = isPagesSubdir ? 'auth.html' : 'pages/auth.html';
+      }
+    });
   }
 });
