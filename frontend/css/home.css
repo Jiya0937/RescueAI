@@ -853,3 +853,14 @@
     font-size: 2rem;
   }
 }
+
+.footer {
+  grid-column: 1 / -1;   /* forces it to span all 3 grid columns */
+  width: 100%;
+  max-width: none;
+}
+
+footer {
+  grid-column: 1 / -1;
+  width: 100%;
+}
