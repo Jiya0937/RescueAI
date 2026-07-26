@@ -1,0 +1,38 @@
+:root {
+  /* Color Palette */
+  --bg-primary: #F8FAFC;
+  --bg-secondary: #FFFFFF;
+  --bg-card: rgba(255, 255, 255, 0.75);
+  --color-primary: #6D5EF7;
+  --color-primary-hover: #5849df;
+  --color-secondary: #2563EB;
+  --color-emergency: #E53935;
+  --color-emergency-hover: #c62828;
+  --color-success: #22C55E;
+  
+  /* Text Colors */
+  --text-primary: #111827;
+  --text-secondary: #6B7280;
+  
+  /* Border & Dividers */
+  --border-color: #E5E7EB;
+  --border-radius-lg: 30px;     /* For Chat Assistant Card */
+  --border-radius-md: 24px;     /* For Feature Cards */
+  --border-radius-sm: 12px;     /* For Inputs, Buttons */
+  --border-radius-full: 9999px; /* For Round Buttons, Microphone */
+
+  /* Typography */
+  --font-heading: 'Poppins', sans-serif;
+  --font-body: 'Inter', sans-serif;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.04), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+  --shadow-premium: 0 20px 40px -15px rgba(0, 0, 0, 0.06);
+  --shadow-card-hover: 0 25px 50px -12px rgba(109, 94, 247, 0.12);
+
+  /* Transitions */
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}

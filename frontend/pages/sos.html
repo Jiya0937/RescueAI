@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Emergency SOS · RescueAI</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<link rel="stylesheet" href="../css/sos.css">
+</head>
+<body>
+
+<!-- ===================== TOP BAR ===================== -->
+<header class="topbar">
+  <div class="topbar-left">
+  <button class="icon-btn" id="back-btn" aria-label="Go back">
+    <i data-lucide="chevron-left"></i>
+  </button>
+  <button class="icon-btn" id="home-btn" aria-label="Go to home page">
+    <i data-lucide="home"></i>
+  </button>
+  <div class="brand">
+      <span class="brand-badge"><i data-lucide="shield-plus"></i></span>
+      <div class="brand-text">
+        <span class="brand-name">RescueAI</span>
+        <span class="brand-tag">Your Safety, Our Priority</span>
+      </div>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <span class="pill pill-offline"><i data-lucide="wifi-off"></i> Offline Mode Ready</span>
+    <button class="icon-btn" id="settings-btn" aria-label="Settings">
+      <i data-lucide="settings"></i>
+    </button>
+  </div>
+</header>
+
+<main class="sos-page">
+
+  <!-- ===================== HERO / SOS BUTTON ===================== -->
+  <section class="hero-sos">
+    <div class="hero-copy">
+      <span class="eyebrow"><i data-lucide="siren"></i> Emergency SOS</span>
+      <h1>One tap can<br>save a life.</h1>
+      <p>Hold the button to alert your emergency contacts and share your live location instantly.</p>
+    </div>
+
+    <div class="sos-button-wrap">
+      <svg class="sos-ring" viewBox="0 0 200 200">
+        <circle class="sos-ring-track" cx="100" cy="100" r="92"/>
+        <circle class="sos-ring-progress" id="sos-ring-progress" cx="100" cy="100" r="92"/>
+      </svg>
+      <button class="sos-button" id="sos-button" aria-label="Hold for 3 seconds to trigger SOS">
+        <span class="sos-button-label">SOS</span>
+        <span class="sos-button-sub">EMERGENCY</span>
+      </button>
+      <p class="hold-hint"><i data-lucide="hand"></i> Hold for 3 seconds</p>
+    </div>
+
+    <div class="location-card" id="location-card">
+      <div class="location-card-head">
+        <i data-lucide="map-pin"></i>
+        <span>Your Location</span>
+        <span class="live-dot">LIVE</span>
+      </div>
+      <p class="location-value" id="location-value">Detecting your location…</p>
+      <p class="location-accuracy" id="location-accuracy"></p>
+    </div>
+  </section>
+
+  <div id="sos-toast" class="toast" role="status" aria-live="polite"></div>
+
+  <!-- ===================== CALL EMERGENCY SERVICES ===================== -->
+  <section class="section">
+    <div class="section-head">
+      <i data-lucide="phone-call"></i>
+      <h2>Call Emergency Services</h2>
+    </div>
+    <p class="section-sub">Tap a card to dial instantly. Numbers are for India — update in <code>sos.js</code> for your region.</p>
+
+    <div class="service-grid" id="service-grid"><!-- rendered by sos.js --></div>
+  </section>
+
+  <!-- ===================== MY EMERGENCY CONTACTS ===================== -->
+  <section class="section">
+    <div class="section-head">
+      <i data-lucide="users"></i>
+      <h2>My Emergency Contacts</h2>
+    </div>
+    <p class="section-sub">Add family or friends who should be notified and reachable during an emergency.</p>
+
+    <div class="contacts-layout">
+      <!-- Add contact form -->
+      <form class="contact-form" id="contact-form">
+        <h3>Add a contact</h3>
+
+        <label class="field">
+          <span>Name</span>
+          <input type="text" id="contact-name" placeholder="e.g. Riya Sharma" required maxlength="100">
+        </label>
+
+        <label class="field">
+          <span>Phone number</span>
+          <input type="tel" id="contact-phone" placeholder="e.g. +91 98765 43210" required maxlength="20">
+        </label>
+
+        <label class="field">
+          <span>Relation</span>
+          <select id="contact-relation">
+            <option value="Family">Family</option>
+            <option value="Friend">Friend</option>
+            <option value="Neighbor">Neighbor</option>
+            <option value="Colleague">Colleague</option>
+            <option value="Other">Other</option>
+          </select>
+        </label>
+
+        <label class="checkbox-field">
+          <input type="checkbox" id="contact-primary">
+          <span>Notify first in an SOS</span>
+        </label>
+
+        <button type="submit" class="btn-primary">
+          <i data-lucide="user-plus"></i> Save contact
+        </button>
+        <p class="form-error" id="contact-form-error"></p>
+      </form>
+
+      <!-- Contacts list -->
+      <div class="contacts-list-wrap">
+        <div class="contacts-list" id="contacts-list">
+          <!-- rendered by sos.js -->
+        </div>
+        <p class="empty-state" id="contacts-empty" hidden>
+          <i data-lucide="user-round-plus"></i>
+          No emergency contacts yet. Add the first person you'd want notified.
+        </p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script src="../js/sos.js"></script>
+</body>
+</html>

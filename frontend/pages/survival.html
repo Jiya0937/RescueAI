@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Survival Mode</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --indigo-900:#1E1B4B;
+    --indigo-700:#4338CA;
+    --indigo-600:#4F46E5;
+    --indigo-100:#E0E7FF;
+    --indigo-50:#EEF2FF;
+    --amber-600:#D97706;
+    --amber-100:#FEF3C7;
+    --green-600:#059669;
+    --green-100:#D1FAE5;
+    --red-600:#DC2626;
+    --red-100:#FEE2E2;
+    --slate-900:#0F172A;
+    --slate-600:#475569;
+    --slate-400:#94A3B8;
+    --slate-200:#E2E8F0;
+    --slate-50:#F8FAFC;
+    --page-bg:#F4F6FB;
+    --card-radius:20px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    font-family:'Inter',sans-serif;
+    background:var(--page-bg);
+    color:var(--slate-900);
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* Header */
+  header{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 40px;
+    background:#fff;
+    border-bottom:1px solid var(--slate-200);
+    position:sticky; top:0; z-index:20;
+  }
+  .back-btn{
+    display:flex; align-items:center; gap:8px;
+    background:none; border:none; cursor:pointer;
+    font-weight:600; font-size:14px; color:var(--indigo-700);
+    padding:8px 14px; border-radius:999px;
+    transition:background .15s ease;
+  }
+  .back-btn:hover{ background:var(--indigo-50); }
+  .header-title{
+    display:flex; align-items:center; gap:10px;
+    font-weight:800; font-size:20px; color:var(--indigo-900);
+  }
+  .header-title i{ color:var(--indigo-600); font-size:20px; }
+  .offline-badge{
+    display:flex; align-items:center; gap:6px;
+    background:var(--green-100); color:#047857;
+    font-weight:600; font-size:13px;
+    padding:6px 14px; border-radius:999px;
+  }
+  .offline-badge .dot{
+    width:8px; height:8px; border-radius:50%;
+    background:#10B981;
+  }
+
+  main{ max-width:1180px; margin:0 auto; padding:36px 40px 80px; }
+  section{ margin-bottom:44px; }
+  .section-title{
+    font-size:15px; font-weight:700; color:var(--slate-900);
+    text-transform:uppercase; letter-spacing:.04em;
+    margin-bottom:18px;
+  }
+
+  /* Essentials grid */
+  .essentials-grid{
+    display:grid;
+    grid-template-columns:repeat(4, 1fr);
+    gap:20px;
+  }
+  .ess-card{
+    background:#fff; border-radius:var(--card-radius);
+    padding:24px; border:1px solid var(--slate-200);
+    box-shadow:0 1px 2px rgba(15,23,42,.04);
+    display:flex; flex-direction:column;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .ess-card:hover{ transform:translateY(-3px); box-shadow:0 10px 24px rgba(15,23,42,.08); }
+  .ess-icon{
+    width:52px; height:52px; border-radius:14px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:22px; margin-bottom:16px;
+  }
+  .ess-card h3{ font-size:17px; font-weight:700; margin-bottom:8px; }
+  .ess-card p{ font-size:13.5px; color:var(--slate-600); line-height:1.5; flex-grow:1; margin-bottom:18px; }
+  .ess-btn{
+    display:inline-flex; align-items:center; gap:6px;
+    align-self:flex-start;
+    background:var(--indigo-50); color:var(--indigo-700);
+    border:none; font-weight:600; font-size:13.5px;
+    padding:9px 16px; border-radius:999px; cursor:pointer;
+    transition:background .15s ease;
+  }
+  .ess-btn:hover{ background:var(--indigo-100); }
+  .ess-btn.torch-btn{ background:var(--amber-100); color:var(--amber-600); }
+  .ess-btn.torch-btn:hover{ background:#FDE68A; }
+
+  .icon-amber{ background:var(--amber-100); color:var(--amber-600); }
+  .icon-green{ background:var(--green-100); color:var(--green-600); }
+  .icon-red{ background:var(--red-100); color:var(--red-600); }
+  .icon-indigo{ background:var(--indigo-100); color:var(--indigo-600); }
+
+  /* Guides grid */
+  .guides-grid{
+    display:grid;
+    grid-template-columns:repeat(2, 1fr);
+    gap:20px;
+  }
+  .guide-card{
+    background:#fff; border-radius:var(--card-radius);
+    padding:26px; border:1px solid var(--slate-200);
+    box-shadow:0 1px 2px rgba(15,23,42,.04);
+  }
+  .guide-head{ display:flex; align-items:center; gap:14px; margin-bottom:14px; }
+  .guide-icon{
+    width:46px; height:46px; border-radius:12px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; font-size:19px;
+  }
+  .guide-card h3{ font-size:16px; font-weight:700; }
+  .guide-card p{ font-size:13.5px; color:var(--slate-600); line-height:1.5; margin-bottom:14px; }
+  .guide-points{ list-style:none; margin-bottom:18px; }
+  .guide-points li{
+    font-size:13px; color:var(--slate-600);
+    padding-left:16px; position:relative; margin-bottom:6px;
+  }
+  .guide-points li::before{
+    content:''; position:absolute; left:0; top:7px;
+    width:6px; height:6px; border-radius:50%;
+    background:var(--indigo-600);
+  }
+
+  /* Modal */
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(15,23,42,.55);
+    display:none; align-items:center; justify-content:center;
+    z-index:100; padding:20px;
+  }
+  .modal-overlay.open{ display:flex; }
+  .modal-box{
+    background:#fff; border-radius:22px;
+    max-width:560px; width:100%;
+    max-height:82vh; overflow-y:auto;
+    padding:32px;
+    animation:modalIn .18s ease;
+  }
+  @keyframes modalIn{ from{ opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
+  .modal-head{ display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:6px; }
+  .modal-head-left{ display:flex; align-items:center; gap:12px; }
+  .modal-icon{
+    width:44px; height:44px; border-radius:12px;
+    display:flex; align-items:center; justify-content:center; font-size:19px;
+  }
+  .modal-box h2{ font-size:20px; font-weight:800; }
+  .modal-close{
+    background:var(--slate-50); border:none; width:32px; height:32px;
+    border-radius:50%; cursor:pointer; color:var(--slate-600);
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  .modal-close:hover{ background:var(--slate-200); }
+  .modal-sub{ color:var(--slate-600); font-size:13.5px; margin:14px 0 20px; }
+  .modal-block{ margin-bottom:20px; }
+  .modal-block:last-child{ margin-bottom:0; }
+  .modal-block h4{
+    font-size:12.5px; font-weight:700; text-transform:uppercase;
+    letter-spacing:.03em; color:var(--indigo-700); margin-bottom:10px;
+  }
+  .modal-block ul{ list-style:none; }
+  .modal-block li{
+    font-size:14px; color:var(--slate-900); line-height:1.6;
+    padding-left:18px; position:relative; margin-bottom:8px;
+  }
+  .modal-block li::before{
+    content:''; position:absolute; left:0; top:8px;
+    width:6px; height:6px; border-radius:50%; background:var(--indigo-600);
+  }
+  .modal-note{
+    background:var(--amber-100); color:#92400E;
+    font-size:12.5px; padding:12px 14px; border-radius:12px;
+    margin-top:18px; line-height:1.5;
+  }
+
+  /* Flashlight overlay */
+  .torch-overlay{
+    position:fixed; inset:0; background:#fff;
+    display:none; align-items:center; justify-content:center;
+    z-index:200; cursor:pointer;
+  }
+  .torch-overlay.open{ display:flex; }
+  .torch-hint{
+    position:absolute; bottom:40px; left:0; right:0;
+    text-align:center; font-family:'Inter',sans-serif;
+    font-size:13px; color:#94A3B8; font-weight:600;
+    letter-spacing:.03em;
+  }
+
+  @media (max-width:900px){
+    .essentials-grid{ grid-template-columns:repeat(2, 1fr); }
+    .guides-grid{ grid-template-columns:1fr; }
+    header{ padding:16px 20px; }
+    main{ padding:28px 20px 60px; }
+    .header-title span{ display:none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <button class="back-btn" id="back-btn"><i class="fa-solid fa-arrow-left"></i> Back to Home</button>
+  <div class="header-title"><i class="fa-solid fa-shield-heart"></i> <span>Survival Mode</span></div>
+  <div class="offline-badge"><span class="dot"></span> Offline Mode</div>
+</header>
+
+<main>
+  <section>
+    <div class="section-title">Emergency Essentials</div>
+    <div class="essentials-grid">
+
+      <div class="ess-card">
+        <div class="ess-icon icon-amber"><i class="fa-solid fa-bowl-food"></i></div>
+        <h3>Food &amp; Water</h3>
+        <p>How to purify water, ration food, and stay nourished until help arrives.</p>
+        <button class="ess-btn" onclick="openModal('food')">Open Guide <i class="fa-solid fa-arrow-right"></i></button>
+      </div>
+
+      <div class="ess-card">
+        <div class="ess-icon icon-green"><i class="fa-solid fa-campground"></i></div>
+        <h3>Shelter</h3>
+        <p>Find or build safe shelter, insulate from the elements, and stay visible to rescuers.</p>
+        <button class="ess-btn" onclick="openModal('shelter')">Open Guide <i class="fa-solid fa-arrow-right"></i></button>
+      </div>
+
+      <div class="ess-card">
+        <div class="ess-icon icon-amber"><i class="fa-solid fa-flashlight"></i></div>
+        <h3>Flashlight</h3>
+        <p>Turn your screen into a bright light source — works on any device, no permissions needed.</p>
+        <button class="ess-btn torch-btn" onclick="openTorch()">Turn On <i class="fa-solid fa-bolt"></i></button>
+      </div>
+
+      <div class="ess-card">
+        <div class="ess-icon icon-indigo"><i class="fa-solid fa-book-open"></i></div>
+        <h3>Offline Survival Guide</h3>
+        <p>First aid, fire-starting, navigation, and signaling — all saved for zero-signal moments.</p>
+        <button class="ess-btn" onclick="openModal('guide')">Open Guide <i class="fa-solid fa-arrow-right"></i></button>
+      </div>
+
+    </div>
+  </section>
+
+  <section>
+    <div class="section-title">Quick Reference</div>
+    <div class="guides-grid">
+
+      <div class="guide-card">
+        <div class="guide-head">
+          <div class="guide-icon icon-red"><i class="fa-solid fa-suitcase-medical"></i></div>
+          <h3>First Aid Basics</h3>
+        </div>
+        <p>Fast, essential steps for the most common injuries in an emergency.</p>
+        <ul class="guide-points">
+          <li>Bleeding control &amp; wound care</li>
+          <li>Recognizing shock &amp; hypothermia</li>
+          <li>Basic splinting &amp; support</li>
+        </ul>
+        <button class="ess-btn" onclick="openModal('firstaid')">Read Guide <i class="fa-solid fa-arrow-right"></i></button>
+      </div>
+
+      <div class="guide-card">
+        <div class="guide-head">
+          <div class="guide-icon icon-amber"><i class="fa-solid fa-fire"></i></div>
+          <h3>Fire &amp; Warmth</h3>
+        </div>
+        <p>Starting a fire safely and staying warm without proper gear.</p>
+        <ul class="guide-points">
+          <li>Tinder, kindling &amp; fuel basics</li>
+          <li>Layering for retained body heat</li>
+          <li>Fire safety in the wild</li>
+        </ul>
+        <button class="ess-btn" onclick="openModal('fire')">Read Guide <i class="fa-solid fa-arrow-right"></i></button>
+      </div>
+
+      <div class="guide-card">
+        <div class="guide-head">
+          <div class="guide-icon icon-indigo"><i class="fa-solid fa-compass"></i></div>
+          <h3>Navigation</h3>
+        </div>
+        <p>Finding direction and making good decisions when you're lost.</p>
+        <ul class="guide-points">
+          <li>Reading the sun &amp; stars</li>
+          <li>When to stay put vs. move</li>
+          <li>Marking your trail</li>
+        </ul>
+        <button class="ess-btn" onclick="openModal('nav')">Read Guide <i class="fa-solid fa-arrow-right"></i></button>
+      </div>
+
+      <div class="guide-card">
+        <div class="guide-head">
+          <div class="guide-icon icon-green"><i class="fa-solid fa-tower-broadcast"></i></div>
+          <h3>Signaling for Rescue</h3>
+        </div>
+        <p>Universal signals that help rescuers find you faster.</p>
+        <ul class="guide-points">
+          <li>The "rule of three" distress signal</li>
+          <li>Using mirrors &amp; bright objects</li>
+          <li>Ground-to-air signals</li>
+        </ul>
+        <button class="ess-btn" onclick="openModal('signal')">Read Guide <i class="fa-solid fa-arrow-right"></i></button>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal-box" id="modal-box"></div>
+</div>
+
+<!-- Flashlight fullscreen -->
+<div class="torch-overlay" id="torch-overlay" onclick="closeTorch()">
+  <div class="torch-hint">Tap anywhere to turn off</div>
+</div>
+
+<script>
+  const content = {
+    food: {
+      icon: 'fa-bowl-food', color:'amber', title:'Food & Water',
+      sub:'Staying hydrated and fed when supplies are limited.',
+      blocks:[
+        {h:'Water', items:[
+          'Boil water for at least 1 minute (3 minutes above 2,000m altitude) to kill pathogens.',
+          'If boiling isn\'t possible, use purification tablets or a fine filter.',
+          'Collect rainwater in a clean, covered container — it\'s safer than most ground sources.',
+          'Never drink floodwater or standing water directly, even if it looks clear.'
+        ]},
+        {h:'Food', items:[
+          'The body can survive far longer without food than without water — prioritize water first.',
+          'Eat non-perishable, calorie-dense food first; save shelf-stable items for later.',
+          'Ration in small, steady amounts rather than large infrequent meals.',
+          'Avoid unfamiliar plants or fungi unless you\'re certain they\'re safe to eat.'
+        ]}
+      ],
+      note:'If you can\'t verify a water source is safe, treat it as unsafe — purify before drinking.'
+    },
+    shelter: {
+      icon:'fa-campground', color:'green', title:'Shelter',
+      sub:'Protecting yourself from the elements until help arrives.',
+      blocks:[
+        {h:'Choosing a Location', items:[
+          'Pick elevated, dry ground — avoid low points where water can collect.',
+          'Stay away from lone trees, cliff edges, and dry riverbeds.',
+          'Look for natural windbreaks like rock formations or dense brush.'
+        ]},
+        {h:'Building & Insulating', items:[
+          'Insulate yourself from the ground first — cold ground draws heat faster than cold air.',
+          'Use branches, leaves, or a tarp to build a simple A-frame or lean-to.',
+          'Keep the shelter just big enough for your body — smaller spaces retain heat better.'
+        ]},
+        {h:'Staying Visible', items:[
+          'Mark your shelter with bright cloth or gear so it\'s visible from above.',
+          'If possible, create a large ground symbol (like an "X" or "SOS") nearby.'
+        ]}
+      ],
+      note:'A safe, visible shelter often matters more than a comfortable one — rescue speed comes first.'
+    },
+    guide: {
+      icon:'fa-book-open', color:'indigo', title:'Offline Survival Guide',
+      sub:'Everything below is saved on your device and works without signal.',
+      blocks:[
+        {h:'What\'s covered', items:[
+          'First Aid Basics — bleeding, shock, hypothermia, splinting',
+          'Fire & Warmth — starting fires safely, staying warm',
+          'Navigation — finding direction without GPS',
+          'Signaling for Rescue — universal distress signals'
+        ]}
+      ],
+      note:'Open each topic from the Quick Reference section below for full step-by-step guidance.'
+    },
+    firstaid: {
+      icon:'fa-suitcase-medical', color:'red', title:'First Aid Basics',
+      sub:'Immediate steps for common emergency injuries.',
+      blocks:[
+        {h:'Bleeding', items:[
+          'Apply firm, direct pressure to the wound with a clean cloth.',
+          'Keep the pressure steady — don\'t lift the cloth to check.',
+          'Elevate the injured area above heart level if possible.'
+        ]},
+        {h:'Shock', items:[
+          'Signs include pale skin, rapid breathing, and confusion.',
+          'Lay the person down and elevate their legs slightly.',
+          'Keep them warm and calm; avoid giving food or water if unconscious risk exists.'
+        ]},
+        {h:'Hypothermia', items:[
+          'Watch for shivering, slurred speech, and confusion.',
+          'Move to shelter, remove wet clothing, and warm gradually with dry layers.'
+        ]}
+      ],
+      note:'This is general guidance, not a substitute for professional medical care — seek help as soon as possible.'
+    },
+    fire: {
+      icon:'fa-fire', color:'amber', title:'Fire & Warmth',
+      sub:'Starting a fire and retaining body heat without proper gear.',
+      blocks:[
+        {h:'Starting a Fire', items:[
+          'Gather three layers: tinder (dry grass, bark), kindling (small twigs), and fuel (larger branches).',
+          'Build a small teepee or log-cabin shape to let air flow through.',
+          'Shield your fire-starting area from wind while lighting it.'
+        ]},
+        {h:'Staying Warm', items:[
+          'Several thin layers trap more heat than one thick layer.',
+          'Keep your head, neck, and hands covered — most heat is lost there.',
+          'Stay dry — wet clothing pulls heat away from the body far faster.'
+        ]}
+      ],
+      note:'Always build fires in a cleared area, away from dry brush, and never leave one unattended.'
+    },
+    nav: {
+      icon:'fa-compass', color:'indigo', title:'Navigation',
+      sub:'Finding direction and making good decisions when lost.',
+      blocks:[
+        {h:'Finding Direction', items:[
+          'The sun rises roughly in the east and sets in the west.',
+          'At night, a clear view of the stars can help you hold a steady bearing.',
+          'Don\'t rely on moss growth alone — it\'s not a reliable direction indicator.'
+        ]},
+        {h:'Staying or Moving', items:[
+          'If people know roughly where you are, staying put often helps rescuers find you faster.',
+          'If you do move, mark your path clearly so it can be retraced.',
+          'Head toward high ground or open areas where you\'re easier to spot.'
+        ]}
+      ],
+      note:'When unsure, staying visible and reachable is usually safer than continuing to travel.'
+    },
+    signal: {
+      icon:'fa-tower-broadcast', color:'green', title:'Signaling for Rescue',
+      sub:'Universal signals that help rescuers locate you faster.',
+      blocks:[
+        {h:'The Rule of Three', items:[
+          'Three of anything — fires, whistle blasts, flashes — is recognized worldwide as distress.',
+          'Space signals evenly so they read as intentional, not random.'
+        ]},
+        {h:'Visual Signals', items:[
+          'Reflective surfaces (mirrors, foil) can catch aircraft attention from a distance.',
+          'Bright colored cloth or gear laid out in the open increases visibility from above.',
+          'A large ground symbol like "X" or "SOS" is recognizable from the air.'
+        ]}
+      ],
+      note:'Combine sound and visual signals when possible — rescuers often scan for both.'
+    }
+  };
+
+  function openModal(key){
+    const c = content[key];
+    const box = document.getElementById('modal-box');
+    box.innerHTML = `
+      <div class="modal-head">
+        <div class="modal-head-left">
+          <div class="modal-icon icon-${c.color}"><i class="fa-solid ${c.icon}"></i></div>
+          <h2>${c.title}</h2>
+        </div>
+        <button class="modal-close" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <p class="modal-sub">${c.sub}</p>
+      ${c.blocks.map(b => `
+        <div class="modal-block">
+          <h4>${b.h}</h4>
+          <ul>${b.items.map(i => `<li>${i}</li>`).join('')}</ul>
+        </div>
+      `).join('')}
+      ${c.note ? `<div class="modal-note"><i class="fa-solid fa-triangle-exclamation"></i>&nbsp; ${c.note}</div>` : ''}
+    `;
+    document.getElementById('modal-overlay').classList.add('open');
+  }
+  function closeModal(){
+    document.getElementById('modal-overlay').classList.remove('open');
+  }
+  document.getElementById('modal-overlay').addEventListener('click', (e) => {
+    if(e.target.id === 'modal-overlay') closeModal();
+  });
+
+  function openTorch(){
+    document.getElementById('torch-overlay').classList.add('open');
+  }
+  function closeTorch(){
+    document.getElementById('torch-overlay').classList.remove('open');
+  }
+
+  document.getElementById('back-btn').addEventListener('click', () => {
+    if (window.history.length > 1) window.history.back();
+    else window.location.href = '../index.html';
+  });
+</script>
+
+</body>
+</html>

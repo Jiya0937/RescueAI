@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  # FastAPI backend service
+  backend:
+    build:
+      context: ./backend
+      dockerfile: ../docker/Dockerfile.backend
+    container_name: rescue_backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/workspace
+      - sqlite_data:/workspace/app/database
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8000
+      - DATABASE_URL=sqlite:///./app/database/rescue.db
+      - OLLAMA_API_BASE=http://ollama:11434
+    depends_on:
+      - ollama
+
+  # React PWA frontend service
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ../docker/Dockerfile.frontend
+    container_name: rescue_frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/workspace
+      - /workspace/node_modules
+    depends_on:
+      - backend
+
+  # Ollama offline LLM service
+  ollama:
+    image: ollama/ollama:latest
+    container_name: rescue_ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+
+volumes:
+  sqlite_data:
+  ollama_data:

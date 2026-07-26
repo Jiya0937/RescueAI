@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Settings · RescueAI</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<link rel="stylesheet" href="../css/settings.css">
+</head>
+<body>
+
+<!-- ===================== TOP BAR ===================== -->
+<header class="topbar">
+  <div class="topbar-left">
+    <button class="icon-btn" id="back-btn" aria-label="Go back">
+      <i data-lucide="chevron-left"></i>
+    </button>
+    <button class="icon-btn" id="home-btn" aria-label="Go to home page">
+      <i data-lucide="home"></i>
+    </button>
+    <div class="brand">
+      <span class="brand-badge"><i data-lucide="shield-plus"></i></span>
+      <div class="brand-text">
+        <span class="brand-name">RescueAI</span>
+        <span class="brand-tag">Your Safety, Our Priority</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="settings-page">
+
+  <h1>Settings</h1>
+  <p class="page-sub">Manage your account, security, and how RescueAI reaches you in an emergency.</p>
+
+  <div id="settings-toast" class="toast" role="status" aria-live="polite"></div>
+
+  <!-- ===================== ACCOUNT INFO ===================== -->
+  <section class="settings-card">
+    <div class="card-head">
+      <i data-lucide="user-round"></i>
+      <div>
+        <h2>Account details</h2>
+        <p>Update your name, email, and phone number.</p>
+      </div>
+    </div>
+
+    <form id="profile-form" class="settings-form">
+      <label class="field">
+        <span>Full name</span>
+        <input type="text" id="profile-name" placeholder="Your name" maxlength="100">
+      </label>
+
+      <label class="field">
+        <span>Email address</span>
+        <input type="email" id="profile-email" placeholder="you@example.com" required>
+      </label>
+
+      <label class="field">
+        <span>Phone number</span>
+        <input type="tel" id="profile-phone" placeholder="+91 98765 43210" maxlength="20">
+      </label>
+
+      <div class="form-actions">
+        <button type="submit" class="btn-primary">
+          <i data-lucide="save"></i> Save changes
+        </button>
+        <span class="form-msg" id="profile-msg"></span>
+      </div>
+    </form>
+  </section>
+
+  <!-- ===================== PASSWORD ===================== -->
+  <section class="settings-card">
+    <div class="card-head">
+      <i data-lucide="lock-keyhole"></i>
+      <div>
+        <h2>Update password</h2>
+        <p>Choose a strong password you don't use elsewhere.</p>
+      </div>
+    </div>
+
+    <form id="password-form" class="settings-form">
+      <label class="field">
+        <span>Current password</span>
+        <input type="password" id="current-password" required autocomplete="current-password">
+      </label>
+
+      <label class="field">
+        <span>New password</span>
+        <input type="password" id="new-password" required minlength="8" autocomplete="new-password">
+      </label>
+
+      <label class="field">
+        <span>Confirm new password</span>
+        <input type="password" id="confirm-password" required minlength="8" autocomplete="new-password">
+      </label>
+
+      <div class="form-actions">
+        <button type="submit" class="btn-primary">
+          <i data-lucide="key-round"></i> Update password
+        </button>
+        <span class="form-msg" id="password-msg"></span>
+      </div>
+    </form>
+  </section>
+
+  <!-- ===================== EMERGENCY SETUP SHORTCUT ===================== -->
+  <section class="settings-card link-card" id="emergency-shortcut">
+    <div class="card-head">
+      <i data-lucide="siren"></i>
+      <div>
+        <h2>Emergency contacts</h2>
+        <p>Manage who gets notified when you trigger SOS.</p>
+      </div>
+    </div>
+    <i data-lucide="chevron-right" class="link-arrow"></i>
+  </section>
+
+  <!-- ===================== PREFERENCES ===================== -->
+  <section class="settings-card">
+    <div class="card-head">
+      <i data-lucide="sliders-horizontal"></i>
+      <div>
+        <h2>Preferences</h2>
+        <p>Control alerts and how the app behaves.</p>
+      </div>
+    </div>
+
+    <div class="toggle-row">
+      <div>
+        <p class="toggle-label">SOS alert sound</p>
+        <p class="toggle-sub">Play a sound when SOS is activated.</p>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="pref-sound" checked>
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="toggle-row">
+      <div>
+        <p class="toggle-label">Auto-share location on SOS</p>
+        <p class="toggle-sub">Share your live location with emergency contacts automatically.</p>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="pref-location" checked>
+        <span class="slider"></span>
+      </label>
+    </div>
+  </section>
+
+  <!-- ===================== DANGER ZONE ===================== -->
+  <section class="settings-card danger-card">
+    <div class="card-head">
+      <i data-lucide="log-out"></i>
+      <div>
+        <h2>Log out</h2>
+        <p>Sign out of RescueAI on this device.</p>
+      </div>
+    </div>
+    <button class="btn-danger" id="logout-btn">Log out</button>
+  </section>
+
+</main>
+
+<script src="../js/settings.js"></script>
+</body>
+</html>

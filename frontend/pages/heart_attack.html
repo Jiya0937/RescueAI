@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n="title">Heart Attack - Emergency Relief - RescueAI</title>
+  
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="../css/common/variables.css">
+  <link rel="stylesheet" href="../css/common/style.css">
+  <link rel="stylesheet" href="../css/common/animation.css">
+  <link rel="stylesheet" href="../css/common/navbar.css">
+  <link rel="stylesheet" href="../css/common/footer.css">
+  <link rel="stylesheet" href="../css/common/language.css">
+  <link rel="stylesheet" href="../css/emergency.css">
+  <link rel="stylesheet" href="../css/chatbot.css">
+</head>
+<body>
+
+  <!-- Navigation Header with Return Link -->
+  <header>
+    <div class="navbar">
+      <div class="nav-left">
+        <a href="medical.html" class="back-home-link">
+          <i data-lucide="arrow-left" style="width: 20px; height: 20px;"></i>
+          <span data-i18n="nav_back_to_guide" style="font-weight: 700;">Back to Guide</span>
+        </a>
+      </div>
+      <div class="nav-right">
+        <button class="nav-item" id="nav-lang">
+          <i data-lucide="globe"></i>
+          <span data-i18n="nav_language">Language</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Language Selection Modal Overlay & Container (Reused) -->
+  <div class="lang-modal-overlay" id="lang-modal-overlay"></div>
+  <div class="lang-modal-container" id="lang-modal-container">
+    <div class="lang-header">
+      <div class="lang-title">
+        <i data-lucide="globe" style="width: 20px; height: 20px;"></i>
+        <span data-i18n="lang_select_title">Select Language</span>
+      </div>
+      <span class="lang-subtitle" data-i18n="lang_select_subtitle">Choose your preferred language for the RescueAI interface.</span>
+    </div>
+    
+    <div class="lang-search-wrapper">
+      <i data-lucide="search" class="lang-search-icon"></i>
+      <input type="text" class="lang-search-input" id="lang-search-input" placeholder="Search language..." data-i18n="lang_search_placeholder">
+    </div>
+    
+    <div class="lang-list" id="lang-cards-list">
+      <button class="lang-card selected" data-lang="en">
+        <div class="lang-card-left">
+          <span class="lang-flag">🇺🇸</span>
+          <div class="lang-names-wrapper">
+            <span class="lang-eng-name">English</span>
+            <span class="lang-native-name">English</span>
+          </div>
+        </div>
+        <i data-lucide="check" class="lang-check-icon"></i>
+      </button>
+      <button class="lang-card" data-lang="hi">
+        <div class="lang-card-left">
+          <span class="lang-flag">🇮🇳</span>
+          <div class="lang-names-wrapper">
+            <span class="lang-eng-name">Hindi</span>
+            <span class="lang-native-name">हिन्दी</span>
+          </div>
+        </div>
+        <i data-lucide="check" class="lang-check-icon"></i>
+      </button>
+      <button class="lang-card" data-lang="mr">
+        <div class="lang-card-left">
+          <span class="lang-flag">🇮🇳</span>
+          <div class="lang-names-wrapper">
+            <span class="lang-eng-name">Marathi</span>
+            <span class="lang-native-name">मराठी</span>
+          </div>
+        </div>
+        <i data-lucide="check" class="lang-check-icon"></i>
+      </button>
+    </div>
+    
+    <div class="lang-settings-panel">
+      <label class="lang-toggle-row">
+        <input type="checkbox" class="lang-checkbox" id="sync-voice-checkbox" checked>
+        <span data-i18n="lang_sync_voice">Sync Voice with Interface</span>
+      </label>
+      <label class="lang-toggle-row">
+        <input type="checkbox" class="lang-checkbox" id="auto-detect-checkbox">
+        <span data-i18n="lang_auto_detect">Auto Detect User Language</span>
+      </label>
+    </div>
+  </div>
+
+  <main class="container emergency-container">
+    
+    <!-- Title Section -->
+    <div class="emergency-header">
+      <div class="emergency-icon-container icon-heart">
+        <i data-lucide="heart" style="width: 32px; height: 32px;"></i>
+      </div>
+      <div class="emergency-title-wrapper">
+        <h1 class="emergency-title" data-i18n="heart_page_title">Heart Attack</h1>
+        <span class="emergency-subtitle" data-i18n="heart_page_subtitle">Emergency relief for heart attacks</span>
+      </div>
+    </div>
+
+    <!-- Warning Card -->
+    <div class="emergency-warning-card warning-heart">
+      <div class="warning-icon">
+        <i data-lucide="alert-triangle" style="width: 28px; height: 28px;"></i>
+      </div>
+      <div class="warning-text">
+        <strong data-i18n="emergency_warning_title">Medical Emergency</strong>
+        <span data-i18n="heart_warning_text">A heart attack is a medical emergency. Act fast to increase the chances of survival.</span>
+      </div>
+    </div>
+
+    <!-- Details Grid -->
+    <div class="emergency-grid">
+      
+      <!-- Left Column: Steps -->
+      <div class="emergency-guide-card">
+        <h2 class="guide-title" data-i18n="step_by_step_guide_title">Step-by-Step Guide</h2>
+        <ul class="steps-list">
+          <li class="step-item">
+            <div class="step-badge badge-heart">1</div>
+            <div class="step-content" data-i18n="heart_step1">Call 108 or 112 immediately.</div>
+          </li>
+          <li class="step-item">
+            <div class="step-badge badge-heart">2</div>
+            <div class="step-content" data-i18n="heart_step2">Keep the person calm and seated.</div>
+          </li>
+          <li class="step-item">
+            <div class="step-badge badge-heart">3</div>
+            <div class="step-content" data-i18n="heart_step3">Loosen tight clothing.</div>
+          </li>
+          <li class="step-item">
+            <div class="step-badge badge-heart">4</div>
+            <div class="step-content" data-i18n="heart_step4">Give aspirin (if not allergic).</div>
+          </li>
+          <li class="step-item">
+            <div class="step-badge badge-heart">5</div>
+            <div class="step-content" data-i18n="heart_step5">Monitor until help arrives.</div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Right Column: What NOT to do & Action Buttons -->
+      <div class="emergency-side-column">
+        
+        <!-- What NOT to do -->
+        <div class="emergency-not-card">
+          <h2 class="not-title" data-i18n="what_not_to_do_title">What NOT To Do</h2>
+          <ul class="not-list">
+            <li class="not-item">
+              <i data-lucide="x-circle" class="not-icon" style="width: 18px; height: 18px;"></i>
+              <span data-i18n="heart_not1">Do not ignore symptoms.</span>
+            </li>
+            <li class="not-item">
+              <i data-lucide="x-circle" class="not-icon" style="width: 18px; height: 18px;"></i>
+              <span data-i18n="heart_not2">Do not let the person walk or exert.</span>
+            </li>
+            <li class="not-item">
+              <i data-lucide="x-circle" class="not-icon" style="width: 18px; height: 18px;"></i>
+              <span data-i18n="heart_not3">Do not give food or drink.</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Emergency Actions Panel -->
+        <div class="emergency-actions-card">
+          <h2 class="actions-title" data-i18n="emergency_actions_title">Emergency Actions</h2>
+          <div class="actions-grid">
+            <button class="action-btn action-108" id="action-call-108">
+              <div class="action-icon-circle">
+                <i data-lucide="phone" style="width: 20px; height: 20px;"></i>
+              </div>
+              <span class="action-btn-text" data-i18n="call_108_btn">Call 108</span>
+            </button>
+            <button class="action-btn action-112" id="action-call-112">
+              <div class="action-icon-circle">
+                <i data-lucide="phone" style="width: 20px; height: 20px;"></i>
+              </div>
+              <span class="action-btn-text" data-i18n="call_112_btn">Call 112</span>
+            </button>
+            <button class="action-btn action-location" id="action-share-location">
+              <div class="action-icon-circle">
+                <i data-lucide="map-pin" style="width: 20px; height: 20px;"></i>
+              </div>
+              <span class="action-btn-text" data-i18n="share_location_btn">Share Location</span>
+            </button>
+            <button class="action-btn action-hospital" id="action-find-hospital">
+              <div class="action-icon-circle">
+                <i data-lucide="hospital" style="width: 20px; height: 20px;"></i>
+              </div>
+              <span class="action-btn-text" data-i18n="find_hospital_btn">Find Hospital</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Script Loader -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="../js/common/translations.js"></script>
+  <script src="../js/common/emergency_translations.js"></script>
+  <script src="../js/common/main.js"></script>
+  <script src="../js/emergency.js"></script>
+  <script src="../js/chatbot.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+backend/.venv/
+venv/
+env/
+ENV/
+
+# Environment files
+.env
+.env.*
+
+# Node
+node_modules/
+
+# Databases
+*.db
+*.sqlite3
+
+# Offline map tiles
+backend/tiles/
+
+# IDE
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

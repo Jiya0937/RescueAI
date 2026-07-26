@@ -1,0 +1,130 @@
+[
+  {
+    "name": "City Hospital",
+    "type": "Hospital",
+    "address": "MG Road, Indore",
+    "latitude": 22.7196,
+    "longitude": 75.8577
+  },
+  {
+    "name": "Apollo Hospital",
+    "type": "Hospital",
+    "address": "Vijay Nagar, Indore",
+    "latitude": 22.7533,
+    "longitude": 75.8937
+  },
+  {
+    "name": "Fire Station",
+    "type": "Fire Station",
+    "address": "Rajwada, Indore",
+    "latitude": 22.7179,
+    "longitude": 75.8333
+  },
+  {
+    "name": "Police Station",
+    "type": "Police",
+    "address": "Palasia, Indore",
+    "latitude": 22.7250,
+    "longitude": 75.8830
+  },
+  {
+    "name": "Emergency Shelter",
+    "type": "Shelter",
+    "address": "Geeta Bhawan, Indore",
+    "latitude": 22.7065,
+    "longitude": 75.8758
+  }
+
+,
+  {
+    "id": 1,
+    "name": "City Hospital",
+    "category": "hospital",
+    "lat": 22.7185,
+    "lng": 75.8560,
+    "distance_km": 1.2,
+    "status": "Emergency Available",
+    "address": "AB Road, Indore"
+  },
+  {
+    "id": 2,
+    "name": "Central Police Station",
+    "category": "police",
+    "lat": 22.7210,
+    "lng": 75.8600,
+    "distance_km": 1.8,
+    "status": "Open 24/7",
+    "address": "MG Road, Indore"
+  },
+  {
+    "id": 3,
+    "name": "Lifecare Pharmacy",
+    "category": "pharmacy",
+    "lat": 22.7175,
+    "lng": 75.8550,
+    "distance_km": 0.8,
+    "status": "Open",
+    "address": "Sapna Sangeeta Road, Indore"
+  },
+  {
+    "id": 4,
+    "name": "Indian Oil Petrol Pump",
+    "category": "petrol",
+    "lat": 22.7220,
+    "lng": 75.8590,
+    "distance_km": 1.6,
+    "status": "Open",
+    "address": "Ring Road, Indore"
+  },
+  {
+    "id": 5,
+    "name": "State Bank ATM",
+    "category": "atm",
+    "lat": 22.7190,
+    "lng": 75.8570,
+    "distance_km": 0.5,
+    "status": "Active",
+    "address": "Vijay Nagar, Indore"
+  },
+  {
+    "id": 6,
+    "name": "St. Xavier School",
+    "category": "school",
+    "lat": 22.7250,
+    "lng": 75.8620,
+    "distance_km": 2.3,
+    "status": "Open",
+    "address": "Race Course Road, Indore"
+  },
+  {
+    "id": 7,
+    "name": "Indore Junction",
+    "category": "railway",
+    "lat": 22.7160,
+    "lng": 75.8480,
+    "distance_km": 2.8,
+    "status": "Railway Station",
+    "address": "Station Road, Indore"
+  },
+  {
+    "id": 8,
+    "name": "Green Park Restaurant",
+    "category": "restaurant",
+    "lat": 22.7200,
+    "lng": 75.8610,
+    "distance_km": 1.4,
+    "status": "Open",
+    "address": "Palasia, Indore"
+  },
+  {
+    "id": 9,
+    "name": "Nehru Public Park",
+    "category": "park",
+    "lat": 22.7280,
+    "lng": 75.8640,
+    "distance_km": 3.4,
+    "status": "Open Ground",
+    "address": "Nehru Nagar, Indore"
+  }
+
+]

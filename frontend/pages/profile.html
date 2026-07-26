@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RescueAI - User Profile & Emergency Health Card</title>
+  <meta name="description" content="Manage your personal information, medical records, emergency contacts, and account security.">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Global & Profile Styles -->
+  <link rel="stylesheet" href="../css/index.css">
+  <link rel="stylesheet" href="../css/profile.css">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="profile-body">
+
+  <!-- Top Navigation Header -->
+  <header class="profile-navbar">
+    <div class="nav-container">
+      <a href="../index.html" class="nav-logo">
+        <div class="logo-shield">
+          <svg class="logo-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 22C12 22 20 18 20 12V5L12 2L4 5V12C4 18 12 22 12 22Z" fill="#EF4444" stroke="#DC2626" stroke-width="1.5" stroke-linejoin="round"/>
+            <path d="M12 7V15M8 11H16" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <span class="logo-text">Rescue<span class="logo-highlight">AI</span></span>
+      </a>
+
+      <div class="nav-actions">
+        <a href="../index.html" class="btn-nav-link">
+          <i data-lucide="home"></i>
+          <span>Home</span>
+        </a>
+        <button class="btn-nav-logout" id="nav-btn-logout" title="Sign Out">
+          <i data-lucide="log-out"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+
+  <div class="profile-main-container">
+    
+    <!-- 1. PROFILE HEADER CARD -->
+    <div class="profile-card profile-header-card">
+      <div class="header-avatar-column">
+        <div class="avatar-wrapper" id="avatar-container">
+          <img id="profile-avatar-img" src="../assets/images/disaster/pandemic.png" alt="Profile Image" class="avatar-img">
+          <div class="avatar-overlay">
+            <label for="avatar-file-input" class="avatar-action-btn" title="Upload Photo">
+              <i data-lucide="camera"></i>
+            </label>
+            <button type="button" class="avatar-action-btn remove-btn" id="btn-remove-avatar" title="Remove Photo">
+              <i data-lucide="trash-2"></i>
+            </button>
+          </div>
+          <input type="file" id="avatar-file-input" accept="image/*" style="display: none;">
+        </div>
+      </div>
+
+      <div class="header-info-column">
+        <div class="user-name-row">
+          <h1 class="user-display-name" id="user-display-name">John Doe</h1>
+          <span class="badge-status-pill" id="account-type-pill">Cloud Synced</span>
+        </div>
+        <p class="user-display-email" id="user-display-email">john.doe@example.com</p>
+
+        <!-- Completion Bar -->
+        <div class="header-completion-box">
+          <div class="completion-info">
+            <span class="completion-label">Profile Completion</span>
+            <span class="completion-value" id="completion-pct-value">40%</span>
+          </div>
+          <div class="completion-bar-track">
+            <div class="completion-bar-fill" id="completion-bar-fill" style="width: 40%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="header-action-column">
+        <button class="btn-edit-header" id="btn-open-edit-personal">
+          <i data-lucide="edit-3"></i>
+          <span>Edit Profile</span>
+        </button>
+      </div>
+    </div>
+
+
+    <!-- GRID SYSTEM FOR PROFILE SECTIONS -->
+    <div class="profile-grid">
+
+      <!-- 2. PERSONAL INFORMATION CARD -->
+      <div class="profile-card section-card">
+        <div class="section-card-header">
+          <div class="section-title-wrap">
+            <i data-lucide="user" class="section-icon"></i>
+            <h2>Personal Information</h2>
+          </div>
+          <button class="btn-section-edit" onclick="openSectionModal('personal')">
+            <i data-lucide="edit-2"></i>
+            <span>Edit</span>
+          </button>
+        </div>
+
+        <div class="info-data-grid">
+          <div class="info-item">
+            <span class="item-label">Gender</span>
+            <span class="item-value" id="val-gender">Not specified</span>
+          </div>
+          <div class="info-item">
+            <span class="item-label">Date of Birth / Age</span>
+            <span class="item-value" id="val-dob">Not specified</span>
+          </div>
+          <div class="info-item">
+            <span class="item-label">Phone Number</span>
+            <span class="item-value" id="val-phone">Not specified</span>
+          </div>
+          <div class="info-item">
+            <span class="item-label">Alt Phone Number</span>
+            <span class="item-value" id="val-alt-phone">Not specified</span>
+          </div>
+          <div class="info-item full-width">
+            <span class="item-label">Address</span>
+            <span class="item-value" id="val-address">Not specified</span>
+          </div>
+          <div class="info-item">
+            <span class="item-label">City / State</span>
+            <span class="item-value" id="val-city-state">Not specified</span>
+          </div>
+          <div class="info-item">
+            <span class="item-label">Country & Postal Code</span>
+            <span class="item-value" id="val-country">Not specified</span>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- 3. MEDICAL INFORMATION CARD -->
+      <div class="profile-card section-card">
+        <div class="section-card-header">
+          <div class="section-title-wrap">
+            <i data-lucide="activity" class="section-icon red"></i>
+            <h2>Medical Profile</h2>
+          </div>
+          <button class="btn-section-edit" onclick="openSectionModal('medical')">
+            <i data-lucide="edit-2"></i>
+            <span>Edit</span>
+          </button>
+        </div>
+
+        <div class="info-data-grid">
+          <div class="info-item highlight-item">
+            <span class="item-label">Blood Group</span>
+            <span class="item-value blood-badge" id="val-blood-group">O+</span>
+          </div>
+          <div class="info-item">
+            <span class="item-label">Height / Weight / BMI</span>
+            <span class="item-value" id="val-hwb">175cm / 70kg</span>
+          </div>
+          <div class="info-item full-width">
+            <span class="item-label">Known Allergies</span>
+            <span class="item-value tag-list" id="val-allergies">Penicillin</span>
+          </div>
+          <div class="info-item full-width">
+            <span class="item-label">Known Diseases / Conditions</span>
+            <span class="item-value" id="val-diseases">Asthma</span>
+          </div>
+          <div class="info-item">
+            <span class="item-label">Organ Donor</span>
+            <span class="item-value" id="val-organ-donor">Yes</span>
+          </div>
+          <div class="info-item">
+            <span class="item-label">Hospital Preference</span>
+            <span class="item-value" id="val-hospital">City Hospital</span>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- 4. EMERGENCY CONTACTS CARD (UP TO 5 CONTACTS) -->
+      <div class="profile-card section-card full-span">
+        <div class="section-card-header">
+          <div class="section-title-wrap">
+            <i data-lucide="phone-call" class="section-icon purple"></i>
+            <h2>Emergency Contacts (Up to 5)</h2>
+          </div>
+          <button class="btn-section-edit" onclick="openSectionModal('contacts')">
+            <i data-lucide="plus"></i>
+            <span>Manage Contacts</span>
+          </button>
+        </div>
+
+        <div class="contacts-grid" id="contacts-display-grid">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+
+
+      <!-- 5. BIOMETRIC SETTINGS CARD -->
+      <div class="profile-card section-card">
+        <div class="section-card-header">
+          <div class="section-title-wrap">
+            <i data-lucide="fingerprint" class="section-icon blue"></i>
+            <h2>Biometric Authentication</h2>
+          </div>
+        </div>
+
+        <div class="switch-list">
+          <div class="switch-item">
+            <div class="switch-info">
+              <span class="switch-title">Fingerprint Unlock</span>
+              <span class="switch-desc">Use device fingerprint scanner for quick SOS login.</span>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="switch-fingerprint">
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="switch-item">
+            <div class="switch-info">
+              <span class="switch-title">Face Authentication</span>
+              <span class="switch-desc">Unlock profile using biometric face recognition.</span>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="switch-face">
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="switch-item">
+            <div class="switch-info">
+              <span class="switch-title">Voice Authentication</span>
+              <span class="switch-desc">Authorize emergency actions using voice recognition.</span>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="switch-voice">
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- 6. ACCOUNT SECURITY & PREFERENCES -->
+      <div class="profile-card section-card">
+        <div class="section-card-header">
+          <div class="section-title-wrap">
+            <i data-lucide="shield-check" class="section-icon green"></i>
+            <h2>Preferences & Security</h2>
+          </div>
+        </div>
+
+        <div class="info-data-grid">
+          <div class="info-item">
+            <span class="item-label">Preferred Language</span>
+            <span class="item-value" id="val-pref-lang">English</span>
+          </div>
+          <div class="info-item">
+            <span class="item-label">Emergency Offline Status</span>
+            <span class="item-value badge-green">Active (Ready)</span>
+          </div>
+          <div class="info-item full-width">
+            <span class="item-label">Last Sync Time</span>
+            <span class="item-value" id="val-last-sync">Just now</span>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- 7. DANGER ZONE -->
+      <div class="profile-card section-card full-span danger-zone-card">
+        <div class="section-card-header">
+          <div class="section-title-wrap">
+            <i data-lucide="alert-triangle" class="section-icon red"></i>
+            <h2>Danger Zone</h2>
+          </div>
+        </div>
+
+        <div class="danger-actions-row">
+          <div class="danger-info">
+            <h3 class="danger-title">Sign Out or Delete Account</h3>
+            <p class="danger-desc">Signing out keeps your local emergency card active on this device. Deleting your account permanently removes cloud backups.</p>
+          </div>
+          <div class="danger-btns-group">
+            <button class="btn-danger-logout" id="btn-danger-logout">
+              <i data-lucide="log-out"></i>
+              <span>Sign Out</span>
+            </button>
+            <button class="btn-danger-delete" id="btn-danger-delete">
+              <i data-lucide="trash-2"></i>
+              <span>Delete Account</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- SECTION EDIT MODAL DRAWER -->
+  <div class="modal-backdrop" id="edit-modal-backdrop">
+    <div class="modal-card" id="edit-modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modal-title-text">Edit Information</h3>
+        <button class="modal-close-btn" onclick="closeEditModal()">&times;</button>
+      </div>
+
+      <div class="modal-body" id="modal-body-content">
+        <!-- Content injected dynamically by profile.js -->
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-modal-cancel" onclick="closeEditModal()">Cancel</button>
+        <button class="btn-modal-save" id="btn-modal-save">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/profile.js"></script>
+</body>
+</html>

@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n="maps_title">Offline Maps & Live Location - RescueAI</title>
+  
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="../css/common/variables.css">
+  <link rel="stylesheet" href="../css/common/style.css">
+  <link rel="stylesheet" href="../css/common/animation.css">
+  <link rel="stylesheet" href="../css/common/navbar.css">
+  <link rel="stylesheet" href="../css/common/footer.css">
+  <link rel="stylesheet" href="../css/common/language.css">
+  <link rel="stylesheet" href="../css/maps.css">
+</head>
+<body>
+
+  <!-- Navigation Header with Return Link & Status Badges -->
+  <header>
+    <div class="navbar">
+      <div class="nav-left">
+        <a href="../index.html" class="back-home-link" id="nav-back-link">
+          <i data-lucide="arrow-left" style="width: 20px; height: 20px;"></i>
+          <span data-i18n="nav_back_to_home" style="font-weight: 700;">Back to Home</span>
+        </a>
+      </div>
+      <div class="nav-right">
+        <div class="offline-mode-badge" title="Works 100% Without Internet">
+          <span class="offline-dot"></span>
+          <span>Offline Mode</span>
+        </div>
+        <button class="nav-item lang-badge-btn" id="nav-lang">
+          <i data-lucide="globe"></i>
+          <span>EN | हिन्दी</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Language Selection Modal Overlay & Container -->
+  <div class="lang-modal-overlay" id="lang-modal-overlay"></div>
+  <div class="lang-modal-container" id="lang-modal-container">
+    <div class="lang-header">
+      <div class="lang-title">
+        <i data-lucide="globe" style="width: 20px; height: 20px;"></i>
+        <span data-i18n="lang_select_title">Select Language</span>
+      </div>
+      <span class="lang-subtitle" data-i18n="lang_select_subtitle">Choose your preferred language for the RescueAI interface.</span>
+    </div>
+    
+    <div class="lang-search-wrapper">
+      <i data-lucide="search" class="lang-search-icon"></i>
+      <input type="text" class="lang-search-input" id="lang-search-input" placeholder="Search language..." data-i18n="lang_search_placeholder">
+    </div>
+    
+    <div class="lang-list" id="lang-cards-list">
+      <button class="lang-card selected" data-lang="en">
+        <div class="lang-card-left">
+          <span class="lang-flag">🇺🇸</span>
+          <div class="lang-names-wrapper">
+            <span class="lang-eng-name">English</span>
+            <span class="lang-native-name">English</span>
+          </div>
+        </div>
+        <i data-lucide="check" class="lang-check-icon"></i>
+      </button>
+      <button class="lang-card" data-lang="hi">
+        <div class="lang-card-left">
+          <span class="lang-flag">🇮🇳</span>
+          <div class="lang-names-wrapper">
+            <span class="lang-eng-name">Hindi</span>
+            <span class="lang-native-name">हिन्दी</span>
+          </div>
+        </div>
+        <i data-lucide="check" class="lang-check-icon"></i>
+      </button>
+      <button class="lang-card" data-lang="mr">
+        <div class="lang-card-left">
+          <span class="lang-flag">🇮🇳</span>
+          <div class="lang-names-wrapper">
+            <span class="lang-eng-name">Marathi</span>
+            <span class="lang-native-name">मराठी</span>
+          </div>
+        </div>
+        <i data-lucide="check" class="lang-check-icon"></i>
+      </button>
+    </div>
+    
+    <div class="lang-settings-panel">
+      <label class="lang-toggle-row">
+        <input type="checkbox" class="lang-checkbox" id="sync-voice-checkbox" checked>
+        <span data-i18n="lang_sync_voice">Sync Voice with Interface</span>
+      </label>
+      <label class="lang-toggle-row">
+        <input type="checkbox" class="lang-checkbox" id="auto-detect-checkbox">
+        <span data-i18n="lang_auto_detect">Auto Detect User Language</span>
+      </label>
+    </div>
+  </div>
+
+  <main class="container maps-container">
+    
+    <!-- Hero Section -->
+    <section class="maps-hero">
+      <div class="hero-glass-overlay"></div>
+      <div class="maps-hero-content fade-right">
+        <div class="maps-hero-title-row">
+          <div class="maps-hero-icon-pill">
+            <i data-lucide="map-pin"></i>
+          </div>
+          <h1 class="maps-hero-title" data-i18n="maps_title">Offline Maps & Live Location</h1>
+        </div>
+        <p class="maps-hero-subtitle" data-i18n="maps_hero_desc">
+          Find your current location, search any place, and navigate safely even without internet.
+        </p>
+
+        <!-- Premium Feature Chips -->
+        <div class="hero-feature-chips">
+          <div class="hero-chip">
+            <i data-lucide="wifi-off" class="chip-icon"></i>
+            <span>100% Offline</span>
+          </div>
+          <div class="hero-chip">
+            <i data-lucide="cpu" class="chip-icon"></i>
+            <span>AI Powered</span>
+          </div>
+          <div class="hero-chip">
+            <i data-lucide="navigation" class="chip-icon"></i>
+            <span>Live GPS</span>
+          </div>
+          <div class="hero-chip">
+            <i data-lucide="search" class="chip-icon"></i>
+            <span>Search Anything</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Search Section -->
+    <section class="maps-search-section">
+      <div class="gmaps-search-bar">
+        <i data-lucide="search" class="gmaps-search-icon"></i>
+        <input type="text" class="gmaps-search-input" id="maps-search-input" placeholder="Search for hospitals, schools, petrol pumps, rivers, highways, ATMs, restaurants..." data-i18n="maps_search_placeholder">
+        <div class="gmaps-search-actions">
+          <button class="gmaps-action-btn voice-btn" id="voice-search-btn" title="Voice Search">
+            <i data-lucide="mic"></i>
+          </button>
+          <button class="gmaps-action-btn search-btn" id="trigger-search-btn" title="Search">
+            <i data-lucide="arrow-right"></i>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Category Filters -->
+    <section class="maps-categories-section">
+      <div class="category-chips-scroll" id="category-chips-scroll">
+        <button class="category-chip active" data-category="all">
+          <i data-lucide="layout-grid" class="chip-cat-icon"></i>
+          <span>All</span>
+        </button>
+        <button class="category-chip" data-category="hospital">
+          <i data-lucide="heart-pulse" class="chip-cat-icon icon-red"></i>
+          <span>Hospitals</span>
+        </button>
+        <button class="category-chip" data-category="pharmacy">
+          <i data-lucide="pill" class="chip-cat-icon icon-green"></i>
+          <span>Pharmacy</span>
+        </button>
+        <button class="category-chip" data-category="police">
+          <i data-lucide="shield" class="chip-cat-icon icon-blue"></i>
+          <span>Police</span>
+        </button>
+        <button class="category-chip" data-category="fire">
+          <i data-lucide="flame" class="chip-cat-icon icon-orange"></i>
+          <span>Fire Station</span>
+        </button>
+        <button class="category-chip" data-category="petrol">
+          <i data-lucide="fuel" class="chip-cat-icon icon-yellow"></i>
+          <span>Petrol Pump</span>
+        </button>
+        <button class="category-chip" data-category="hotel">
+          <i data-lucide="bed" class="chip-cat-icon icon-purple"></i>
+          <span>Hotels</span>
+        </button>
+        <button class="category-chip" data-category="school">
+          <i data-lucide="graduation-cap" class="chip-cat-icon icon-indigo"></i>
+          <span>Schools</span>
+        </button>
+        <button class="category-chip" data-category="restaurant">
+          <i data-lucide="utensils" class="chip-cat-icon icon-amber"></i>
+          <span>Restaurants</span>
+        </button>
+        <button class="category-chip" data-category="atm">
+          <i data-lucide="credit-card" class="chip-cat-icon icon-emerald"></i>
+          <span>ATM</span>
+        </button>
+        <button class="category-chip" data-category="shopping">
+          <i data-lucide="shopping-bag" class="chip-cat-icon icon-pink"></i>
+          <span>Shopping</span>
+        </button>
+        <button class="category-chip" data-category="railway">
+          <i data-lucide="train" class="chip-cat-icon icon-cyan"></i>
+          <span>Railway</span>
+        </button>
+        <button class="category-chip" data-category="airport">
+          <i data-lucide="plane" class="chip-cat-icon icon-sky"></i>
+          <span>Airport</span>
+        </button>
+        <button class="category-chip" data-category="bus">
+          <i data-lucide="bus" class="chip-cat-icon icon-violet"></i>
+          <span>Bus Stop</span>
+        </button>
+        <button class="category-chip" data-category="temple">
+          <i data-lucide="building-2" class="chip-cat-icon icon-rose"></i>
+          <span>Temple</span>
+        </button>
+        <button class="category-chip" data-category="park">
+          <i data-lucide="trees" class="chip-cat-icon icon-teal"></i>
+          <span>Park</span>
+        </button>
+        <button class="category-chip" data-category="river">
+          <i data-lucide="waves" class="chip-cat-icon icon-blue font-water"></i>
+          <span>River</span>
+        </button>
+        <button class="category-chip" data-category="bridge">
+          <i data-lucide="git-commit" class="chip-cat-icon icon-slate"></i>
+          <span>Bridge</span>
+        </button>
+        <button class="category-chip" data-category="highway">
+          <i data-lucide="route" class="chip-cat-icon icon-dark"></i>
+          <span>Highway</span>
+        </button>
+        <button class="category-chip" data-category="more">
+          <i data-lucide="more-horizontal" class="chip-cat-icon"></i>
+          <span>More</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Main Content Layout -->
+    <section class="maps-main-grid">
+      
+      <!-- Left Column: Location Card & Offline Status -->
+      <div class="maps-left-col">
+        <!-- Current Location Card -->
+        <div class="location-card glass-card">
+          <div class="loc-card-header">
+            <div class="loc-icon-badge">
+              <i data-lucide="map-pin"></i>
+            </div>
+            <div class="loc-header-text">
+              <h3 class="loc-card-title">Current Location</h3>
+              <span class="loc-subtitle">Indore, Madhya Pradesh</span>
+            </div>
+          </div>
+
+          <div class="loc-metrics-list">
+            <div class="metric-row">
+              <span class="metric-label" data-i18n="maps_gps_status">GPS Status</span>
+              <span class="metric-value status-online">
+                <span class="status-pulse-dot"></span>
+                <span>Connected</span>
+              </span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label" data-i18n="maps_lat">Latitude</span>
+              <span class="metric-value" id="val-lat">22.7196° N</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label" data-i18n="maps_lng">Longitude</span>
+              <span class="metric-value" id="val-lng">75.8577° E</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label" data-i18n="maps_accuracy">Accuracy</span>
+              <span class="metric-value">± 5 m</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label" data-i18n="maps_offline_status">Offline Status</span>
+              <span class="metric-value status-offline-ready">Active</span>
+            </div>
+          </div>
+
+          <button class="btn btn-locate-me" id="locate-me-btn">
+            <i data-lucide="crosshair"></i>
+            <span data-i18n="maps_locate_me">Locate Me</span>
+          </button>
+        </div>
+
+        <!-- Offline Map Status Card -->
+        <div class="offline-status-card glass-card">
+          <div class="offline-card-top">
+            <div class="offline-card-title-row">
+              <i data-lucide="hard-drive" class="offline-card-icon"></i>
+              <span class="offline-card-title" data-i18n="maps_offline_card_title">Offline Maps</span>
+            </div>
+            <span class="ready-badge" data-i18n="maps_offline_card_ready">Ready</span>
+          </div>
+          
+          <p class="offline-card-desc">Map data stored on your device. Works without internet.</p>
+          
+          <div class="offline-package-info">
+            <div class="pkg-header">
+              <span class="pkg-name" data-i18n="maps_package_name">India Map Package</span>
+              <span class="pkg-size">12.4 GB</span>
+            </div>
+            <div class="pkg-progress-bar">
+              <div class="pkg-progress-fill" style="width: 100%;"></div>
+            </div>
+            <div class="pkg-status-row">
+              <i data-lucide="check-circle-2" class="pkg-check-icon"></i>
+              <span class="pkg-downloaded-text" data-i18n="maps_package_downloaded">Downloaded</span>
+            </div>
+          </div>
+
+          <button class="btn-manage-maps" id="manage-maps-btn">
+            <i data-lucide="download"></i>
+            <span data-i18n="maps_manage_maps">Manage Maps</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Center Column: Large Map Placeholder Canvas -->
+      <div class="maps-center-col">
+        <div class="map-placeholder-card glass-card" id="map-canvas-container">
+          <!-- Background Map Preview Graphic -->
+          <div class="map-preview-img-wrapper">
+            <img src="../assets/images/maps/offline_map_preview.png" alt="Offline Map Preview" class="map-preview-bg" id="map-bg-img">
+          </div>
+
+          <!-- Pulsing User Location Marker -->
+          <div class="user-location-marker" id="user-location-marker">
+            <div class="user-pulse-ring"></div>
+            <div class="user-dot">
+              <i data-lucide="navigation"></i>
+            </div>
+            <div class="user-label-tooltip">You are here</div>
+          </div>
+
+          <!-- Sample Map Pins for Places -->
+          <div class="map-pin-item pin-hospital" title="City Hospital">
+            <div class="pin-icon-box bg-red"><i data-lucide="heart-pulse"></i></div>
+          </div>
+          <div class="map-pin-item pin-police" title="Police Station">
+            <div class="pin-icon-box bg-blue"><i data-lucide="shield"></i></div>
+          </div>
+          <div class="map-pin-item pin-pharmacy" title="Pharmacy">
+            <div class="pin-icon-box bg-green"><i data-lucide="pill"></i></div>
+          </div>
+          <div class="map-pin-item pin-petrol" title="Petrol Pump">
+            <div class="pin-icon-box bg-orange"><i data-lucide="fuel"></i></div>
+          </div>
+          <div class="map-pin-item pin-atm" title="ATM">
+            <div class="pin-icon-box bg-purple"><i data-lucide="credit-card"></i></div>
+          </div>
+
+          <!-- Compass Rose -->
+          <div class="map-compass" title="Compass (North)">
+            <div class="compass-n">N</div>
+            <i data-lucide="compass" class="compass-icon"></i>
+          </div>
+
+          <!-- Map Controls (Zoom in / out / Recenter / Layer) -->
+          <div class="map-controls-vertical">
+            <button class="map-ctrl-btn" id="map-zoom-in" title="Zoom In">
+              <i data-lucide="plus"></i>
+            </button>
+            <button class="map-ctrl-btn" id="map-zoom-out" title="Zoom Out">
+              <i data-lucide="minus"></i>
+            </button>
+            <div class="map-ctrl-divider"></div>
+            <button class="map-ctrl-btn" id="map-recenter" title="My Location">
+              <i data-lucide="target"></i>
+            </button>
+          </div>
+
+          <!-- Overlay Text Notice Banner -->
+          <div class="map-overlay-badge">
+            <div class="badge-icon-wrap">
+              <i data-lucide="map"></i>
+            </div>
+            <div class="badge-text-wrap">
+              <h4 class="badge-title" data-i18n="maps_preview_title">Offline Map Preview</h4>
+              <p class="badge-sub" data-i18n="maps_preview_sub">Map will be loaded after offline map package is installed.</p>
+            </div>
+          </div>
+
+          <!-- Scale Indicator -->
+          <div class="map-scale-bar">
+            <div class="scale-line"></div>
+            <span>2 km</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Nearby Places Panel -->
+      <div class="maps-right-col">
+        <div class="nearby-places-card glass-card">
+          <div class="nearby-header">
+            <div class="nearby-title-row">
+              <i data-lucide="navigation-2" class="nearby-title-icon"></i>
+              <h3 class="nearby-title" data-i18n="maps_nearby_title">Nearby Places</h3>
+            </div>
+            <span class="nearby-radius-tag">Within 5 km</span>
+          </div>
+
+          <!-- Filterable Places List -->
+          <div class="places-list" id="nearby-places-list">
+            
+            <!-- Place 1: Hospital -->
+            <div class="place-item-card" data-category="hospital">
+              <div class="place-left">
+                <div class="place-icon-wrapper bg-red-light">
+                  <i data-lucide="hospital" class="icon-red"></i>
+                </div>
+                <div class="place-info">
+                  <h4 class="place-name">City Hospital</h4>
+                  <div class="place-meta">
+                    <span class="place-distance">1.2 km</span>
+                    <span class="place-badge badge-emergency">Emergency Available</span>
+                  </div>
+                </div>
+              </div>
+              <button class="btn-navigate-sm" title="Navigate">
+                <i data-lucide="navigation"></i>
+              </button>
+            </div>
+
+            <!-- Place 2: Police Station -->
+            <div class="place-item-card" data-category="police">
+              <div class="place-left">
+                <div class="place-icon-wrapper bg-blue-light">
+                  <i data-lucide="shield" class="icon-blue"></i>
+                </div>
+                <div class="place-info">
+                  <h4 class="place-name">Central Police Station</h4>
+                  <div class="place-meta">
+                    <span class="place-distance">1.8 km</span>
+                    <span class="place-badge badge-open">Open 24/7</span>
+                  </div>
+                </div>
+              </div>
+              <button class="btn-navigate-sm" title="Navigate">
+                <i data-lucide="navigation"></i>
+              </button>
+            </div>
+
+            <!-- Place 3: Pharmacy -->
+            <div class="place-item-card" data-category="pharmacy">
+              <div class="place-left">
+                <div class="place-icon-wrapper bg-green-light">
+                  <i data-lucide="pill" class="icon-green"></i>
+                </div>
+                <div class="place-info">
+                  <h4 class="place-name">Lifecare Pharmacy</h4>
+                  <div class="place-meta">
+                    <span class="place-distance">0.8 km</span>
+                    <span class="place-badge badge-open">Open</span>
+                  </div>
+                </div>
+              </div>
+              <button class="btn-navigate-sm" title="Navigate">
+                <i data-lucide="navigation"></i>
+              </button>
+            </div>
+
+            <!-- Place 4: Petrol Pump -->
+            <div class="place-item-card" data-category="petrol">
+              <div class="place-left">
+                <div class="place-icon-wrapper bg-orange-light">
+                  <i data-lucide="fuel" class="icon-orange"></i>
+                </div>
+                <div class="place-info">
+                  <h4 class="place-name">Indian Oil Petrol Pump</h4>
+                  <div class="place-meta">
+                    <span class="place-distance">1.6 km</span>
+                    <span class="place-badge badge-open">Open</span>
+                  </div>
+                </div>
+              </div>
+              <button class="btn-navigate-sm" title="Navigate">
+                <i data-lucide="navigation"></i>
+              </button>
+            </div>
+
+            <!-- Place 5: ATM -->
+            <div class="place-item-card" data-category="atm">
+              <div class="place-left">
+                <div class="place-icon-wrapper bg-purple-light">
+                  <i data-lucide="credit-card" class="icon-purple"></i>
+                </div>
+                <div class="place-info">
+                  <h4 class="place-name">State Bank ATM</h4>
+                  <div class="place-meta">
+                    <span class="place-distance">0.5 km</span>
+                    <span class="place-badge badge-active">Active</span>
+                  </div>
+                </div>
+              </div>
+              <button class="btn-navigate-sm" title="Navigate">
+                <i data-lucide="navigation"></i>
+              </button>
+            </div>
+
+            <!-- Place 6: School -->
+            <div class="place-item-card" data-category="school">
+              <div class="place-left">
+                <div class="place-icon-wrapper bg-indigo-light">
+                  <i data-lucide="graduation-cap" class="icon-indigo"></i>
+                </div>
+                <div class="place-info">
+                  <h4 class="place-name">St. Xavier School</h4>
+                  <div class="place-meta">
+                    <span class="place-distance">2.3 km</span>
+                    <span class="place-badge badge-open">Open</span>
+                  </div>
+                </div>
+              </div>
+              <button class="btn-navigate-sm" title="Navigate">
+                <i data-lucide="navigation"></i>
+              </button>
+            </div>
+
+            <!-- Place 7: Railway Station -->
+            <div class="place-item-card" data-category="railway">
+              <div class="place-left">
+                <div class="place-icon-wrapper bg-cyan-light">
+                  <i data-lucide="train" class="icon-cyan"></i>
+                </div>
+                <div class="place-info">
+                  <h4 class="place-name">Indore Junction</h4>
+                  <div class="place-meta">
+                    <span class="place-distance">2.8 km</span>
+                    <span class="place-badge badge-active">Railway Station</span>
+                  </div>
+                </div>
+              </div>
+              <button class="btn-navigate-sm" title="Navigate">
+                <i data-lucide="navigation"></i>
+              </button>
+            </div>
+
+            <!-- Place 8: Restaurant -->
+            <div class="place-item-card" data-category="restaurant">
+              <div class="place-left">
+                <div class="place-icon-wrapper bg-amber-light">
+                  <i data-lucide="utensils" class="icon-amber"></i>
+                </div>
+                <div class="place-info">
+                  <h4 class="place-name">Green Park Restaurant</h4>
+                  <div class="place-meta">
+                    <span class="place-distance">1.4 km</span>
+                    <span class="place-badge badge-open">Open</span>
+                  </div>
+                </div>
+              </div>
+              <button class="btn-navigate-sm" title="Navigate">
+                <i data-lucide="navigation"></i>
+              </button>
+            </div>
+
+            <!-- Place 9: Park -->
+            <div class="place-item-card" data-category="park">
+              <div class="place-left">
+                <div class="place-icon-wrapper bg-teal-light">
+                  <i data-lucide="trees" class="icon-teal"></i>
+                </div>
+                <div class="place-info">
+                  <h4 class="place-name">Nehru Public Park</h4>
+                  <div class="place-meta">
+                    <span class="place-distance">3.4 km</span>
+                    <span class="place-badge badge-open">Open Ground</span>
+                  </div>
+                </div>
+              </div>
+              <button class="btn-navigate-sm" title="Navigate">
+                <i data-lucide="navigation"></i>
+              </button>
+            </div>
+
+          </div>
+
+          <button class="btn-view-more" id="view-more-places-btn">
+            <span>View More Places</span>
+            <i data-lucide="chevron-down"></i>
+          </button>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Bottom Section: Emergency Quick Actions -->
+    <section class="emergency-quick-actions">
+      <h3 class="quick-actions-title">
+        <i data-lucide="siren" class="title-siren-icon"></i>
+        <span>Emergency Quick Actions</span>
+      </h3>
+      <div class="quick-actions-grid">
+        <a href="tel:112" class="action-btn btn-call-112 hover-lift">
+          <i data-lucide="phone-call" class="act-icon"></i>
+          <span data-i18n="maps_btn_call_112">Call 112</span>
+        </a>
+        <button class="action-btn btn-find-hospital hover-lift" id="act-find-hospital">
+          <i data-lucide="hospital" class="act-icon"></i>
+          <span data-i18n="maps_btn_find_hospital">Find Nearest Hospital</span>
+        </button>
+        <button class="action-btn btn-start-navigation hover-lift" id="act-start-nav">
+          <i data-lucide="compass" class="act-icon"></i>
+          <span data-i18n="maps_btn_start_nav">Start Navigation</span>
+        </button>
+        <button class="action-btn btn-share-location hover-lift" id="act-share-loc">
+          <i data-lucide="share-2" class="act-icon"></i>
+          <span data-i18n="maps_btn_share_loc">Share My Location</span>
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Bottom Nav Bar (Active on Mobile viewports) -->
+  <nav class="bottom-nav">
+    <a href="../index.html" class="bottom-nav-item">
+      <i data-lucide="home"></i>
+      <span data-i18n="nav_home">Home</span>
+    </a>
+    <a href="disaster.html" class="bottom-nav-item">
+      <i data-lucide="alert-triangle"></i>
+      <span data-i18n="nav_disaster">Disaster</span>
+    </a>
+    <a href="medical.html" class="bottom-nav-item">
+      <i data-lucide="heart"></i>
+      <span data-i18n="card_med">Medical</span>
+    </a>
+    <a href="maps.html" class="bottom-nav-item active">
+      <i data-lucide="map-pin"></i>
+      <span data-i18n="card_loc">Maps</span>
+    </a>
+    <a href="settings.html" class="bottom-nav-item">
+      <i data-lucide="settings"></i>
+      <span data-i18n="nav_settings">Settings</span>
+    </a>
+  </nav>
+
+  <!-- Lucide Script CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- JavaScript Scripts -->
+  <script src="../js/common/translations.js"></script>
+  <script src="../js/common/main.js"></script>
+  <script src="../js/maps.js"></script>
+
+</body>
+</html>
