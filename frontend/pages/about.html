@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n="about_title">About RescueAI - AI Emergency Assistant</title>
+  <meta name="description" content="Learn how RescueAI helps you respond to medical emergencies and disasters, even without the internet.">
+
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="../css/common/variables.css">
+  <link rel="stylesheet" href="../css/common/style.css">
+  <link rel="stylesheet" href="../css/common/animation.css">
+  <link rel="stylesheet" href="../css/common/navbar.css">
+  <link rel="stylesheet" href="../css/common/footer.css">
+  <link rel="stylesheet" href="../css/common/language.css">
+  <link rel="stylesheet" href="../css/about.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+  <!-- Sticky Navigation Header -->
+  <header>
+    <div class="navbar">
+      <div class="nav-left">
+        <div class="logo-container" onclick="window.location.href='../index.html'">
+          <div class="logo-icon">
+            <i data-lucide="shield-check"></i>
+          </div>
+          <div class="logo-text-wrapper">
+            <span class="logo-title">RescueAI</span>
+            <span class="logo-subtitle">AI Emergency Assistant</span>
+          </div>
+        </div>
+      </div>
+      <div class="nav-right">
+        <button class="nav-item" id="nav-lang"><i data-lucide="globe"></i><span>Language</span></button>
+        <button class="nav-item nav-item-notification" id="nav-notifications">
+          <i data-lucide="bell"></i><span class="notification-dot"></span><span>Notifications</span>
+        </button>
+        <button class="nav-item active" id="nav-about"><i data-lucide="info"></i><span>About</span></button>
+        <button class="nav-item" id="nav-settings"><i data-lucide="settings"></i><span>Settings</span></button>
+        <button class="nav-item" id="nav-profile"><i data-lucide="user"></i><span>Profile</span></button>
+        <button class="login-btn">Login</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-content">
+
+    <!-- ============ HERO ============ -->
+    <section class="about-hero">
+      <div class="container about-hero-inner fade-right">
+        <div class="about-hero-badge">
+          <span class="status-dot"></span>
+          <span>Offline-First &middot; AI-Powered &middot; Built to Save Lives</span>
+        </div>
+        <h1 class="about-hero-title">
+          About <span class="purple-text">RescueAI</span>
+        </h1>
+        <p class="about-hero-subtitle">
+          Saving Lives, Even Without the Internet. RescueAI is an offline-first, AI-powered emergency
+          assistant that guides you through medical emergencies and disasters, right when help is hardest to reach.
+        </p>
+        <div class="about-hero-buttons">
+          <a href="#how-it-works" class="btn btn-primary">
+            <span>See How It Works</span>
+            <i data-lucide="arrow-right"></i>
+          </a>
+          <a href="../pages/sos.html" class="btn btn-secondary">
+            <span>Emergency SOS</span>
+            <i data-lucide="phone-call"></i>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ IMPACT STATS ============ -->
+    <section class="stats-section">
+      <div class="container stats-grid scroll-fade">
+        <div class="stat-card">
+          <div class="stat-icon"><i data-lucide="wifi-off"></i></div>
+          <span class="stat-number" data-count="100" data-suffix="%">0%</span>
+          <span class="stat-label">Offline First</span>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><i data-lucide="bot"></i></div>
+          <span class="stat-number" data-count="24" data-suffix="/7">0/7</span>
+          <span class="stat-label">AI Guidance</span>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><i data-lucide="siren"></i></div>
+          <span class="stat-number" data-count="9" data-suffix="+">0+</span>
+          <span class="stat-label">Emergency Modules</span>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><i data-lucide="languages"></i></div>
+          <span class="stat-number" data-count="10" data-suffix="+">0+</span>
+          <span class="stat-label">Languages Supported</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ OUR STORY / WHY ============ -->
+    <section class="story-section">
+      <div class="container story-grid scroll-fade">
+        <div class="story-content">
+          <span class="section-eyebrow">Our Story</span>
+          <h2 class="section-title">Why RescueAI exists</h2>
+          <p class="story-text">
+            In many emergencies — earthquakes, floods, fires, road accidents, snake bites, or sudden
+            medical crises — internet connectivity may be unavailable, or emergency services may take
+            time to arrive. Most emergency apps stop working the moment the network does.
+          </p>
+          <p class="story-text">
+            RescueAI bridges that gap. It works directly on your device, so critical guidance is available
+            the moment you need it, connection or not, until professional help arrives.
+          </p>
+          <div class="story-mission-box">
+            <i data-lucide="target"></i>
+            <p>
+              <strong>Our mission:</strong> ensure no one is left without life-saving guidance simply
+              because they don't have an internet connection.
+            </p>
+          </div>
+        </div>
+        <div class="story-why-list">
+          <div class="why-item">
+            <div class="why-icon card-med"><i data-lucide="zap"></i></div>
+            <div>
+              <h4>Immediate Guidance</h4>
+              <p>Step-by-step instructions the moment an emergency happens — no waiting, no loading.</p>
+            </div>
+          </div>
+          <div class="why-item">
+            <div class="why-icon card-loc"><i data-lucide="wifi-off"></i></div>
+            <div>
+              <h4>Works Offline</h4>
+              <p>Core features run on-device, so a dead network never means dead guidance.</p>
+            </div>
+          </div>
+          <div class="why-item">
+            <div class="why-icon card-ai"><i data-lucide="brain-circuit"></i></div>
+            <div>
+              <h4>AI-Assisted Decisions</h4>
+              <p>Natural language help that explains what's happening and what to do next.</p>
+            </div>
+          </div>
+          <div class="why-item">
+            <div class="why-icon card-survival"><i data-lucide="book-open-check"></i></div>
+            <div>
+              <h4>Built for Real Situations</h4>
+              <p>Clear, jargon-free instructions anyone can follow under pressure.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ WHY OFFLINE MATTERS ============ -->
+    <section class="offline-section scroll-fade">
+      <div class="container offline-grid">
+        <div class="offline-visual">
+          <div class="offline-visual-ring"></div>
+          <div class="offline-visual-icon"><i data-lucide="wifi-off"></i></div>
+        </div>
+        <div class="offline-content">
+          <span class="section-eyebrow">Why Offline Matters</span>
+          <h2 class="section-title">Built to work when the network doesn't</h2>
+          <p class="story-text">
+            During disasters, communication networks are often overloaded or completely
+            unavailable. Many emergency applications stop working the moment internet access is lost.
+          </p>
+          <p class="story-text">
+            RescueAI follows an offline-first approach, ensuring that essential emergency
+            guidance remains available even when traditional communication systems fail —
+            enabling users to receive critical assistance anytime, anywhere.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ VISION ============ -->
+    <section class="vision-section scroll-fade">
+      <div class="container vision-box">
+        <i data-lucide="eye" class="vision-icon"></i>
+        <span class="section-eyebrow" style="color: rgba(255,255,255,0.85);">Our Vision</span>
+        <h2 class="vision-title">
+          A future where technology is a trusted companion during emergencies
+        </h2>
+        <p class="vision-text">
+          We envision every individual empowered with the knowledge and confidence to respond
+          effectively when professional help is delayed. Our goal is a safer world where AI is
+          not only intelligent, but accessible, reliable, and capable of saving lives during the
+          moments that matter most.
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ WHAT CAN RESCUEAI DO (FEATURES) ============ -->
+    <section class="features-section scroll-fade" id="about-features">
+      <div class="container">
+        <div class="section-header text-center">
+          <span class="section-eyebrow">What Can RescueAI Do?</span>
+          <h2 class="section-title">Everything you need in one platform</h2>
+          <p class="section-subtitle">Every feature works toward one goal — helping you act fast and correctly.</p>
+        </div>
+
+        <div class="features-grid">
+          <div class="feature-card hover-lift">
+            <div class="feature-card-header">
+              <div class="feature-icon-wrapper card-med"><i data-lucide="heart-pulse"></i></div>
+              <h3 class="feature-title">Emergency First Aid</h3>
+            </div>
+            <ul class="feature-list card-med-list">
+              <li class="feature-list-item">CPR &amp; Choking</li>
+              <li class="feature-list-item">Snake Bites &amp; Poisoning</li>
+              <li class="feature-list-item">Burns, Fractures &amp; Bleeding</li>
+              <li class="feature-list-item">Heart Attack &amp; Stroke</li>
+            </ul>
+          </div>
+
+          <div class="feature-card hover-lift">
+            <div class="feature-card-header">
+              <div class="feature-icon-wrapper card-ai"><i data-lucide="bot"></i></div>
+              <h3 class="feature-title">AI Emergency Assistant</h3>
+            </div>
+            <ul class="feature-list card-ai-list">
+              <li class="feature-list-item">Ask in plain language</li>
+              <li class="feature-list-item">Understands your situation</li>
+              <li class="feature-list-item">Suggests safe next steps</li>
+              <li class="feature-list-item">Works fully offline</li>
+            </ul>
+          </div>
+
+          <div class="feature-card hover-lift">
+            <div class="feature-card-header">
+              <div class="feature-icon-wrapper card-secondary"><i data-lucide="scan-line"></i></div>
+              <h3 class="feature-title">OCR Medicine Scanner</h3>
+            </div>
+            <ul class="feature-list card-secondary-list">
+              <li class="feature-list-item">Scan medicine strips</li>
+              <li class="feature-list-item">Read prescriptions instantly</li>
+              <li class="feature-list-item">Extract dosage details</li>
+              <li class="feature-list-item">No internet required</li>
+            </ul>
+          </div>
+
+          <div class="feature-card hover-lift">
+            <div class="feature-card-header">
+              <div class="feature-icon-wrapper card-survival"><i data-lucide="camera"></i></div>
+              <h3 class="feature-title">Object Detection</h3>
+            </div>
+            <ul class="feature-list card-survival-list">
+              <li class="feature-list-item">Point your camera to identify</li>
+              <li class="feature-list-item">Spot emergency-relevant items</li>
+              <li class="feature-list-item">Get contextual guidance</li>
+              <li class="feature-list-item">Boosts situational awareness</li>
+            </ul>
+          </div>
+
+          <div class="feature-card hover-lift">
+            <div class="feature-card-header">
+              <div class="feature-icon-wrapper card-success"><i data-lucide="mic"></i></div>
+              <h3 class="feature-title">Voice Assistant</h3>
+            </div>
+            <ul class="feature-list card-success-list">
+              <li class="feature-list-item">Hands-free operation</li>
+              <li class="feature-list-item">Speak your emergency</li>
+              <li class="feature-list-item">Ideal under stress</li>
+              <li class="feature-list-item">Multilingual voice input</li>
+            </ul>
+          </div>
+
+          <div class="feature-card hover-lift">
+            <div class="feature-card-header">
+              <div class="feature-icon-wrapper card-disaster"><i data-lucide="globe"></i></div>
+              <h3 class="feature-title">Disaster Management</h3>
+            </div>
+            <ul class="feature-list card-disaster-list">
+              <li class="feature-list-item">Earthquake, Flood, Fire</li>
+              <li class="feature-list-item">Cyclone, Lightning, Heatwave</li>
+              <li class="feature-list-item">Before / During / After guides</li>
+              <li class="feature-list-item">Landslide safety steps</li>
+            </ul>
+          </div>
+
+          <div class="feature-card hover-lift">
+            <div class="feature-card-header">
+              <div class="feature-icon-wrapper card-loc"><i data-lucide="map-pin"></i></div>
+              <h3 class="feature-title">Offline Maps</h3>
+            </div>
+            <ul class="feature-list card-loc-list">
+              <li class="feature-list-item">Navigate without signal</li>
+              <li class="feature-list-item">Find nearby hospitals</li>
+              <li class="feature-list-item">Locate police &amp; fire stations</li>
+              <li class="feature-list-item">Identify safer routes</li>
+            </ul>
+          </div>
+
+          <div class="feature-card hover-lift">
+            <div class="feature-card-header">
+              <div class="feature-icon-wrapper card-sos"><i data-lucide="phone-call"></i></div>
+              <h3 class="feature-title">Emergency Contacts</h3>
+            </div>
+            <ul class="feature-list card-sos-list">
+              <li class="feature-list-item">112, 108, 100 / 101</li>
+              <li class="feature-list-item">One-tap dialing</li>
+              <li class="feature-list-item">Personal emergency contacts</li>
+              <li class="feature-list-item">Always within reach</li>
+            </ul>
+          </div>
+
+          <div class="feature-card hover-lift">
+            <div class="feature-card-header">
+              <div class="feature-icon-wrapper card-primary"><i data-lucide="languages"></i></div>
+              <h3 class="feature-title">Multilingual Support</h3>
+            </div>
+            <ul class="feature-list card-primary-list">
+              <li class="feature-list-item">English, Hindi, Marathi</li>
+              <li class="feature-list-item">Bangla, Gujarati, Punjabi</li>
+              <li class="feature-list-item">Tamil, Telugu, Kannada &amp; more</li>
+              <li class="feature-list-item">Voice synced to language</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ HOW IT WORKS ============ -->
+    <section class="how-it-works-section scroll-fade" id="how-it-works">
+      <div class="container">
+        <div class="section-header text-center">
+          <span class="section-eyebrow">How It Works</span>
+          <h2 class="section-title">From panic to plan in five steps</h2>
+          <p class="section-subtitle">RescueAI is built to guide you fast, with no learning curve.</p>
+        </div>
+
+        <div class="timeline">
+          <div class="timeline-step">
+            <div class="timeline-marker">01</div>
+            <div class="timeline-content">
+              <h4>Open RescueAI</h4>
+              <p>Launch the app immediately after an emergency occurs — no sign-in required.</p>
+            </div>
+          </div>
+          <div class="timeline-step">
+            <div class="timeline-marker">02</div>
+            <div class="timeline-content">
+              <h4>Choose or Ask</h4>
+              <p>Pick an emergency category, or ask the AI Assistant directly what's happening.</p>
+            </div>
+          </div>
+          <div class="timeline-step">
+            <div class="timeline-marker">03</div>
+            <div class="timeline-content">
+              <h4>Scan, Detect or Speak</h4>
+              <p>If needed, scan a medicine, detect an object, or use your voice to explain the situation.</p>
+            </div>
+          </div>
+          <div class="timeline-step">
+            <div class="timeline-marker">04</div>
+            <div class="timeline-content">
+              <h4>Follow the Steps</h4>
+              <p>Get clear, step-by-step instructions written for a calm, confident response.</p>
+            </div>
+          </div>
+          <div class="timeline-step">
+            <div class="timeline-marker">05</div>
+            <div class="timeline-content">
+              <h4>Contact Help</h4>
+              <p>Reach emergency services with one tap while continuing to follow safety guidance.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ WHO CAN USE IT ============ -->
+    <section class="who-section scroll-fade">
+      <div class="container">
+        <div class="section-header text-center">
+          <span class="section-eyebrow">Who Is It For?</span>
+          <h2 class="section-title">Built for everyone, everywhere</h2>
+        </div>
+        <div class="who-chips">
+          <span class="who-chip"><i data-lucide="users"></i>Families</span>
+          <span class="who-chip"><i data-lucide="graduation-cap"></i>Students</span>
+          <span class="who-chip"><i data-lucide="heart-handshake"></i>Senior Citizens</span>
+          <span class="who-chip"><i data-lucide="plane"></i>Travelers</span>
+          <span class="who-chip"><i data-lucide="mountain"></i>Trekkers</span>
+          <span class="who-chip"><i data-lucide="home"></i>Rural Communities</span>
+          <span class="who-chip"><i data-lucide="stethoscope"></i>Healthcare Volunteers</span>
+          <span class="who-chip"><i data-lucide="life-buoy"></i>Disaster Response Teams</span>
+          <span class="who-chip"><i data-lucide="hand-heart"></i>NGOs</span>
+          <span class="who-chip"><i data-lucide="school"></i>Schools &amp; Colleges</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ FAQ ============ -->
+    <section class="faq-section scroll-fade">
+      <div class="container faq-grid">
+        <div class="faq-intro">
+          <span class="section-eyebrow">FAQ</span>
+          <h2 class="section-title">Frequently Asked Questions</h2>
+          <p class="section-subtitle">Everything you need to know about how RescueAI works.</p>
+        </div>
+        <div class="faq-list">
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>Does RescueAI really work without internet?</span>
+              <i data-lucide="chevron-down"></i>
+            </button>
+            <div class="faq-answer">
+              <p>Yes. RescueAI follows an offline-first approach — core first aid, disaster guides, and emergency contacts are stored on your device and accessible without any connection.</p>
+            </div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>Is RescueAI a replacement for calling emergency services?</span>
+              <i data-lucide="chevron-down"></i>
+            </button>
+            <div class="faq-answer">
+              <p>No. RescueAI is a decision-support tool to help you act correctly while waiting for help. Always contact local emergency authorities and healthcare professionals as soon as possible.</p>
+            </div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>What languages does RescueAI support?</span>
+              <i data-lucide="chevron-down"></i>
+            </button>
+            <div class="faq-answer">
+              <p>RescueAI currently supports English, Hindi, Marathi, Bangla, Gujarati, Punjabi, Tamil, Telugu, Kannada, Malayalam, and Urdu, with voice synced to your chosen language.</p>
+            </div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>How does the OCR medicine scanner work?</span>
+              <i data-lucide="chevron-down"></i>
+            </button>
+            <div class="faq-answer">
+              <p>Point your camera at a medicine strip or prescription. RescueAI reads the text on-device using OCR and extracts the medicine name, dosage, and other key details.</p>
+            </div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>Who is RescueAI built for?</span>
+              <i data-lucide="chevron-down"></i>
+            </button>
+            <div class="faq-answer">
+              <p>Everyone — families, students, senior citizens, travelers, trekkers, rural communities, healthcare volunteers, disaster response teams, NGOs, and schools.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ DISCLAIMER ============ -->
+    <section class="disclaimer-section scroll-fade">
+      <div class="container">
+        <div class="disclaimer-box">
+          <div class="disclaimer-icon"><i data-lucide="alert-triangle"></i></div>
+          <div>
+            <h4>Important Disclaimer</h4>
+            <p>
+              RescueAI provides emergency guidance and decision support. It is <strong>not</strong> a
+              replacement for professional medical treatment or emergency services. Always contact local
+              emergency authorities and healthcare professionals as soon as possible during any serious
+              emergency. Use RescueAI as an assistance tool while waiting for professional help.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ CTA ============ -->
+    <section class="about-cta-section scroll-fade">
+      <div class="container about-cta-box">
+        <i data-lucide="shield-check" class="about-cta-icon"></i>
+        <h2>Together, we can make emergency response faster, smarter, and more accessible.</h2>
+        <div class="about-cta-buttons">
+          <a href="../index.html" class="btn btn-primary">
+            <span>Get Started</span>
+            <i data-lucide="arrow-right"></i>
+          </a>
+          <a href="../pages/sos.html" class="btn btn-secondary">
+            <span>Emergency SOS</span>
+            <i data-lucide="phone-call"></i>
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer Section -->
+  <footer class="footer">
+    <div class="container footer-content">
+      <div class="footer-left">
+        <div class="footer-logo">
+          <div class="footer-logo-icon"><i data-lucide="shield-check"></i></div>
+          <span class="footer-logo-text">RescueAI</span>
+        </div>
+        <p class="footer-desc">Saving Lives Even Without the Internet.</p>
+        <div class="footer-socials">
+          <a href="#" class="footer-social-icon" title="GitHub"><i data-lucide="github"></i></a>
+          <a href="#" class="footer-social-icon" title="Twitter"><i data-lucide="twitter"></i></a>
+          <a href="#" class="footer-social-icon" title="LinkedIn"><i data-lucide="linkedin"></i></a>
+          <a href="#" class="footer-social-icon" title="Youtube"><i data-lucide="youtube"></i></a>
+        </div>
+      </div>
+      <div class="footer-column">
+        <h4 class="footer-column-title">Quick Links</h4>
+        <ul class="footer-links">
+          <li><a href="../pages/medical.html" class="footer-link">Medical Emergency</a></li>
+          <li><a href="../pages/disaster.html" class="footer-link">Disaster Safety</a></li>
+          <li><a href="../pages/chatbot.html" class="footer-link">AI Assistance</a></li>
+          <li><a href="../pages/maps.html" class="footer-link">Maps &amp; Location</a></li>
+          <li><a href="../pages/contacts.html" class="footer-link">Contacts</a></li>
+          <li><a href="../pages/settings.html" class="footer-link">Settings</a></li>
+        </ul>
+      </div>
+      <div class="footer-column">
+        <h4 class="footer-column-title">Resources</h4>
+        <ul class="footer-links">
+          <li><a href="#" class="footer-link">IEEE Hackathon Project</a></li>
+          <li><a href="#" class="footer-link">GitHub Repository</a></li>
+          <li><a href="#" class="footer-link">Privacy Policy</a></li>
+          <li><a href="#" class="footer-link">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <p>&copy; RescueAI 2026. All rights reserved.</p>
+      <p>IEEE Hackathon Project</p>
+    </div>
+  </footer>
+
+</div>
+
+<!-- Lucide Script CDN -->
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<!-- JavaScript Scripts -->
+<script src="../js/common/translations.js"></script>
+<script src="../js/common/main.js"></script>
+<script src="../js/about.js"></script>
+</body>
+</html>
