@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n="notif_title">Notification Center - RescueAI</title>
+  <meta name="description" content="Stay updated with emergency alerts, AI guidance, disaster notifications, and system updates from RescueAI.">
+
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="../css/common/variables.css">
+  <link rel="stylesheet" href="../css/common/style.css">
+  <link rel="stylesheet" href="../css/common/animation.css">
+  <link rel="stylesheet" href="../css/common/navbar.css">
+  <link rel="stylesheet" href="../css/common/footer.css">
+  <link rel="stylesheet" href="../css/common/language.css">
+  <link rel="stylesheet" href="../css/notifications.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+  <!-- Sticky Navigation Header -->
+  <header>
+    <div class="navbar">
+      <div class="nav-left">
+        <div class="logo-container" onclick="window.location.href='../index.html'">
+          <div class="logo-icon"><i data-lucide="shield-check"></i></div>
+          <div class="logo-text-wrapper">
+            <span class="logo-title">RescueAI</span>
+            <span class="logo-subtitle">AI Emergency Assistant</span>
+          </div>
+        </div>
+      </div>
+      <div class="nav-right">
+        <button class="nav-item" id="nav-lang"><i data-lucide="globe"></i><span>Language</span></button>
+        <button class="nav-item nav-item-notification active" id="nav-notifications">
+          <i data-lucide="bell"></i><span class="notification-dot"></span><span>Notifications</span>
+        </button>
+        <button class="nav-item" id="nav-about"><i data-lucide="info"></i><span>About</span></button>
+        <button class="nav-item" id="nav-settings"><i data-lucide="settings"></i><span>Settings</span></button>
+        <button class="nav-item" id="nav-profile"><i data-lucide="user"></i><span>Profile</span></button>
+        <button class="login-btn">Login</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <div class="container">
+
+      <div class="back-home-wrap">
+        <a href="../index.html" class="back-home-link">
+          <i data-lucide="arrow-left"></i>
+          <span>Back to Home</span>
+        </a>
+      </div>
+
+      <!-- ============ PAGE HEADER ============ -->
+      <section class="notif-header fade-right">
+        <div class="notif-header-left">
+          <span class="section-eyebrow">Notification Center</span>
+          <h1 class="notif-title">Stay Updated. Stay Prepared. Stay Safe.</h1>
+          <p class="notif-subtitle">
+            Important alerts, emergency updates, AI guidance, and safety reminders — all in one place,
+            so you can respond quickly and confidently.
+          </p>
+        </div>
+        <div class="notif-header-actions">
+          <button class="notif-action-btn" id="mark-all-read-btn">
+            <i data-lucide="check-check"></i>
+            <span>Mark all as read</span>
+          </button>
+          <button class="notif-action-btn notif-action-danger" id="clear-all-btn">
+            <i data-lucide="trash-2"></i>
+            <span>Clear all</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- ============ PRIORITY LEGEND ============ -->
+      <section class="priority-legend scroll-fade">
+        <span class="legend-item"><i class="legend-dot dot-critical"></i>Critical — Requires Immediate Action</span>
+        <span class="legend-item"><i class="legend-dot dot-high"></i>High — Important Safety Information</span>
+        <span class="legend-item"><i class="legend-dot dot-medium"></i>Medium — Guidance &amp; Recommendations</span>
+        <span class="legend-item"><i class="legend-dot dot-low"></i>Low — General Updates</span>
+      </section>
+
+      <!-- ============ WHAT YOU'LL FIND HERE ============ -->
+      <section class="notif-info-section scroll-fade">
+        <div class="notif-info-header">
+          <span class="section-eyebrow">What You'll Find Here</span>
+          <h2 class="notif-info-title">Every alert, in the right place</h2>
+        </div>
+        <div class="notif-info-grid">
+          <div class="notif-info-card">
+            <div class="notif-info-icon cat-emergency">🚨</div>
+            <h4>Emergency Alerts</h4>
+            <p>High-priority notifications about emergency situations and critical safety information.</p>
+            <ul>
+              <li>Emergency SOS Activated</li>
+              <li>First Aid Session Started</li>
+              <li>Emergency Contact Notified</li>
+              <li>Critical Safety Warning</li>
+            </ul>
+          </div>
+          <div class="notif-info-card">
+            <div class="notif-info-icon cat-disaster">🌍</div>
+            <h4>Disaster Notifications</h4>
+            <p>Disaster-related guidance and preparedness tips to keep you ready.</p>
+            <ul>
+              <li>Earthquake Safety Reminder</li>
+              <li>Flood Preparedness Tips</li>
+              <li>Fire Safety Instructions</li>
+              <li>Cyclone Preparedness Guide</li>
+            </ul>
+          </div>
+          <div class="notif-info-card">
+            <div class="notif-info-icon cat-ai">🤖</div>
+            <h4>AI Assistant Updates</h4>
+            <p>Notifications generated by the AI Assistant to guide you during emergencies.</p>
+            <ul>
+              <li>AI Emergency Assessment Completed</li>
+              <li>Recommended Immediate Actions</li>
+              <li>Safety Checklist Available</li>
+              <li>Next Steps Suggested</li>
+            </ul>
+          </div>
+          <div class="notif-info-card">
+            <div class="notif-info-icon cat-health">💊</div>
+            <h4>Medicine &amp; Health Alerts</h4>
+            <p>Updates related to medicine scans and health guidance.</p>
+            <ul>
+              <li>Medicine Successfully Scanned</li>
+              <li>Dosage Information Available</li>
+              <li>Safety Precautions Updated</li>
+              <li>Emergency Medical Advice</li>
+            </ul>
+          </div>
+          <div class="notif-info-card">
+            <div class="notif-info-icon cat-navigation">📍</div>
+            <h4>Navigation &amp; Location</h4>
+            <p>Important navigation and location events, even offline.</p>
+            <ul>
+              <li>Offline Map Ready</li>
+              <li>Route Successfully Loaded</li>
+              <li>Emergency Location Saved</li>
+              <li>Nearby Safe Zone Identified</li>
+            </ul>
+          </div>
+          <div class="notif-info-card">
+            <div class="notif-info-icon cat-system">⚙️</div>
+            <h4>System Notifications</h4>
+            <p>Important updates about the application itself.</p>
+            <ul>
+              <li>Application Updated Successfully</li>
+              <li>Offline Resources Ready</li>
+              <li>New Emergency Module Added</li>
+              <li>Language Updated</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ WHY NOTIFICATIONS MATTER ============ -->
+      <section class="notif-why-section scroll-fade">
+        <div class="notif-why-icon"><i data-lucide="shield-alert"></i></div>
+        <div>
+          <h3>Why Notifications Matter</h3>
+          <p>
+            During emergencies, people often miss critical information due to stress or panic.
+            RescueAI's Notification Center keeps all important updates organized in one place —
+            making it easier to review emergency instructions, follow AI recommendations, and stay
+            informed throughout the entire emergency response process.
+          </p>
+        </div>
+      </section>
+
+      <!-- ============ CATEGORY FILTER TABS ============ -->
+      <section class="filter-tabs scroll-fade" id="filter-tabs">
+        <button class="filter-tab active" data-filter="all">
+          <i data-lucide="layout-grid"></i><span>All</span>
+        </button>
+        <button class="filter-tab" data-filter="emergency">
+          <span class="tab-emoji">🚨</span><span>Emergency</span>
+        </button>
+        <button class="filter-tab" data-filter="ai">
+          <span class="tab-emoji">🤖</span><span>AI Guidance</span>
+        </button>
+        <button class="filter-tab" data-filter="disaster">
+          <span class="tab-emoji">🌍</span><span>Disaster Alerts</span>
+        </button>
+        <button class="filter-tab" data-filter="health">
+          <span class="tab-emoji">💊</span><span>Health</span>
+        </button>
+        <button class="filter-tab" data-filter="navigation">
+          <span class="tab-emoji">📍</span><span>Navigation</span>
+        </button>
+        <button class="filter-tab" data-filter="system">
+          <span class="tab-emoji">⚙️</span><span>System</span>
+        </button>
+        <button class="filter-tab" data-filter="general">
+          <span class="tab-emoji">🔔</span><span>General</span>
+        </button>
+      </section>
+
+
+      <!-- ============ NOTIFICATION LIST ============ -->
+      <section class="notif-list-section scroll-fade">
+        <div class="notif-list" id="notif-list">
+          <!-- Notification cards are rendered here by notifications.js -->
+        </div>
+
+        <!-- ============ EMPTY STATE (hidden unless list is empty) ============ -->
+        <div class="notif-empty-state" id="notif-empty-state" style="display: none;">
+          <div class="empty-icon-wrapper">
+            <i data-lucide="party-popper"></i>
+          </div>
+          <h3>You're All Caught Up!</h3>
+          <p>No new notifications at the moment.</p>
+          <p class="empty-subtext">
+            RescueAI will notify you about emergency alerts, AI recommendations, disaster updates,
+            medicine information, and important system activities whenever they become available.
+          </p>
+          <span class="empty-footer">Stay safe, stay prepared. 💙</span>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Footer Section -->
+  <footer class="footer">
+    <div class="container footer-content">
+      <div class="footer-left">
+        <div class="footer-logo">
+          <div class="footer-logo-icon"><i data-lucide="shield-check"></i></div>
+          <span class="footer-logo-text">RescueAI</span>
+        </div>
+        <p class="footer-desc">Saving Lives Even Without the Internet.</p>
+        <div class="footer-socials">
+          <a href="#" class="footer-social-icon" title="GitHub"><i data-lucide="github"></i></a>
+          <a href="#" class="footer-social-icon" title="Twitter"><i data-lucide="twitter"></i></a>
+          <a href="#" class="footer-social-icon" title="LinkedIn"><i data-lucide="linkedin"></i></a>
+          <a href="#" class="footer-social-icon" title="Youtube"><i data-lucide="youtube"></i></a>
+        </div>
+      </div>
+      <div class="footer-column">
+        <h4 class="footer-column-title">Quick Links</h4>
+        <ul class="footer-links">
+          <li><a href="../pages/medical.html" class="footer-link">Medical Emergency</a></li>
+          <li><a href="../pages/disaster.html" class="footer-link">Disaster Safety</a></li>
+          <li><a href="../pages/chatbot.html" class="footer-link">AI Assistance</a></li>
+          <li><a href="../pages/maps.html" class="footer-link">Maps &amp; Location</a></li>
+          <li><a href="../pages/contacts.html" class="footer-link">Contacts</a></li>
+          <li><a href="../pages/settings.html" class="footer-link">Settings</a></li>
+        </ul>
+      </div>
+      <div class="footer-column">
+        <h4 class="footer-column-title">Resources</h4>
+        <ul class="footer-links">
+          <li><a href="../pages/about.html" class="footer-link">About RescueAI</a></li>
+          <li><a href="#" class="footer-link">GitHub Repository</a></li>
+          <li><a href="#" class="footer-link">Privacy Policy</a></li>
+          <li><a href="#" class="footer-link">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <p>&copy; RescueAI 2026. All rights reserved.</p>
+      <p>IEEE Hackathon Project</p>
+    </div>
+  </footer>
+
+</div>
+
+<!-- Lucide Script CDN -->
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<!-- JavaScript Scripts -->
+<script src="../js/common/translations.js"></script>
+<script src="../js/common/main.js"></script>
+<script src="../js/notifications.js"></script>
+</body>
+</html>

@@ -1209,3 +1209,7 @@ body.desktop-chat-layout {
   transform: translateY(-3px);
   box-shadow: 0 14px 32px rgba(108, 99, 255, 0.4);
 }
+
+*{
+  font-size: 20px;
+}

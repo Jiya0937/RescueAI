@@ -542,6 +542,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // About nav icon navigation -> opens the About page
+  const navAboutBtn = document.getElementById('nav-about');
+  if (navAboutBtn) {
+    navAboutBtn.addEventListener('click', () => {
+      window.location.href = isPagesSubdir ? 'about.html' : 'pages/about.html';
+    });
+  }
+
   // 5. Intercept language changed event from main.js
   document.addEventListener('rescueLangChanged', (e) => {
     const nextLang = e.detail.lang;

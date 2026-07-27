@@ -62,6 +62,21 @@ function initScrollReveal() {
   targets.forEach((el) => observer.observe(el));
 }
 
+  document.addEventListener('rescueLangChanged', (e) => {
+    const nextLang = e.detail.lang;
+    currentLang = nextLang;
+
+    // Reset placeholder loops
+    clearTimeout(typingTimeout);
+    charIndex = 0;
+    placeholderIndex = 0;
+    isDeleting = false;
+    typePlaceholder();
+
+    // Re-bind chips listeners to pull translated labels
+    bindChipsListeners();
+  });
+
 /* Animate the impact stat numbers (100%, 24/7, 9+, 10+) when in view */
 function initStatCounters() {
   const counters = document.querySelectorAll('.stat-number[data-count]');
